@@ -4,7 +4,15 @@
 
 # 🎙️ ARMOR-VOICE-AI
 
-<p align="center"><a href="README.md">🇺🇸 English</a> | 🇪🇸 <b>Español</b></p>
+<p align="center">
+  <a href="README.md">🇺🇸 English</a> |
+  🇪🇸 <b>Español</b> |
+  <a href="README_fra.md">🇫🇷 Français</a> |
+  <a href="README_ita.md">🇮🇹 Italiano</a> |
+  <a href="README_deu.md">🇩🇪 Deutsch</a> |
+  <a href="README_zho.md">🇨🇳 简体中文</a> |
+  <a href="README_jpn.md">🇯🇵 日本語</a>
+</p>
 
 ### Intenciones de voz sin conexión con una confirmación que el llamante no puede falsificar
 
@@ -21,16 +29,23 @@
 
 ---
 
-## 1. 🛠️ DESCRIPCIÓN
+## 🎯 Descripción general
 
 * **Una lista cerrada:** `status`, `silence`, `arm` y `disarm`, en inglés y español, tras normalizar acentos, puntuación y muletillas de cortesía. Cualquier otra cosa, o algo ambiguo, no se entiende.
 * **Una confirmación que emite el servicio:** `arm` y `disarm` devuelven un token firmado en el primer turno y solo se aceptan cuando un turno posterior lo repite para la misma intención en 30 s. No se puede falsificar, reorientar, reutilizar ni enviar como un simple `confirmed: true` (se rechaza).
 * **Decisiones, no audio:** con `--audit-file` cada decisión guarda la intención, el resultado y el SHA-256 de la transcripción, nunca audio ni las palabras.
 * **Solo recomendaciones:** un comando aceptado pasa a ARMOR-SERVER, que sigue autenticándolo y autorizándolo.
 
----
+## 📂 Estructura del repositorio
 
-## 2. 🔧 COMPILAR Y EJECUTAR
+```text
+ARMOR-VOICE-AI/
+├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── tests/
+└── docs/SAFETY.md
+```
+
+## 🛠️ Entorno de desarrollo
 
 ```powershell
 $env:PYTHONPATH="src"
@@ -40,18 +55,32 @@ echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 
 Véase [seguridad de voz](docs/SAFETY.md).
 
----
+## 🔗 Proyectos relacionados
 
-## 📂 ESTRUCTURA DE DIRECTORIOS
+**A.R.M.O.R.** (Autonomous Radar & Multimodal Observation Range) es un sistema de seguridad perimetral hecho de repositorios independientes. Cada uno tiene su propia versión, sus propias pruebas y su propio README; esta es la familia:
 
-```text
-ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
-├── tests/
-└── docs/SAFETY.md
-```
+* **[ARMOR-COMMON](../ARMOR-COMMON)** - Contratos de mensajes, validadores, vectores de conformidad y tipos generados
+* **[ARMOR-RADAR](../ARMOR-RADAR)** - Firmware del nodo de campo para ESP32-S3 con tres radares y su propio panel web
+* **[ARMOR-SOLAR](../ARMOR-SOLAR)** - Protocolos de inversores y baterías solares y los mensajes de un nodo pasarela
+* **[ARMOR-SERVER](../ARMOR-SERVER)** - Coordinador central: telemetría, alarmas, dispositivos, lecturas solares y cámaras
+* **[ARMOR-STUDIO](../ARMOR-STUDIO)** - Consola web: cámaras, radar, alarmas, energía solar y el diseñador de sitio 2D/3D
+* **[ARMOR-ANDROID-CONTROL](../ARMOR-ANDROID-CONTROL)** - Cliente Android del operador con radar 2D/3D en vivo
+* **[ARMOR-SERVER-AI](../ARMOR-SERVER-AI)** - Política de inferencia visual que explica sus decisiones y nunca actúa
+* **ARMOR-VOICE-AI** (este repositorio) - Intenciones de voz sin conexión con una confirmación imposible de falsificar
+* **[ARMOR-HARDWARE](../ARMOR-HARDWARE)** - Cajas, electrónica y la matriz de aceptación en banco
+* **[ARMOR-DEVOPS](../ARMOR-DEVOPS)** - Despliegue, el banco de pruebas de la CM5, copias de seguridad y TLS
+* **[ARMOR-SIMULATOR](../ARMOR-SIMULATOR)** - Simulador de telemetría sin conexión con fallos repetibles
+* **[ARMOR-DOCS](../ARMOR-DOCS)** - Arquitectura, base de seguridad y la matriz de capacidades
 
----
+## 📚 Documentación y comunidad
+
+Dónde leer más:
+
+* [Matriz de capacidades: qué está probado y qué no](../ARMOR-DOCS/docs/CAPABILITY_MATRIX.md)
+* [Catálogo de proyectos: versiones y cómo dependen unos de otros](../ARMOR-DOCS/docs/PROJECT_CATALOG.md)
+* [Historial de cambios de este repositorio](CHANGELOG.md)
+* [Licencia (GPL-3.0-or-later)](LICENSE)
+* Preguntas, ideas e informes: electrohobby3d@gmail.com
 
 ## 👤 AUTOR
 
