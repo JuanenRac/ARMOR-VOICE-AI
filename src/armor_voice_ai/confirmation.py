@@ -16,6 +16,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
 import secrets
 import time
@@ -31,7 +32,10 @@ VALID, EXPIRED, INVALID, WRONG_INTENT, REPLAYED = "valid", "expired", "invalid",
 class ConfirmationSigner:
     def __init__(self, secret: bytes | None = None, ttl_s: float = CONFIRMATION_VALIDITY_S, now: Callable[[], float] = time.time) -> None:
         # Without a configured secret a random one is used: pending tokens die with the process, which is the safe failure.
-        self._secret = secret or os.environb.get(b"ARMOR_VOICE_CONFIRM_SECRET") or secrets.token_bytes(32)
+        self._secret = secret or os.environb.get(b"ARMOR_VOICE_CONFIRM_SECRET")
+        if not self._secret:
+            self._secret = secrets.token_bytes(32)
+            logging.getLogger(__name__).warning("ARMOR_VOICE_CONFIRM_SECRET is not set: a random secret is used and the pending confirmations are lost when the process stops")
         if len(self._secret) < 16:
             raise ValueError("the confirmation secret must be at least 16 bytes")
         self._ttl = ttl_s
