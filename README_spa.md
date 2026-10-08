@@ -31,7 +31,7 @@
 
 ## 🎯 Descripción general
 
-* **Una lista cerrada:** `status`, `silence`, `arm` y `disarm`, en inglés y español, tras normalizar acentos, puntuación y muletillas de cortesía. Cualquier otra cosa, o algo ambiguo, no se entiende.
+* **Una lista cerrada:** `status`, `silence`, `arm` y `disarm`, en inglés, español, alemán, francés, italiano, japonés y chino (y la respuesta se dice en el idioma pedido), tras normalizar acentos, puntuación y muletillas de cortesía. Cualquier otra cosa, o algo ambiguo, no se entiende.
 * **Una confirmación que emite el servicio:** `arm` y `disarm` devuelven un token firmado en el primer turno y solo se aceptan cuando un turno posterior lo repite para la misma intención en 30 s. No se puede falsificar, reorientar, reutilizar ni enviar como un simple `confirmed: true` (se rechaza).
 * **Decisiones, no audio:** con `--audit-file` cada decisión guarda la intención, el resultado y el SHA-256 de la transcripción, nunca audio ni las palabras.
 * **Solo recomendaciones:** un comando aceptado pasa a ARMOR-SERVER, que sigue autenticándolo y autorizándolo.

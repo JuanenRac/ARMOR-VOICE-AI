@@ -31,7 +31,7 @@
 
 ## 🎯 Présentation
 
-* **Une liste fermée :** `status`, `silence`, `arm` et `disarm`, en anglais et en espagnol, après normalisation des accents, de la ponctuation et des formules de politesse. Tout le reste, ou tout ce qui est ambigu, n'est pas compris.
+* **Une liste fermée :** `status`, `silence`, `arm` et `disarm`, en anglais, espagnol, allemand, français, italien, japonais et chinois (et la réponse est dite dans la langue demandée), après normalisation des accents, de la ponctuation et des formules de politesse. Tout le reste, ou tout ce qui est ambigu, n'est pas compris.
 * **Une confirmation émise par le service :** `arm` et `disarm` renvoient un jeton signé au premier tour et ne sont acceptés que si un tour suivant le renvoie pour la même intention en moins de 30 s. Il ne peut être ni falsifié, ni redirigé, ni réutilisé, ni remplacé par un simple `confirmed: true` (refusé).
 * **Des décisions, pas de l'audio :** avec `--audit-file`, chaque décision enregistre l'intention, le résultat et un SHA-256 de la transcription, jamais l'audio ni les mots bruts.
 * **Recommandations seulement :** une commande acceptée est transmise à ARMOR-SERVER, qui l'authentifie et l'autorise encore.

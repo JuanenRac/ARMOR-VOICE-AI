@@ -4,7 +4,7 @@ Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 
 Speech recognition output is untrusted text. It is normalised (Unicode NFKC,
 lower case, punctuation and polite filler removed) and must then equal one of a
-small set of known phrases in English or Spanish. Anything else, including any
+small set of known phrases in English, Spanish, German, French, Italian, Japanese or Chinese. Anything else, including any
 phrase that could mean two different intents, is not understood. The text is
 never forwarded as a shell or device command.
 """
@@ -20,13 +20,44 @@ ALLOWED = frozenset({ARM, DISARM, STATUS, SILENCE})
 SENSITIVE = frozenset({ARM, DISARM})
 MAX_TEXT_LENGTH = 200
 
+# Every phrase is written already normalised (lower case, no accents, no punctuation): test_every_phrase_is_its_own_normal_form checks it, and that no phrase
+# means two different intents.
 _PHRASES: dict[str, frozenset[str]] = {
-    ARM: frozenset({"arm", "arm system", "arm the system", "armar", "armar sistema", "armar el sistema", "activar alarma", "activa la alarma"}),
-    DISARM: frozenset({"disarm", "disarm system", "disarm the system", "desarmar", "desarmar sistema", "desarmar el sistema", "desactivar alarma", "desactiva la alarma"}),
-    STATUS: frozenset({"status", "system status", "what is the status", "estado", "estado del sistema", "cual es el estado"}),
-    SILENCE: frozenset({"silence", "silence alarm", "silence the alarm", "silenciar", "silenciar alarma", "silenciar la alarma"}),
+    ARM: frozenset({
+        "arm", "arm system", "arm the system", "armar", "armar sistema", "armar el sistema", "arma el sistema", "activar alarma", "activa la alarma",
+        "scharfschalten", "alarm scharfschalten", "system scharfschalten", "das system scharfschalten",
+        "armer", "armer le systeme", "armer l alarme", "activer l alarme",
+        "armare", "armare il sistema", "attivare l allarme", "attiva l allarme",
+        "警備開始", "警備を開始", "警備を開始して", "布防", "系统布防", "开启警戒",
+    }),
+    DISARM: frozenset({
+        "disarm", "disarm system", "disarm the system", "desarmar", "desarmar sistema", "desarmar el sistema", "desarma el sistema", "desactivar alarma", "desactiva la alarma",
+        "entscharfen", "alarm entscharfen", "system entscharfen", "das system entscharfen",
+        "desarmer", "desarmer le systeme", "desarmer l alarme", "desactiver l alarme",
+        "disarmare", "disarmare il sistema", "disattivare l allarme", "disattiva l allarme",
+        "警備解除", "警備を解除", "警備を解除して", "撤防", "系统撤防", "解除警戒",
+    }),
+    STATUS: frozenset({
+        "status", "system status", "what is the status", "estado", "estado del sistema", "cual es el estado",
+        "systemstatus", "wie ist der status", "statut", "etat du systeme", "quel est l etat", "stato", "stato del sistema", "qual e lo stato",
+        "状態", "システムの状態", "状态", "系统状态",
+    }),
+    SILENCE: frozenset({
+        "silence", "silence alarm", "silence the alarm", "silenciar", "silenciar alarma", "silenciar la alarma", "silencia la alarma",
+        "stummschalten", "alarm stummschalten", "den alarm stummschalten",
+        "silence alarme", "faire taire l alarme", "silenzio", "silenzia", "silenzia l allarme", "silenzia allarme",
+        "警報を止めて", "警報停止", "消音", "静音报警",
+    }),
 }
-_FILLER = re.compile(r"\b(please|kindly|could you|can you|would you|hey|armor|por favor|oye|puedes|podrias)\b")
+# Polite words and ways of calling the assistant that are dropped before the phrase is compared (whole words only). Japanese and Chinese are written without
+# spaces, so they have no filler: their phrases are listed with and without the polite ending.
+_FILLER = re.compile(
+    r"\b(please|kindly|could you|can you|would you|hey|armor|"
+    r"por favor|oye|oiga|venga|bueno|vale|puedes|podrias|"
+    r"bitte|kannst du|konntest du|"
+    r"s il vous plait|s il te plait|svp|stp|"
+    r"per favore|per piacere|ehi)\b"
+)
 _PUNCTUATION = re.compile(r"[^\w\s]")
 
 

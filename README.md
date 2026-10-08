@@ -31,7 +31,7 @@
 
 ## 🎯 Overview
 
-* **A closed allow-list:** `status`, `silence`, `arm` and `disarm`, in English and Spanish, after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
+* **A closed allow-list:** `status`, `silence`, `arm` and `disarm`, in English, Spanish, German, French, Italian, Japanese and Chinese (and the answer is spoken in the language asked for), after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
 * **A confirmation the service issues:** `arm` and `disarm` return a signed token on the first turn and are accepted only when a later turn echoes it for the same intent within 30 s. It cannot be forged, retargeted, reused or sent as a plain `confirmed: true` (that is refused).
 * **Decisions, not audio:** with `--audit-file` each decision records the intent, the outcome and a SHA-256 of the transcript, never audio or the raw words.
 * **Recommendations only:** an accepted command is passed to ARMOR-SERVER, which still authenticates and authorises it.

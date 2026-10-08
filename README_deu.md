@@ -31,7 +31,7 @@
 
 ## 🎯 Überblick
 
-* **Eine geschlossene Erlaubnisliste:** `status`, `silence`, `arm` und `disarm`, auf Englisch und Spanisch, nach Normalisierung von Akzenten, Satzzeichen und Höflichkeitsfloskeln. Alles andere oder Mehrdeutige wird nicht verstanden.
+* **Eine geschlossene Erlaubnisliste:** `status`, `silence`, `arm` und `disarm`, auf Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch und Chinesisch (und die Antwort wird in der gewünschten Sprache gesprochen), nach Normalisierung von Akzenten, Satzzeichen und Höflichkeitsfloskeln. Alles andere oder Mehrdeutige wird nicht verstanden.
 * **Eine vom Dienst ausgestellte Bestätigung:** `arm` und `disarm` liefern im ersten Schritt ein signiertes Token und werden nur akzeptiert, wenn ein späterer Schritt es für dieselbe Absicht innerhalb von 30 s zurückgibt. Es lässt sich nicht fälschen, umlenken, wiederverwenden oder durch ein einfaches `confirmed: true` ersetzen (wird abgelehnt).
 * **Entscheidungen, kein Audio:** mit `--audit-file` hält jede Entscheidung Absicht, Ergebnis und einen SHA-256 des Transkripts fest, nie Audio oder die rohen Wörter.
 * **Nur Empfehlungen:** ein akzeptierter Befehl wird an ARMOR-SERVER weitergegeben, der ihn weiterhin authentifiziert und autorisiert.
