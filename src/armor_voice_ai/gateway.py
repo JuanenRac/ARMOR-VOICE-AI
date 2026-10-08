@@ -27,11 +27,17 @@ from pathlib import Path
 from .confirmation import ConfirmationSigner
 from .session import ACCEPTED, CONFIRMATION_NEEDED, CONFIRMATION_REFUSED, evaluate
 
-SPEECH = {
-    CONFIRMATION_NEEDED: "Please confirm",
-    ACCEPTED: "Command accepted",
-    CONFIRMATION_REFUSED: "Confirmation refused",
+# What the gateway says back, in the language the caller asks for (`language`, one of these codes; English when none is given).
+SPEECH_BY_LANGUAGE = {
+    "en": {CONFIRMATION_NEEDED: "Please confirm", ACCEPTED: "Command accepted", CONFIRMATION_REFUSED: "Confirmation refused", "": "Command not recognised"},
+    "es": {CONFIRMATION_NEEDED: "Por favor, confirma", ACCEPTED: "Orden aceptada", CONFIRMATION_REFUSED: "Confirmaci\u00f3n rechazada", "": "Orden no reconocida"},
+    "de": {CONFIRMATION_NEEDED: "Bitte best\u00e4tigen", ACCEPTED: "Befehl akzeptiert", CONFIRMATION_REFUSED: "Best\u00e4tigung abgelehnt", "": "Befehl nicht erkannt"},
+    "fr": {CONFIRMATION_NEEDED: "Veuillez confirmer", ACCEPTED: "Commande accept\u00e9e", CONFIRMATION_REFUSED: "Confirmation refus\u00e9e", "": "Commande non reconnue"},
+    "it": {CONFIRMATION_NEEDED: "Conferma, per favore", ACCEPTED: "Comando accettato", CONFIRMATION_REFUSED: "Conferma rifiutata", "": "Comando non riconosciuto"},
+    "ja": {CONFIRMATION_NEEDED: "\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044", ACCEPTED: "\u30b3\u30de\u30f3\u30c9\u3092\u53d7\u3051\u4ed8\u3051\u307e\u3057\u305f", CONFIRMATION_REFUSED: "\u78ba\u8a8d\u304c\u62d2\u5426\u3055\u308c\u307e\u3057\u305f", "": "\u30b3\u30de\u30f3\u30c9\u3092\u8a8d\u8b58\u3067\u304d\u307e\u305b\u3093"},
+    "zh": {CONFIRMATION_NEEDED: "\u8bf7\u786e\u8ba4", ACCEPTED: "\u547d\u4ee4\u5df2\u63a5\u53d7", CONFIRMATION_REFUSED: "\u786e\u8ba4\u88ab\u62d2\u7edd", "": "\u65e0\u6cd5\u8bc6\u522b\u547d\u4ee4"},
 }
+SPEECH = SPEECH_BY_LANGUAGE["en"]   # kept for callers of the English table
 MAX_LINE_BYTES = 2048
 
 
@@ -40,14 +46,15 @@ def handle_request(request: object, signer: ConfirmationSigner, audit: Path | No
         return {"accepted": False, "error": "invalid request shape"}
     if "confirmed" in request:
         return {"accepted": False, "error": "a confirmed flag is not accepted; echo the confirmation token the service issued"}
-    if set(request) - {"text", "confirmation"}:
+    if set(request) - {"text", "confirmation", "language"}:
         return {"accepted": False, "error": "invalid request shape"}
-    text, confirmation = request.get("text"), request.get("confirmation")
-    if not isinstance(text, str) or (confirmation is not None and not isinstance(confirmation, str)):
+    text, confirmation, language = request.get("text"), request.get("confirmation"), request.get("language", "en")
+    if not isinstance(text, str) or (confirmation is not None and not isinstance(confirmation, str)) or not isinstance(language, str) or language not in SPEECH_BY_LANGUAGE:
         return {"accepted": False, "error": "invalid request fields"}
     decision = evaluate(text, signer, confirmation)
     answer = asdict(decision)
-    answer["speech"] = SPEECH.get(decision.outcome, "Command not recognised")
+    spoken = SPEECH_BY_LANGUAGE[language]
+    answer["speech"] = spoken.get(decision.outcome, spoken[""])
     if decision.confirmation_token is None:
         del answer["confirmation_token"]
     if not decision.reason:

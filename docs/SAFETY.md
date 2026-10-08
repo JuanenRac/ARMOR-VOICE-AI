@@ -8,7 +8,7 @@ four known intents or refuses it.
 
 Transcripts are normalised (Unicode NFKC, lower case, no accents, punctuation or
 polite filler such as "please" or "por favor") and must then equal a known phrase
-in English or Spanish. Anything else, anything over 200 characters and any phrase
+in English, Spanish, German, French, Italian, Japanese or Chinese. Anything else, anything over 200 characters and any phrase
 that could mean two intents is *not understood*.
 
 | Intent | Meaning | Confirmation |

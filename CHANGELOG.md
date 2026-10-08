@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [0.3.0] - Seven languages, and more polite words in Spanish
+
+- **Phrases in German, French, Italian, Japanese and Chinese** for `arm`, `disarm`, `status` and `silence`, next to English and Spanish. It is still a closed allow-list: a test checks that every phrase is written in its own normal form (or it could never match) and that no phrase means two intents.
+- **More polite words** are dropped before a phrase is compared: `oiga`, `venga`, `bueno`, `vale` (Spanish), `bitte` (German), `s'il vous plaît`, `svp` (French), `per favore`, `per piacere` (Italian); a filler alone never makes an unknown phrase known.
+- **The answer is spoken in the language asked for:** an optional `language` field of the request (`en`, `es`, `de`, `fr`, `it`, `ja`, `zh`; English when it is absent; anything else is a malformed request). New tests: 7.
+
+
 ## [0.2.2] - What used to go unsaid is now in the log
 
 - **Audit file:** when a decision's line cannot be written, a warning says so (on stderr: stdout is the protocol of the gateway).
