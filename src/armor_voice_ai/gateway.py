@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import sys
 import time
 from dataclasses import asdict
@@ -61,8 +62,9 @@ def _record(path: Path, intent: str | None, outcome: str, text: str) -> None:
     try:
         with path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(entry, separators=(",", ":")) + "\n")
-    except OSError:
-        pass  # Recording must never break a spoken command.
+    except OSError as error:
+        # Recording must never break a spoken command, but a decision that left no trace is said (on stderr: stdout is the protocol).
+        logging.getLogger(__name__).warning("the audit line could not be written to %s: %s", path, error)
 
 
 def main(argv: list[str] | None = None) -> None:
