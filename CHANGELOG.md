@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.5] - Fifteen commands instead of four
+
+- **Ten new commands**, each in the seven languages (3 or 4 phrases per language, `phrases.py`): the ones that *ask* - `alarms` (*how many alarms are there*), `nodes`, `cameras`, `radar` (*is anyone there*), `solar` (*how is the battery*), `electrical` (*how much power am I using*), `network` (*do I have internet*), `time` (*what time is it*) and `help` (*what can I do*) - which change nothing and need no confirmation, and `lights_on` and `lights_off`, which the server carries out with the session of the person. Arm and disarm are still the only ones confirmed in a second turn.
+- The phrases now live in one table and are normalised when the module loads with the same function that normalises what is heard, so they cannot drift apart (a test checks that every phrase of every language is understood as its own command, that none means two, and that no half of a phrase is enough). 36 tests.
+
 ## [0.2.4] - A local HTTP service, for the server to ask
 
 - **`python -m armor_voice_ai.service`:** the same closed gateway as a small HTTP service - `POST /v1/command` with `{text, language?, confirmation?}` and `GET /healthz` - that listens on the loopback address only (it refuses to start on another one without `--allow-remote`), wants a token in `X-Armor-Voice-Token` (at least 16 characters, from `ARMOR_VOICE_TOKEN` or a `--token-file`), takes at most 2 KB, never logs what was said and signs the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. It only decides: ARMOR-SERVER asks it and carries out what is accepted. 5 new tests.
