@@ -2,7 +2,8 @@ import unittest
 
 from armor_voice_ai.confirmation import ConfirmationSigner
 from armor_voice_ai.gateway import SPEECH_BY_LANGUAGE, handle_request
-from armor_voice_ai.intent import ARM, DISARM, SILENCE, STATUS, _PHRASES, normalize_text, parse_intent
+from armor_voice_ai.intent import ACTIONS, ALLOWED, ARM, DISARM, QUERIES, SENSITIVE, SILENCE, STATUS, _PHRASES, normalize_text, parse_intent
+from armor_voice_ai.phrases import LANGUAGES, PHRASES
 from armor_voice_ai.session import ACCEPTED, CONFIRMATION_NEEDED, CONFIRMATION_REFUSED
 
 SECRET = b"s" * 32
@@ -57,6 +58,31 @@ class LanguageTests(unittest.TestCase):
         signer = ConfirmationSigner(SECRET)
         for bad in ("xx", 3, None, ["en"]):
             self.assertEqual(handle_request({"text": "status", "language": bad}, signer), {"accepted": False, "error": "invalid request fields"})
+
+
+class EveryCommandTests(unittest.TestCase):
+    def test_every_command_is_said_in_every_language_and_is_understood_as_itself(self):
+        self.assertEqual(set(PHRASES), set(ALLOWED))
+        for intent, by_language in PHRASES.items():
+            self.assertEqual(tuple(by_language), LANGUAGES, intent)
+            for language, phrases in by_language.items():
+                self.assertGreaterEqual(len(phrases), 2, f"{intent} {language}")
+                for phrase in phrases:
+                    self.assertEqual(parse_intent(phrase), intent, f"{language}: {phrase!r}")
+
+    def test_the_commands_that_ask_and_those_that_do_are_told_apart_and_only_arm_and_disarm_are_confirmed(self):
+        self.assertFalse(QUERIES & ACTIONS)
+        self.assertEqual(SENSITIVE, {ARM, DISARM})
+        self.assertGreaterEqual(len(ALLOWED), 15)
+
+    def test_what_is_heard_with_polite_words_and_without_accents_is_understood(self):
+        for heard, intent in (("Por favor, ¿qué hora es?", "time"), ("oiga cuantas alarmas hay", "alarms"), ("Hey, turn on the lights please", "lights_on"), ("Quel est l'état des caméras ?", None),
+                              ("état des caméras", "cameras"), ("Wie viel Strom verbrauche ich?", "electrical"), ("什么", None), ("電気を消して", "lights_off")):
+            self.assertEqual(parse_intent(heard), intent, heard)
+
+    def test_a_phrase_that_is_part_of_a_command_is_not_enough(self):
+        for heard in ("lights", "turn the lights", "alarm", "estado de", "open the garage", "ayuda por favor ahora"):
+            self.assertIsNone(parse_intent(heard), heard)
 
 
 if __name__ == "__main__":

@@ -45,3 +45,11 @@ It does not arm, disarm or silence anything: an accepted decision is a
 recommendation to ARMOR-SERVER, which still authenticates and authorises the
 action. Speech recognition and synthesis engines are deployment choices and are
 not part of this repository yet.
+
+## Two kinds of command
+
+The closed list has fifteen commands (`phrases.py`), of two kinds. The ones that **ask** - the state, the alarms, the nodes, the cameras, the radars, the solar system, the
+consumption, the network, the time, the help - change nothing and need no confirmation. The ones that **do** are *arm* and *disarm* (they change the security state, so they are
+confirmed in a second turn with a signed, single-use token), *silence* (acknowledges the alarms) and the *lights* (on and off). The gateway only decides which command a phrase
+is: the server carries each out with the session of the person who spoke, writes it in the audit trail and says what it did in their language. A phrase that is not exactly one
+of them, or that could be two, is not understood.
