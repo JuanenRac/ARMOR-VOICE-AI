@@ -25,24 +25,25 @@
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the signed confirmation and the audit are real and tested (20 tests). **No speech recognition or synthesis engine is part of this repository yet.**
+**Honesty check - what runs today:** The intent rules, the signed confirmation and the audit are real and tested (36 tests). **No speech recognition or synthesis engine is part of this repository yet.**
 
 ---
 
 ## 🎯 Overview
 
-* **A closed allow-list:** `status`, `silence`, `arm` and `disarm`, in English, Spanish, German, French, Italian, Japanese and Chinese (and the answer is spoken in the language asked for), after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
+* **A closed allow-list:** fifteen commands - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` and `lights_off` -, in English, Spanish, German, French, Italian, Japanese and Chinese (and the answer is spoken in the language asked for), after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
 * **A confirmation the service issues:** `arm` and `disarm` return a signed token on the first turn and are accepted only when a later turn echoes it for the same intent within 30 s. It cannot be forged, retargeted, reused or sent as a plain `confirmed: true` (that is refused).
 * **Decisions, not audio:** with `--audit-file` each decision records the intent, the outcome and a SHA-256 of the transcript, never audio or the raw words.
 * **Recommendations only:** an accepted command is passed to ARMOR-SERVER, which still authenticates and authorises it.
+* **A small service, not an engine:** `armor-voice` listens on `127.0.0.1:18090` for the text the server hands it (typed in the Android app, or what the phone's own speech recognition heard) and answers with the verdict; see [the service](docs/SERVICE.md). The server carries out each accepted command with the session of the person who spoke.
 
 ## 📂 Repository Structure
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
 ├── tests/
-└── docs/SAFETY.md
+└── docs/SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ Development Environment

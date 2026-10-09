@@ -25,24 +25,25 @@
 
 ---
 
-**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die signierte Bestätigung und das Audit sind real und getestet (20 Tests). **Eine Spracherkennungs- oder Synthese-Engine ist noch nicht Teil dieses Repositorys.**
+**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die signierte Bestätigung und das Audit sind real und getestet (36 Tests). **Eine Spracherkennungs- oder Synthese-Engine ist noch nicht Teil dieses Repositorys.**
 
 ---
 
 ## 🎯 Überblick
 
-* **Eine geschlossene Erlaubnisliste:** `status`, `silence`, `arm` und `disarm`, auf Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch und Chinesisch (und die Antwort wird in der gewünschten Sprache gesprochen), nach Normalisierung von Akzenten, Satzzeichen und Höflichkeitsfloskeln. Alles andere oder Mehrdeutige wird nicht verstanden.
+* **Eine geschlossene Erlaubnisliste:** fünfzehn Befehle - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` und `lights_off` -, auf Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch und Chinesisch (und die Antwort wird in der gewünschten Sprache gesprochen), nach Normalisierung von Akzenten, Satzzeichen und Höflichkeitsfloskeln. Alles andere oder Mehrdeutige wird nicht verstanden.
 * **Eine vom Dienst ausgestellte Bestätigung:** `arm` und `disarm` liefern im ersten Schritt ein signiertes Token und werden nur akzeptiert, wenn ein späterer Schritt es für dieselbe Absicht innerhalb von 30 s zurückgibt. Es lässt sich nicht fälschen, umlenken, wiederverwenden oder durch ein einfaches `confirmed: true` ersetzen (wird abgelehnt).
 * **Entscheidungen, kein Audio:** mit `--audit-file` hält jede Entscheidung Absicht, Ergebnis und einen SHA-256 des Transkripts fest, nie Audio oder die rohen Wörter.
 * **Nur Empfehlungen:** ein akzeptierter Befehl wird an ARMOR-SERVER weitergegeben, der ihn weiterhin authentifiziert und autorisiert.
+* **Ein kleiner Dienst, keine Engine:** `armor-voice` lauscht auf `127.0.0.1:18090` auf den Text, den der Server ihm gibt (in der Android-App getippt oder von der Spracherkennung des Telefons gehört), und antwortet mit dem Urteil; siehe [der Dienst](docs/SERVICE.md). Der Server führt jeden akzeptierten Befehl mit der Sitzung der sprechenden Person aus.
 
 ## 📂 Struktur des Repositorys
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
 ├── tests/
-└── docs/SAFETY.md
+└── docs/SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ Entwicklungsumgebung
