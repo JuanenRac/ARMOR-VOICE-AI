@@ -2,7 +2,11 @@
 
 All notable changes to this project are documented here.
 
-## [0.3.0] - Seven languages, and more polite words in Spanish
+## [0.2.4] - A local HTTP service, for the server to ask
+
+- **`python -m armor_voice_ai.service`:** the same closed gateway as a small HTTP service - `POST /v1/command` with `{text, language?, confirmation?}` and `GET /healthz` - that listens on the loopback address only (it refuses to start on another one without `--allow-remote`), wants a token in `X-Armor-Voice-Token` (at least 16 characters, from `ARMOR_VOICE_TOKEN` or a `--token-file`), takes at most 2 KB, never logs what was said and signs the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. It only decides: ARMOR-SERVER asks it and carries out what is accepted. 5 new tests.
+
+## [0.2.3] - Seven languages, and more polite words in Spanish
 
 - **Phrases in German, French, Italian, Japanese and Chinese** for `arm`, `disarm`, `status` and `silence`, next to English and Spanish. It is still a closed allow-list: a test checks that every phrase is written in its own normal form (or it could never match) and that no phrase means two intents.
 - **More polite words** are dropped before a phrase is compared: `oiga`, `venga`, `bueno`, `vale` (Spanish), `bitte` (German), `s'il vous plaît`, `svp` (French), `per favore`, `per piacere` (Italian); a filler alone never makes an unknown phrase known.
