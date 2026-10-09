@@ -25,24 +25,25 @@
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分:** 意图规则、签名确认和审计都是真实的并经过测试（20 个测试）。**本仓库目前还没有任何语音识别或合成引擎。**
+**诚实性检查 - 今天真正能运行的部分:** 意图规则、签名确认和审计都是真实的并经过测试（36 个测试）。**本仓库目前还没有任何语音识别或合成引擎。**
 
 ---
 
 ## 🎯 概述
 
-* **封闭的允许列表：** `status`、`silence`、`arm` 和 `disarm`，支持英语、西班牙语、德语、法语、意大利语、日语和中文（回答使用所要求的语言），先规范化重音、标点和客套用语。其他任何内容或有歧义的内容都不会被理解。
+* **封闭的允许列表：** 十五条命令 - `arm`、`disarm`、`status`、`silence`、`alarms`、`nodes`、`cameras`、`radar`、`solar`、`electrical`、`network`、`time`、`help`、`lights_on` 和 `lights_off` -，支持英语、西班牙语、德语、法语、意大利语、日语和中文（回答使用所要求的语言），先规范化重音、标点和客套用语。其他任何内容或有歧义的内容都不会被理解。
 * **由服务签发的确认：** `arm` 和 `disarm` 在第一轮返回签名令牌，只有后续一轮在 30 s 内为同一意图回传它才会被接受。它无法被伪造、改指目标、重复使用，也不能用简单的 `confirmed: true` 代替（会被拒绝）。
 * **只记决定，不记音频：** 使用 `--audit-file` 时，每个决定记录意图、结果和转写文本的 SHA-256，绝不记录音频或原始文字。
 * **只给建议：** 被接受的命令会交给 ARMOR-SERVER，由它继续认证和授权。
+* **一个小型服务，而不是引擎：** `armor-voice` 在 `127.0.0.1:18090` 上接收服务器交给它的文字（在 Android 应用中输入，或由手机自带的语音识别听到），并回复判定结果；见[服务说明](docs/SERVICE.md)。服务器以说话者的会话执行每条被接受的命令。
 
 ## 📂 仓库结构
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
 ├── tests/
-└── docs/SAFETY.md
+└── docs/SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ 开发环境

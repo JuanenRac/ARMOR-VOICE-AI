@@ -1,7 +1,7 @@
 # The voice gateway as a service
 
 `python -m armor_voice_ai.service --port 18090 --token-file <file with ARMOR_VOICE_TOKEN=...>` runs the closed gateway of [SAFETY.md](SAFETY.md) as a small HTTP
-service for ARMOR-SERVER to ask. It only decides - which of the four commands a phrase is, and the two-turn confirmation of arm and disarm - and never acts: the
+service for ARMOR-SERVER to ask. It only decides - which of the fifteen commands a phrase is, and the two-turn confirmation of arm and disarm - and never acts: the
 server carries out what was accepted, with the session of the person who spoke.
 
 | Route | What it does |

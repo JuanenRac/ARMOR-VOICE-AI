@@ -2,7 +2,7 @@
 
 Speech recognition is **untrusted input**. This service never forwards spoken
 text as a shell command or a device command; it turns a transcript into one of
-four known intents or refuses it.
+fifteen known intents or refuses it.
 
 ## What is understood
 

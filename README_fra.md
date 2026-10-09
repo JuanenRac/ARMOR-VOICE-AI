@@ -25,24 +25,25 @@
 
 ---
 
-**Vérification d'honnêteté - ce qui fonctionne aujourd'hui:** Les règles d'intention, la confirmation signée et l'audit sont réels et testés (20 tests). **Aucun moteur de reconnaissance ni de synthèse vocale ne fait encore partie de ce dépôt.**
+**Vérification d'honnêteté - ce qui fonctionne aujourd'hui:** Les règles d'intention, la confirmation signée et l'audit sont réels et testés (36 tests). **Aucun moteur de reconnaissance ni de synthèse vocale ne fait encore partie de ce dépôt.**
 
 ---
 
 ## 🎯 Présentation
 
-* **Une liste fermée :** `status`, `silence`, `arm` et `disarm`, en anglais, espagnol, allemand, français, italien, japonais et chinois (et la réponse est dite dans la langue demandée), après normalisation des accents, de la ponctuation et des formules de politesse. Tout le reste, ou tout ce qui est ambigu, n'est pas compris.
+* **Une liste fermée :** quinze commandes - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` et `lights_off` -, en anglais, espagnol, allemand, français, italien, japonais et chinois (et la réponse est dite dans la langue demandée), après normalisation des accents, de la ponctuation et des formules de politesse. Tout le reste, ou tout ce qui est ambigu, n'est pas compris.
 * **Une confirmation émise par le service :** `arm` et `disarm` renvoient un jeton signé au premier tour et ne sont acceptés que si un tour suivant le renvoie pour la même intention en moins de 30 s. Il ne peut être ni falsifié, ni redirigé, ni réutilisé, ni remplacé par un simple `confirmed: true` (refusé).
 * **Des décisions, pas de l'audio :** avec `--audit-file`, chaque décision enregistre l'intention, le résultat et un SHA-256 de la transcription, jamais l'audio ni les mots bruts.
 * **Recommandations seulement :** une commande acceptée est transmise à ARMOR-SERVER, qui l'authentifie et l'autorise encore.
+* **Un petit service, pas un moteur :** `armor-voice` écoute sur `127.0.0.1:18090` le texte que le serveur lui remet (saisi dans l'app Android, ou entendu par la reconnaissance vocale du téléphone) et répond par le verdict ; voir [le service](docs/SERVICE.md). Le serveur exécute chaque commande acceptée avec la session de la personne qui a parlé.
 
 ## 📂 Structure du dépôt
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
 ├── tests/
-└── docs/SAFETY.md
+└── docs/SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ Environnement de développement

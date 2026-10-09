@@ -25,24 +25,25 @@
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, la conferma firmata e l'audit sono reali e testati (20 test). **Nessun motore di riconoscimento o sintesi vocale fa ancora parte di questo repository.**
+**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, la conferma firmata e l'audit sono reali e testati (36 test). **Nessun motore di riconoscimento o sintesi vocale fa ancora parte di questo repository.**
 
 ---
 
 ## 🎯 Panoramica
 
-* **Una lista chiusa:** `status`, `silence`, `arm` e `disarm`, in inglese, spagnolo, tedesco, francese, italiano, giapponese e cinese (e la risposta è detta nella lingua richiesta), dopo aver normalizzato accenti, punteggiatura e formule di cortesia. Tutto il resto, o ciò che è ambiguo, non viene capito.
+* **Una lista chiusa:** quindici comandi - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` e `lights_off` -, in inglese, spagnolo, tedesco, francese, italiano, giapponese e cinese (e la risposta è detta nella lingua richiesta), dopo aver normalizzato accenti, punteggiatura e formule di cortesia. Tutto il resto, o ciò che è ambiguo, non viene capito.
 * **Una conferma emessa dal servizio:** `arm` e `disarm` restituiscono un token firmato al primo turno e sono accettati solo se un turno successivo lo rimanda per lo stesso intento entro 30 s. Non si può falsificare, reindirizzare, riutilizzare né sostituire con un semplice `confirmed: true` (rifiutato).
 * **Decisioni, non audio:** con `--audit-file` ogni decisione registra l'intento, l'esito e uno SHA-256 della trascrizione, mai l'audio né le parole grezze.
 * **Solo raccomandazioni:** un comando accettato viene passato ad ARMOR-SERVER, che lo autentica e lo autorizza comunque.
+* **Un piccolo servizio, non un motore:** `armor-voice` ascolta su `127.0.0.1:18090` il testo che gli passa il server (scritto nell'app Android, o sentito dal riconoscimento vocale del telefono) e risponde con il verdetto; vedi [il servizio](docs/SERVICE.md). Il server esegue ogni comando accettato con la sessione di chi ha parlato.
 
 ## 📂 Struttura del repository
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
 ├── tests/
-└── docs/SAFETY.md
+└── docs/SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ Ambiente di sviluppo
