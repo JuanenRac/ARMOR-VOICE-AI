@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [0.2.5] - Fifteen commands instead of four
 
+- **The package carries its `__version__`** (kept in step with the manifest by the shared version tool), so that the server's Services menu in Studio can show which version of the voice service runs.
 - **Ten new commands**, each in the seven languages (3 or 4 phrases per language, `phrases.py`): the ones that *ask* - `alarms` (*how many alarms are there*), `nodes`, `cameras`, `radar` (*is anyone there*), `solar` (*how is the battery*), `electrical` (*how much power am I using*), `network` (*do I have internet*), `time` (*what time is it*) and `help` (*what can I do*) - which change nothing and need no confirmation, and `lights_on` and `lights_off`, which the server carries out with the session of the person. Arm and disarm are still the only ones confirmed in a second turn.
 - The phrases now live in one table and are normalised when the module loads with the same function that normalises what is heard, so they cannot drift apart (a test checks that every phrase of every language is understood as its own command, that none means two, and that no half of a phrase is enough). 36 tests.
 
