@@ -19,6 +19,7 @@ import json
 import logging
 import os
 import secrets
+import threading
 import time
 from collections import OrderedDict
 from collections.abc import Callable
@@ -41,6 +42,8 @@ class ConfirmationSigner:
         self._ttl = ttl_s
         self._now = now
         self._used: OrderedDict[str, float] = OrderedDict()
+        # The server answers several requests at once: checking that a nonce is new and recording it must be one step, or two requests with the same token both pass.
+        self._lock = threading.Lock()
 
     @property
     def ttl_s(self) -> float:
@@ -56,10 +59,11 @@ class ConfirmationSigner:
 
     def verify(self, token: object, intent: str) -> str:
         """VALID, or the reason the token cannot be used for this intent. A valid token is consumed."""
-        if not isinstance(token, str) or token.count(".") != 1:
+        # Only ASCII can be a token; anything else is refused before it reaches the signature code (a character outside ASCII used to make it raise and cut the connection).
+        if not isinstance(token, str) or not token.isascii() or token.count(".") != 1:
             return INVALID
         body, _, signature = token.partition(".")
-        if not hmac.compare_digest(signature, self._sign(body)):
+        if not hmac.compare_digest(signature.encode("ascii"), self._sign(body).encode("ascii")):
             return INVALID
         try:
             payload = json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
@@ -72,12 +76,13 @@ class ConfirmationSigner:
             return EXPIRED
         # The nonces of tokens that have expired are of no use any more (an expired token is refused on its own), so they are what is forgotten; one that could still be replayed is
         # NEVER pushed out to make room. When there are too many of those at once, the new token is refused rather than the old one forgotten.
-        now = self._now()
-        for old in [key for key, until in self._used.items() if until < now]:
-            del self._used[old]
-        if nonce in self._used:
-            return REPLAYED
-        if len(self._used) >= _USED_LIMIT:
-            return INVALID
-        self._used[nonce] = expires
+        with self._lock:
+            now = self._now()
+            for old in [key for key, until in self._used.items() if until < now]:
+                del self._used[old]
+            if nonce in self._used:
+                return REPLAYED
+            if len(self._used) >= _USED_LIMIT:
+                return INVALID
+            self._used[nonce] = expires
         return VALID

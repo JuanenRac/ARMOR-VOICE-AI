@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.6] - Audit round two: sturdier confirmation of spoken orders
+
+- The confirmation of a spoken order is harder to replay or confuse, with tests.
+
 ## [0.2.5] - Fifteen commands instead of four
 
 - **The package carries its `__version__`** (kept in step with the manifest by the shared version tool), so that the server's Services menu in Studio can show which version of the voice service runs.

@@ -94,6 +94,31 @@ class ConfirmationTests(unittest.TestCase):
             ConfirmationSigner(secret=b"short")
 
 
+class ConfirmationHardeningTests(unittest.TestCase):
+    def test_a_token_with_characters_outside_ascii_is_refused_not_a_crash(self):
+        s = signer()
+        for token in ["ñandú.abc", "abc.déf", "😀.😀", "a.bé", "\u0000.\u0000"]:
+            self.assertEqual(s.verify(token, "arm"), INVALID, token)
+
+    def test_two_requests_with_the_same_token_at_the_same_time_cannot_both_pass(self):
+        import threading
+        s = signer()
+        token = s.issue("arm")
+        results = []
+        barrier = threading.Barrier(8)
+
+        def attempt():
+            barrier.wait()
+            results.append(s.verify(token, "arm"))
+        threads = [threading.Thread(target=attempt) for _ in range(8)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        self.assertEqual(results.count(VALID), 1, results)
+        self.assertEqual(results.count(REPLAYED), 7, results)
+
+
 class SessionTests(unittest.TestCase):
     def test_status_needs_no_confirmation(self):
         decision = evaluate("status", signer())
