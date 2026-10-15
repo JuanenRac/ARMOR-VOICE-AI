@@ -51,6 +51,26 @@ class ConfirmationTests(unittest.TestCase):
         self.assertEqual(s.verify(token, "arm"), VALID)
         self.assertEqual(s.verify(token, "arm"), REPLAYED)
 
+    def test_a_token_that_could_still_be_replayed_is_never_forgotten_to_make_room(self):
+        from armor_voice_ai import confirmation
+        clock = Clock()
+        s = signer(clock)
+        first = s.issue("arm")
+        self.assertEqual(s.verify(first, "arm"), VALID)
+        # a flood of other tokens used within the same half minute does not push the first one out: it is still refused as a replay
+        original_limit = confirmation._USED_LIMIT
+        confirmation._USED_LIMIT = 50
+        try:
+            outcomes = [s.verify(s.issue("arm"), "arm") for _ in range(120)]
+            self.assertEqual(outcomes.count(VALID), 49)           # the room that was left
+            self.assertEqual(set(outcomes) - {VALID}, {INVALID})   # the others are refused, none replaces a nonce that is still good
+            self.assertEqual(s.verify(first, "arm"), REPLAYED)
+            # once the tokens have expired their nonces are forgotten, and the room is there again
+            clock.now += s.ttl_s + 1
+            self.assertEqual(s.verify(s.issue("arm"), "arm"), VALID)
+        finally:
+            confirmation._USED_LIMIT = original_limit
+
     def test_a_token_cannot_be_used_for_another_intent(self):
         s = signer()
         self.assertEqual(s.verify(s.issue("arm"), "disarm"), WRONG_INTENT)

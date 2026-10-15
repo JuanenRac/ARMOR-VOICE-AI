@@ -70,9 +70,14 @@ class ConfirmationSigner:
             return WRONG_INTENT
         if self._now() > expires:
             return EXPIRED
+        # The nonces of tokens that have expired are of no use any more (an expired token is refused on its own), so they are what is forgotten; one that could still be replayed is
+        # NEVER pushed out to make room. When there are too many of those at once, the new token is refused rather than the old one forgotten.
+        now = self._now()
+        for old in [key for key, until in self._used.items() if until < now]:
+            del self._used[old]
         if nonce in self._used:
             return REPLAYED
+        if len(self._used) >= _USED_LIMIT:
+            return INVALID
         self._used[nonce] = expires
-        while len(self._used) > _USED_LIMIT:
-            self._used.popitem(last=False)
         return VALID
