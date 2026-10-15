@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [0.2.6] - Audit round two: sturdier confirmation of spoken orders
+## [0.2.6] - Sturdier confirmation of spoken orders
 
 - The confirmation of a spoken order is harder to replay or confuse, with tests.
 

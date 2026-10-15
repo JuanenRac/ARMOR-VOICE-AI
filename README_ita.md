@@ -25,25 +25,24 @@
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, la conferma firmata e l'audit sono reali e testati (36 test). **Nessun motore di riconoscimento o sintesi vocale fa ancora parte di questo repository.**
+**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, la conferma firmata e l'audit sono reali e testati (20 test). **Nessun motore di riconoscimento o sintesi vocale fa ancora parte di questo repository.**
 
 ---
 
 ## 🎯 Panoramica
 
-* **Una lista chiusa:** quindici comandi - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` e `lights_off` -, in inglese, spagnolo, tedesco, francese, italiano, giapponese e cinese (e la risposta è detta nella lingua richiesta), dopo aver normalizzato accenti, punteggiatura e formule di cortesia. Tutto il resto, o ciò che è ambiguo, non viene capito.
+* **Una lista chiusa:** `status`, `silence`, `arm` e `disarm`, in inglese e spagnolo, dopo aver normalizzato accenti, punteggiatura e formule di cortesia. Tutto il resto, o ciò che è ambiguo, non viene capito.
 * **Una conferma emessa dal servizio:** `arm` e `disarm` restituiscono un token firmato al primo turno e sono accettati solo se un turno successivo lo rimanda per lo stesso intento entro 30 s. Non si può falsificare, reindirizzare, riutilizzare né sostituire con un semplice `confirmed: true` (rifiutato).
 * **Decisioni, non audio:** con `--audit-file` ogni decisione registra l'intento, l'esito e uno SHA-256 della trascrizione, mai l'audio né le parole grezze.
 * **Solo raccomandazioni:** un comando accettato viene passato ad ARMOR-SERVER, che lo autentica e lo autorizza comunque.
-* **Un piccolo servizio, non un motore:** `armor-voice` ascolta su `127.0.0.1:18090` il testo che gli passa il server (scritto nell'app Android, o sentito dal riconoscimento vocale del telefono) e risponde con il verdetto; vedi [il servizio](docs/SERVICE.md). Il server esegue ogni comando accettato con la sessione di chi ha parlato.
 
 ## 📂 Struttura del repository
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
+├── src/armor_voice_ai/   intent, confirmation, session, gateway
 ├── tests/
-└── docs/SAFETY.md, SERVICE.md
+└── docs/SAFETY.md
 ```
 
 ## 🛠️ Ambiente di sviluppo
@@ -64,14 +63,12 @@ Vedi la [sicurezza vocale](docs/SAFETY.md).
 * **[ARMOR-RADAR](https://github.com/JuanenRac/ARMOR-RADAR)** - Firmware del nodo di campo per ESP32-S3 con tre radar e un proprio pannello web
 * **[ARMOR-SOLAR](https://github.com/JuanenRac/ARMOR-SOLAR)** - Protocolli di inverter e batterie solari e messaggi di un nodo gateway
 * **[ARMOR-ELECTRICAL](https://github.com/JuanenRac/ARMOR-ELECTRICAL)** - Nodo elettrico: contatori, il messaggio delle letture della rete e le regole di manovra
-* **[ARMOR-ALARM](https://github.com/JuanenRac/ARMOR-ALARM)** - Nodo e centrale d'allarme: zone, inserimento, ritardi, sirena e PIN, con il server o senza
 * **[ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI)** - Pannello touch: lo stato del sistema su uno schermo a parete, attivare e riconoscere gli allarmi, e la casa dell'assistente vocale
 * **[ARMOR-NETWORK](https://github.com/JuanenRac/ARMOR-NETWORK)** - La rete locale: i suoi dispositivi, internet e ciò che cambia
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - Coordinatore centrale: telemetria, allarmi, dispositivi, letture solari e telecamere
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Console web: telecamere, radar, allarmi, energia solare e progettista del sito 2D/3D
 * **[ARMOR-ANDROID-CONTROL](https://github.com/JuanenRac/ARMOR-ANDROID-CONTROL)** - Client Android dell'operatore con radar 2D/3D in tempo reale
 * **[ARMOR-SERVER-AI](https://github.com/JuanenRac/ARMOR-SERVER-AI)** - Politica di inferenza visiva che spiega le sue decisioni e non agisce mai
-* **[ARMOR-VISION](https://github.com/JuanenRac/ARMOR-VISION)** - Zone delle telecamere, maschere e regole di rilevamento per la Jetson Orin NX
 * **ARMOR-VOICE-AI** (questo repository) - Intenti vocali offline con una conferma impossibile da falsificare
 * **[ARMOR-HARDWARE](https://github.com/JuanenRac/ARMOR-HARDWARE)** - Contenitori, elettronica e matrice di accettazione da banco
 * **[ARMOR-DEVOPS](https://github.com/JuanenRac/ARMOR-DEVOPS)** - Distribuzione, banco di prova CM5, backup e TLS

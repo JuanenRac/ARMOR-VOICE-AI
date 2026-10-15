@@ -25,25 +25,24 @@
 
 ---
 
-**正直さのチェック - 今日動いているもの:** インテントの規則、署名付き確認、監査は実在し、テストされています（36 件）。**音声認識・合成エンジンはまだこのリポジトリに含まれていません。**
+**正直さのチェック - 今日動いているもの:** インテントの規則、署名付き確認、監査は実在し、テストされています（20 件）。**音声認識・合成エンジンはまだこのリポジトリに含まれていません。**
 
 ---
 
 ## 🎯 概要
 
-* **閉じた許可リスト：** 15 個のコマンド - `arm`、`disarm`、`status`、`silence`、`alarms`、`nodes`、`cameras`、`radar`、`solar`、`electrical`、`network`、`time`、`help`、`lights_on`、`lights_off` -。英語、スペイン語、ドイツ語、フランス語、イタリア語、日本語、中国語に対応し（応答は指定された言語で話されます）、アクセント、句読点、丁寧な前置きを正規化した後に判定します。それ以外や曖昧なものは理解されません。
+* **閉じた許可リスト：** `status`、`silence`、`arm`、`disarm`。英語とスペイン語に対応し、アクセント、句読点、丁寧な前置きを正規化した後に判定します。それ以外や曖昧なものは理解されません。
 * **サービスが発行する確認：** `arm` と `disarm` は最初のターンで署名付きトークンを返し、後のターンが同じインテントについて 30 s 以内にそれを返した場合のみ受け付けます。偽造、宛先の付け替え、再利用はできず、単なる `confirmed: true` の送信も拒否されます。
 * **音声ではなく判断を記録：** `--audit-file` を使うと、各判断はインテント、結果、書き起こしの SHA-256 を記録し、音声や元の言葉は決して記録しません。
 * **推奨のみ：** 受理されたコマンドは ARMOR-SERVER に渡され、そこで改めて認証と認可が行われます。
-* **エンジンではなく小さなサービス：** `armor-voice` は `127.0.0.1:18090` で、サーバーから渡されたテキスト（Android アプリで入力したもの、またはスマートフォン自身の音声認識が聞き取ったもの）を受け取り、判定を返します。[サービスの説明](docs/SERVICE.md)を参照。サーバーは受理された各コマンドを、話した人のセッションで実行します。
 
 ## 📂 リポジトリの構成
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
+├── src/armor_voice_ai/   intent, confirmation, session, gateway
 ├── tests/
-└── docs/SAFETY.md, SERVICE.md
+└── docs/SAFETY.md
 ```
 
 ## 🛠️ 開発環境
@@ -64,14 +63,12 @@ echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 * **[ARMOR-RADAR](https://github.com/JuanenRac/ARMOR-RADAR)** - ESP32-S3 用フィールドノードのファームウェア。レーダー 3 基と独自の Web パネル付き
 * **[ARMOR-SOLAR](https://github.com/JuanenRac/ARMOR-SOLAR)** - 太陽光インバーターとバッテリーのプロトコル、およびゲートウェイノードのメッセージ
 * **[ARMOR-ELECTRICAL](https://github.com/JuanenRac/ARMOR-ELECTRICAL)** - 電気ノード：電力量計、電力網の計測メッセージ、開閉のルール
-* **[ARMOR-ALARM](https://github.com/JuanenRac/ARMOR-ALARM)** - 警報ノードと警報盤：警戒区域、警戒セット、遅延、サイレン、PIN。サーバーがあってもなくても
 * **[ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI)** - タッチパネル：壁面ディスプレイでのシステム状態表示、警戒・確認操作、音声アシスタントの拠点
 * **[ARMOR-NETWORK](https://github.com/JuanenRac/ARMOR-NETWORK)** - ローカルネットワーク：機器、インターネット、そして変化
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - 中央コーディネーター：テレメトリ、アラーム、デバイス、太陽光の測定値、カメラ
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Web コンソール：カメラ、レーダー、アラーム、太陽光発電、2D/3D サイト設計
 * **[ARMOR-ANDROID-CONTROL](https://github.com/JuanenRac/ARMOR-ANDROID-CONTROL)** - リアルタイム 2D/3D レーダー付きの Android オペレータークライアント
 * **[ARMOR-SERVER-AI](https://github.com/JuanenRac/ARMOR-SERVER-AI)** - 判断を説明し、決して動作しない視覚推論ポリシー
-* **[ARMOR-VISION](https://github.com/JuanenRac/ARMOR-VISION)** - Jetson Orin NX 向けのカメラのゾーン、マスク、検知ルール
 * **ARMOR-VOICE-AI** (このリポジトリ) - 偽造できない確認を備えたオフライン音声インテント
 * **[ARMOR-HARDWARE](https://github.com/JuanenRac/ARMOR-HARDWARE)** - 筐体、電子部品、ベンチ受け入れマトリクス
 * **[ARMOR-DEVOPS](https://github.com/JuanenRac/ARMOR-DEVOPS)** - デプロイ、CM5 テストベンチ、バックアップ、TLS

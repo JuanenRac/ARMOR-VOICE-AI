@@ -25,25 +25,24 @@
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the signed confirmation and the audit are real and tested (36 tests). **No speech recognition or synthesis engine is part of this repository yet.**
+**Honesty check - what runs today:** The intent rules, the signed confirmation and the audit are real and tested (20 tests). **No speech recognition or synthesis engine is part of this repository yet.**
 
 ---
 
 ## 🎯 Overview
 
-* **A closed allow-list:** fifteen commands - `arm`, `disarm`, `status`, `silence`, `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help`, `lights_on` and `lights_off` -, in English, Spanish, German, French, Italian, Japanese and Chinese (and the answer is spoken in the language asked for), after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
+* **A closed allow-list:** `status`, `silence`, `arm` and `disarm`, in English and Spanish, after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
 * **A confirmation the service issues:** `arm` and `disarm` return a signed token on the first turn and are accepted only when a later turn echoes it for the same intent within 30 s. It cannot be forged, retargeted, reused or sent as a plain `confirmed: true` (that is refused).
 * **Decisions, not audio:** with `--audit-file` each decision records the intent, the outcome and a SHA-256 of the transcript, never audio or the raw words.
 * **Recommendations only:** an accepted command is passed to ARMOR-SERVER, which still authenticates and authorises it.
-* **A small service, not an engine:** `armor-voice` listens on `127.0.0.1:18090` for the text the server hands it (typed in the Android app, or what the phone's own speech recognition heard) and answers with the verdict; see [the service](docs/SERVICE.md). The server carries out each accepted command with the session of the person who spoke.
 
 ## 📂 Repository Structure
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway, service
+├── src/armor_voice_ai/   intent, confirmation, session, gateway
 ├── tests/
-└── docs/SAFETY.md, SERVICE.md
+└── docs/SAFETY.md
 ```
 
 ## 🛠️ Development Environment
@@ -64,14 +63,12 @@ See [voice safety](docs/SAFETY.md).
 * **[ARMOR-RADAR](https://github.com/JuanenRac/ARMOR-RADAR)** - Field-node firmware for ESP32-S3 with three radars and its own web panel
 * **[ARMOR-SOLAR](https://github.com/JuanenRac/ARMOR-SOLAR)** - Solar inverter and battery protocols and the messages of a gateway node
 * **[ARMOR-ELECTRICAL](https://github.com/JuanenRac/ARMOR-ELECTRICAL)** - Electrical node: meters, the message of the network's readings and the rules for switching
-* **[ARMOR-ALARM](https://github.com/JuanenRac/ARMOR-ALARM)** - Alarm node and panel: zones, arming, delays, siren and PIN, with the server or without it
 * **[ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI)** - Touch panel: the state of the system on a wall screen, arming and acknowledging, and the home of the voice assistant
 * **[ARMOR-NETWORK](https://github.com/JuanenRac/ARMOR-NETWORK)** - The local network: its devices, the internet and what changes
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - Central coordinator: telemetry, alarms, devices, solar readings and cameras
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Web console: cameras, radar, alarms, solar energy and the 2D/3D site designer
 * **[ARMOR-ANDROID-CONTROL](https://github.com/JuanenRac/ARMOR-ANDROID-CONTROL)** - Android operator client with a live 2D/3D radar
 * **[ARMOR-SERVER-AI](https://github.com/JuanenRac/ARMOR-SERVER-AI)** - Visual inference policy that explains its decisions and never actuates
-* **[ARMOR-VISION](https://github.com/JuanenRac/ARMOR-VISION)** - Camera zones, masks and detection rules for the Jetson Orin NX
 * **ARMOR-VOICE-AI** (this repository) - Offline voice intents with a confirmation that cannot be forged
 * **[ARMOR-HARDWARE](https://github.com/JuanenRac/ARMOR-HARDWARE)** - Enclosures, electronics and the bench acceptance matrix
 * **[ARMOR-DEVOPS](https://github.com/JuanenRac/ARMOR-DEVOPS)** - Deployment, the CM5 test bench, backup and TLS
