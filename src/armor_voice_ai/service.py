@@ -50,6 +50,20 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             self.end_headers()
             self.wfile.write(data)
 
+        def _refuse_unread(self, length: int) -> None:
+            """A refused body is read and thrown away (up to a limit) before the answer: closing a connection with the body still unread resets it, and the client would see a broken
+            connection instead of the 413 that says why."""
+            self.close_connection = True
+            remaining = min(length, 2_000_000) if length > 0 else 0
+            try:
+                while remaining > 0:
+                    chunk = self.rfile.read(min(remaining, 65536))
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+            except OSError:
+                pass
+
         def _authorized(self) -> bool:
             sent = self.headers.get("X-Armor-Voice-Token", "")
             return hmac.compare_digest(sent.encode("utf-8"), token.encode("utf-8"))
@@ -73,7 +87,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             except ValueError:
                 length = -1
             if length <= 0 or length > MAX_AUDIO_BYTES:
-                self.close_connection = True
+                self._refuse_unread(length)
                 return self._send(413 if length > MAX_AUDIO_BYTES else 411, {"error": "bad audio length"})
             pcm = self.rfile.read(length)
             try:
@@ -95,7 +109,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             except ValueError:
                 length = -1
             if length < 0 or length > MAX_LINE_BYTES:
-                self.close_connection = True
+                self._refuse_unread(length)
                 return self._send(413, {"accepted": False, "error": "line too long" if length > MAX_LINE_BYTES else "length required"})
             raw = self.rfile.read(length)
             try:
