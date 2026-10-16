@@ -23,13 +23,14 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .confirmation import ConfirmationSigner
-from .gateway import MAX_LINE_BYTES, handle_request
+from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
+from .turn import MAX_AUDIO_BYTES, CommandEngine, ServerLink, TurnError, TurnService
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
 
-def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, audit: Path | None = None) -> ThreadingHTTPServer:
-    """A server that answers `POST /v1/command` and `GET /healthz`; call serve_forever() on it."""
+def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, audit: Path | None = None, turns: TurnService | None = None) -> ThreadingHTTPServer:
+    """A server that answers `POST /v1/command`, `POST /v1/turn` (audio, when a speech engine is configured) and `GET /healthz`; call serve_forever() on it."""
     if len(token) < 16:
         raise ValueError("the token must be at least 16 characters")
 
@@ -58,7 +59,33 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 return self._send(200, {"ok": True, "service": "armor-voice"})
             self._send(404, {"error": "not found"})
 
+        def _turn(self) -> None:
+            """Audio in (16 kHz mono 16-bit PCM), the answer out: what was heard, what to say and, with a speech engine, the audio of it."""
+            language = self.headers.get("X-Armor-Language", "en")
+            if language not in SPEECH_BY_LANGUAGE:
+                return self._send(422, {"error": "invalid language"})
+            if turns is None:
+                return self._send(501, {"error": "stt_unavailable"})
+            if not self.headers.get("Content-Type", "").lower().startswith("audio/l16"):
+                return self._send(415, {"error": "audio/L16;rate=16000 is expected"})
+            try:
+                length = int(self.headers.get("Content-Length", "-1"))
+            except ValueError:
+                length = -1
+            if length <= 0 or length > MAX_AUDIO_BYTES:
+                self.close_connection = True
+                return self._send(413 if length > MAX_AUDIO_BYTES else 411, {"error": "bad audio length"})
+            pcm = self.rfile.read(length)
+            try:
+                self._send(200, turns.handle(pcm, language, self.client_address[0]))
+            except TurnError as error:
+                self._send(error.status, {"error": error.code})
+
         def do_POST(self) -> None:   # noqa: N802
+            if self.path == "/v1/turn":
+                if not self._authorized():
+                    return self._send(401, {"error": "unauthorized"})
+                return self._turn()
             if self.path != "/v1/command":
                 return self._send(404, {"error": "not found"})
             if not self._authorized():
@@ -102,7 +129,11 @@ def main(argv: list[str] | None = None) -> None:
     token = _read_token(args)
     if len(token) < 16:
         raise SystemExit("a token of at least 16 characters is needed (ARMOR_VOICE_TOKEN)")
-    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file)
+    stt = os.environ.get("ARMOR_VOICE_STT_COMMAND", "").strip()
+    tts = os.environ.get("ARMOR_VOICE_TTS_COMMAND", "").strip()
+    link = ServerLink(os.environ["ARMOR_VOICE_SERVER_URL"], os.environ["ARMOR_VOICE_SERVER_TOKEN"]) if os.environ.get("ARMOR_VOICE_SERVER_URL") and os.environ.get("ARMOR_VOICE_SERVER_TOKEN") else None
+    turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link)
+    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns)
     print(f"armor-voice listening on {args.host}:{server.server_address[1]}", file=sys.stderr, flush=True)
     try:
         server.serve_forever()

@@ -3,7 +3,7 @@
 Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 
 Request  (one JSON object per line):
-    {"text": "arm the system"}                          first turn
+    {"text": "arm the system", "subject": "u-1"}        first turn (the subject, optional, is the person: the token is good only for them)
     {"text": "arm the system", "confirmation": "<token>"}   second turn
 Response:
     {"accepted": false, "requires_confirmation": true, "intent": "arm",
@@ -46,12 +46,14 @@ def handle_request(request: object, signer: ConfirmationSigner, audit: Path | No
         return {"accepted": False, "error": "invalid request shape"}
     if "confirmed" in request:
         return {"accepted": False, "error": "a confirmed flag is not accepted; echo the confirmation token the service issued"}
-    if set(request) - {"text", "confirmation", "language"}:
+    if set(request) - {"text", "confirmation", "language", "subject"}:
         return {"accepted": False, "error": "invalid request shape"}
-    text, confirmation, language = request.get("text"), request.get("confirmation"), request.get("language", "en")
+    text, confirmation, language, subject = request.get("text"), request.get("confirmation"), request.get("language", "en"), request.get("subject", "")
     if not isinstance(text, str) or (confirmation is not None and not isinstance(confirmation, str)) or not isinstance(language, str) or language not in SPEECH_BY_LANGUAGE:
         return {"accepted": False, "error": "invalid request fields"}
-    decision = evaluate(text, signer, confirmation)
+    if not isinstance(subject, str) or len(subject) > 64 or not subject.isascii():
+        return {"accepted": False, "error": "invalid request fields"}
+    decision = evaluate(text, signer, confirmation, subject)
     answer = asdict(decision)
     spoken = SPEECH_BY_LANGUAGE[language]
     answer["speech"] = spoken.get(decision.outcome, spoken[""])

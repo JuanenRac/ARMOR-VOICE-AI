@@ -27,7 +27,7 @@ from collections.abc import Callable
 CONFIRMATION_VALIDITY_S = 30.0
 _USED_LIMIT = 1024
 
-VALID, EXPIRED, INVALID, WRONG_INTENT, REPLAYED = "valid", "expired", "invalid", "wrong-intent", "replayed"
+VALID, EXPIRED, INVALID, WRONG_INTENT, REPLAYED, WRONG_SUBJECT = "valid", "expired", "invalid", "wrong-intent", "replayed", "wrong-subject"
 
 
 class ConfirmationSigner:
@@ -52,12 +52,13 @@ class ConfirmationSigner:
     def _sign(self, body: str) -> str:
         return hmac.new(self._secret, body.encode("ascii"), hashlib.sha256).hexdigest()
 
-    def issue(self, intent: str) -> str:
-        payload = {"i": intent, "e": self._now() + self._ttl, "n": secrets.token_hex(8)}
+    def issue(self, intent: str, subject: str = "") -> str:
+        """A token for this intent, and for the person who asked (`subject`, as the caller names them): a token asked for by one person is not good for another."""
+        payload = {"i": intent, "e": self._now() + self._ttl, "n": secrets.token_hex(8), "s": subject}
         body = base64.urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode()).decode("ascii").rstrip("=")
         return f"{body}.{self._sign(body)}"
 
-    def verify(self, token: object, intent: str) -> str:
+    def verify(self, token: object, intent: str, subject: str = "") -> str:
         """VALID, or the reason the token cannot be used for this intent. A valid token is consumed."""
         # Only ASCII can be a token; anything else is refused before it reaches the signature code (a character outside ASCII used to make it raise and cut the connection).
         if not isinstance(token, str) or not token.isascii() or token.count(".") != 1:
@@ -67,11 +68,13 @@ class ConfirmationSigner:
             return INVALID
         try:
             payload = json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
-            bound_intent, expires, nonce = payload["i"], float(payload["e"]), str(payload["n"])
+            bound_intent, expires, nonce, bound_subject = payload["i"], float(payload["e"]), str(payload["n"]), str(payload.get("s", ""))
         except (ValueError, KeyError, TypeError):
             return INVALID
         if bound_intent != intent:
             return WRONG_INTENT
+        if not hmac.compare_digest(bound_subject.encode("utf-8"), subject.encode("utf-8")):
+            return WRONG_SUBJECT
         if self._now() > expires:
             return EXPIRED
         # The nonces of tokens that have expired are of no use any more (an expired token is refused on its own), so they are what is forgotten; one that could still be replayed is

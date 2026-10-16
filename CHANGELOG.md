@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.7] - A turn endpoint with speech to text and text to speech commands, and orders tied to their speaker
+
+- A `/v1/turn` endpoint takes a recording, runs the speech-to-text command, runs the order through the engine and answers with a recording made by the text-to-speech command.
+- The commands, the server address and its token are set in the environment and run without the service's own secrets.
+- A confirmation belongs to the user who asked for it and is refused for anyone else.
+- Tests cover the turn, the engines and the confirmation by subject.
+
 ## [0.2.6] - Sturdier confirmation of spoken orders
 
 - The confirmation of a spoken order is harder to replay or confuse, with tests.
