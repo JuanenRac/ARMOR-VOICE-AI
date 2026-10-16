@@ -15,46 +15,68 @@
   <a href="README_por.md">🇵🇹 Português</a>
 </p>
 
-### Offline voice intents with a confirmation the caller cannot forge
+### Offline voice intents in eight languages, with a confirmation the caller cannot forge
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0-blue.svg" alt="GPL 3.0">
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
-  <img src="https://img.shields.io/badge/Maturity-functional%20baseline-00E5FF.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Tests-49%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.2.8-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the signed confirmation and the audit are real and tested (20 tests). **No speech recognition or synthesis engine is part of this repository yet.**
+**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit are real and tested (49 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
 
 ---
 
+## 📋 At a glance
+
+| | |
+|---|---|
+| Version | `0.2.8` |
+| Maturity | Established |
+| Tests | 49 (`python -m unittest discover -s tests`) |
+| Stack | Python 3.11+ |
+| On real hardware | Running as a service on the CM5 test bench, asked by the server; no microphone or speech engine has been tried |
+
 ## 🎯 Overview
 
-* **A closed allow-list:** `status`, `silence`, `arm` and `disarm`, in English and Spanish, after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
-* **A confirmation the service issues:** `arm` and `disarm` return a signed token on the first turn and are accepted only when a later turn echoes it for the same intent within 30 s. It cannot be forged, retargeted, reused or sent as a plain `confirmed: true` (that is refused).
+* **A closed allow-list of fifteen commands:** `status`, `silence`, `arm`, `disarm`, and the ones that ask - `alarms`, `nodes`, `cameras`, `radar`, `solar`, `electrical`, `network`, `time`, `help` - plus switching the lights on and off, in **eight languages** (English, Spanish, German, French, Italian, Japanese, Chinese and Portuguese), after normalising accents, punctuation and polite filler. Anything else, or anything ambiguous, is not understood.
+* **A confirmation the service issues:** `arm` and `disarm` return a signed token on the first turn and are accepted only when a later turn echoes it for the same intent within 30 s, **for the same user**. It cannot be forged by the caller, a stale one is refused and the nonces of the unexpired ones are never forgotten to make room.
+* **A local HTTP service:** `python -m armor_voice_ai.service` listens on the loopback address only, wants a token and answers `POST /v1/command` with the decision in the language asked for; the server's Services menu shows which version runs.
+* **A turn endpoint:** `POST /v1/turn` takes a recording, runs the speech-to-text command you configure, runs the order through the engine and answers with a recording made by the text-to-speech command; the commands, the server address and its token come from the environment.
 * **Decisions, not audio:** with `--audit-file` each decision records the intent, the outcome and a SHA-256 of the transcript, never audio or the raw words.
-* **Recommendations only:** an accepted command is passed to ARMOR-SERVER, which still authenticates and authorises it.
+* **Recommendations only:** an accepted command is passed to ARMOR-SERVER, which still authenticates and authorises it; disarming by voice is never possible without the person's PIN on a screen.
+
+## 🧩 Role in A.R.M.O.R.
+
+ARMOR-VOICE-AI turns what is said into one of a closed list of commands and never does anything by itself: [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) asks it, then authenticates and authorises the command exactly as it would a click in [ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO). It is meant to live behind the microphone of the [ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI) wall panel and answers the written and spoken assistant of the Android app.
 
 ## 📂 Repository Structure
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/   intent, confirmation, session, gateway
-├── tests/
-└── docs/SAFETY.md
+├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway (stdin), service (HTTP), turn (speech to text, order, text to speech)
+├── tests/                gateway, languages, service and turn tests
+└── docs/                 SAFETY.md, SERVICE.md
 ```
 
 ## 🛠️ Development Environment
 
+**Requirements:** Python 3.11+ (standard library only), optional: a speech-to-text and a text-to-speech command for `/v1/turn`
+
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests
+python -m unittest discover -s tests   # 49 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
+python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```
 
-See [voice safety](docs/SAFETY.md).
+See [voice safety](docs/SAFETY.md) and the [service](docs/SERVICE.md).
 
 ## 🔗 Related Projects
 
@@ -64,12 +86,14 @@ See [voice safety](docs/SAFETY.md).
 * **[ARMOR-RADAR](https://github.com/JuanenRac/ARMOR-RADAR)** - Field-node firmware for ESP32-S3 with three radars and its own web panel
 * **[ARMOR-SOLAR](https://github.com/JuanenRac/ARMOR-SOLAR)** - Solar inverter and battery protocols and the messages of a gateway node
 * **[ARMOR-ELECTRICAL](https://github.com/JuanenRac/ARMOR-ELECTRICAL)** - Electrical node: meters, the message of the network's readings and the rules for switching
+* **[ARMOR-ALARM](https://github.com/JuanenRac/ARMOR-ALARM)** - Alarm node and panel: zones, arming, delays, siren and PIN, with the server or without it
 * **[ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI)** - Touch panel: the state of the system on a wall screen, arming and acknowledging, and the home of the voice assistant
 * **[ARMOR-NETWORK](https://github.com/JuanenRac/ARMOR-NETWORK)** - The local network: its devices, the internet and what changes
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - Central coordinator: telemetry, alarms, devices, solar readings and cameras
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Web console: cameras, radar, alarms, solar energy and the 2D/3D site designer
 * **[ARMOR-ANDROID-CONTROL](https://github.com/JuanenRac/ARMOR-ANDROID-CONTROL)** - Android operator client with a live 2D/3D radar
 * **[ARMOR-SERVER-AI](https://github.com/JuanenRac/ARMOR-SERVER-AI)** - Visual inference policy that explains its decisions and never actuates
+* **[ARMOR-VISION](https://github.com/JuanenRac/ARMOR-VISION)** - Camera zones, masks and detection rules for the Jetson Orin NX
 * **ARMOR-VOICE-AI** (this repository) - Offline voice intents with a confirmation that cannot be forged
 * **[ARMOR-HARDWARE](https://github.com/JuanenRac/ARMOR-HARDWARE)** - Enclosures, electronics and the bench acceptance matrix
 * **[ARMOR-DEVOPS](https://github.com/JuanenRac/ARMOR-DEVOPS)** - Deployment, the CM5 test bench, backup and TLS
