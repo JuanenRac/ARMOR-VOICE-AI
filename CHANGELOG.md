@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.8] - Portuguese, the eighth language
+
+- The voice assistant understands and answers in Portuguese: every command (arm, disarm, status, silence, alarms, nodes, cameras, radar, solar, power, network, time, help, lights on and off), the yes and no of a confirmation and the sentences it says back.
+- The tests check that Portuguese arms, disarms, asks and silences like the other languages and that the gateway answers in it.
+
 ## [0.2.7] - A turn endpoint with speech to text and text to speech commands, and orders tied to their speaker
 
 - A `/v1/turn` endpoint takes a recording, runs the speech-to-text command, runs the order through the engine and answers with a recording made by the text-to-speech command.

@@ -33,12 +33,12 @@ ENGINE_TIMEOUT_S = 25.0
 PENDING_VALIDITY_S = 30.0
 
 YES = {"en": ("yes", "yeah", "confirm", "do it"), "es": ("sí", "si", "confirmo", "adelante", "vale"), "de": ("ja", "bestätige", "mach das"), "fr": ("oui", "confirme", "vas-y"),
-       "it": ("sì", "si", "conferma", "vai"), "ja": ("はい", "ええ", "確認"), "zh": ("是", "是的", "确认", "好")}
-NO = {"en": ("no", "cancel", "stop"), "es": ("no", "cancela", "cancelar"), "de": ("nein", "abbrechen"), "fr": ("non", "annule"), "it": ("no", "annulla"), "ja": ("いいえ", "キャンセル"), "zh": ("不", "不要", "取消")}
+       "it": ("sì", "si", "conferma", "vai"), "ja": ("はい", "ええ", "確認"), "zh": ("是", "是的", "确认", "好"), "pt": ("sim", "confirmo", "confirma", "avança", "pode ser")}
+NO = {"en": ("no", "cancel", "stop"), "es": ("no", "cancela", "cancelar"), "de": ("nein", "abbrechen"), "fr": ("non", "annule"), "it": ("no", "annulla"), "ja": ("いいえ", "キャンセル"), "zh": ("不", "不要", "取消"), "pt": ("não", "nao", "cancela", "cancelar")}
 DISARM_REFUSED = {"en": "Disarming needs your PIN: do it on the screen.", "es": "Para desarmar hace falta tu PIN: hazlo en la pantalla.", "de": "Zum Entschärfen brauchst du deine PIN: mach es auf dem Bildschirm.",
-                  "fr": "Pour désarmer il faut votre PIN : faites-le sur l'écran.", "it": "Per disarmare serve il tuo PIN: fallo sullo schermo.", "ja": "解除には PIN が必要です。画面で操作してください。", "zh": "撤防需要 PIN，请在屏幕上操作。"}
-CANCELLED = {"en": "Cancelled.", "es": "Cancelado.", "de": "Abgebrochen.", "fr": "Annulé.", "it": "Annullato.", "ja": "キャンセルしました。", "zh": "已取消。"}
-NOTHING_HEARD = {"en": "I did not hear anything.", "es": "No he oído nada.", "de": "Ich habe nichts gehört.", "fr": "Je n'ai rien entendu.", "it": "Non ho sentito nulla.", "ja": "聞き取れませんでした。", "zh": "没有听到内容。"}
+                  "fr": "Pour désarmer il faut votre PIN : faites-le sur l'écran.", "it": "Per disarmare serve il tuo PIN: fallo sullo schermo.", "ja": "解除には PIN が必要です。画面で操作してください。", "zh": "撤防需要 PIN，请在屏幕上操作。", "pt": "Para desarmar é preciso o seu PIN: faça-o no ecrã."}
+CANCELLED = {"en": "Cancelled.", "es": "Cancelado.", "de": "Abgebrochen.", "fr": "Annulé.", "it": "Annullato.", "ja": "キャンセルしました。", "zh": "已取消。", "pt": "Cancelado."}
+NOTHING_HEARD = {"en": "I did not hear anything.", "es": "No he oído nada.", "de": "Ich habe nichts gehört.", "fr": "Je n'ai rien entendu.", "it": "Non ho sentito nulla.", "ja": "聞き取れませんでした。", "zh": "没有听到内容。", "pt": "Não ouvi nada."}
 
 
 class TurnError(Exception):

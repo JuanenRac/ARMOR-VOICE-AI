@@ -29,6 +29,7 @@ class LanguageTests(unittest.TestCase):
             "it": ("Per favore, armare il sistema", "Disattiva l'allarme", "Qual è lo stato?", "Silenzia l'allarme"),
             "ja": ("警備開始", "警備解除", "システムの状態", "警報停止"),
             "zh": ("布防", "撤防", "系统状态", "消音"),
+            "pt": ("Por favor, armar o sistema", "Desarma o sistema, por favor", "Qual é o estado?", "Silencia o alarme"),
             "es": ("Oiga, armar el sistema", "Bueno, desarma el sistema por favor", "¿Cuál es el estado?", "Silencia la alarma"),
         }
         for language, (arm, disarm, status, silence) in said.items():
@@ -47,9 +48,10 @@ class LanguageTests(unittest.TestCase):
         self.assertEqual((second["outcome"], second["speech"]), (ACCEPTED, "Commande acceptée"))
         self.assertEqual(handle_request({"text": "blah", "language": "de"}, signer)["speech"], "Befehl nicht erkannt")
         self.assertEqual(handle_request({"text": "arm"}, signer)["speech"], "Please confirm")   # English when none is asked
+        self.assertEqual(handle_request({"text": "blah", "language": "pt"}, signer)["speech"], "Ordem não reconhecida")
 
     def test_every_language_says_every_outcome(self):
-        self.assertEqual(sorted(SPEECH_BY_LANGUAGE), ["de", "en", "es", "fr", "it", "ja", "zh"])
+        self.assertEqual(sorted(SPEECH_BY_LANGUAGE), ["de", "en", "es", "fr", "it", "ja", "pt", "zh"])
         for language, table in SPEECH_BY_LANGUAGE.items():
             for outcome in (CONFIRMATION_NEEDED, ACCEPTED, CONFIRMATION_REFUSED, ""):
                 self.assertTrue(table[outcome].strip(), f"{language} {outcome!r}")

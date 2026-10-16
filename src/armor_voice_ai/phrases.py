@@ -10,7 +10,7 @@ and the lights, which the server carries out with the session of the person who 
 
 from __future__ import annotations
 
-LANGUAGES = ("en", "es", "de", "fr", "it", "ja", "zh")
+LANGUAGES = ("en", "es", "de", "fr", "it", "ja", "zh", "pt")
 
 #: command -> language -> phrases
 PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
@@ -22,6 +22,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("armare", "armare il sistema", "attivare l'allarme", "attiva l'allarme"),
         "ja": ("警備開始", "警備を開始", "警備を開始して"),
         "zh": ("布防", "系统布防", "开启警戒"),
+        "pt": ("armar", "armar sistema", "armar o sistema", "arma o sistema", "ativar alarme", "ativa o alarme"),
     },
     "disarm": {
         "en": ("disarm", "disarm system", "disarm the system"),
@@ -31,6 +32,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("disarmare", "disarmare il sistema", "disattivare l'allarme", "disattiva l'allarme"),
         "ja": ("警備解除", "警備を解除", "警備を解除して"),
         "zh": ("撤防", "系统撤防", "解除警戒"),
+        "pt": ("desarmar", "desarmar sistema", "desarmar o sistema", "desarma o sistema", "desativar alarme", "desativa o alarme"),
     },
     "status": {
         "en": ("status", "system status", "what is the status"),
@@ -40,6 +42,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("stato", "stato del sistema", "qual è lo stato"),
         "ja": ("状態", "システムの状態"),
         "zh": ("状态", "系统状态"),
+        "pt": ("estado", "estado do sistema", "qual é o estado"),
     },
     "silence": {
         "en": ("silence", "silence alarm", "silence the alarm"),
@@ -49,6 +52,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("silenzio", "silenzia", "silenzia l'allarme", "silenzia allarme"),
         "ja": ("警報を止めて", "警報停止"),
         "zh": ("消音", "静音报警"),
+        "pt": ("silenciar", "silenciar alarme", "silenciar o alarme", "silencia o alarme"),
     },
     "alarms": {
         "en": ("alarms", "active alarms", "are there any alarms", "how many alarms are there"),
@@ -58,6 +62,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("allarmi", "allarmi attivi", "ci sono allarmi", "quanti allarmi ci sono"),
         "ja": ("アラーム", "有効なアラーム", "アラームはありますか"),
         "zh": ("报警", "活动报警", "有报警吗", "有几个报警"),
+        "pt": ("alarmes", "alarmes ativos", "há algum alarme", "quantos alarmes há"),
     },
     "nodes": {
         "en": ("nodes", "node status", "how many nodes are online", "are the nodes online"),
@@ -67,6 +72,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("nodi", "stato dei nodi", "quanti nodi sono online", "i nodi sono online"),
         "ja": ("ノード", "ノードの状態", "オンラインのノードは何台ですか"),
         "zh": ("节点", "节点状态", "有几个节点在线"),
+        "pt": ("nós", "estado dos nós", "quantos nós estão online", "os nós estão online"),
     },
     "cameras": {
         "en": ("cameras", "camera status", "are the cameras online", "are the cameras working"),
@@ -76,6 +82,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("telecamere", "stato delle telecamere", "le telecamere sono online", "le telecamere funzionano"),
         "ja": ("カメラ", "カメラの状態", "カメラは動いていますか"),
         "zh": ("摄像头", "摄像头状态", "摄像头正常吗"),
+        "pt": ("câmaras", "estado das câmaras", "as câmaras estão online", "as câmaras funcionam"),
     },
     "radar": {
         "en": ("radar", "is anyone there", "is there anyone outside", "people detected"),
@@ -85,6 +92,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("radar", "c'è qualcuno", "c'è qualcuno fuori", "persone rilevate"),
         "ja": ("レーダー", "誰かいますか", "検知された人"),
         "zh": ("雷达", "有人吗", "检测到的人"),
+        "pt": ("radar", "está alguém", "está alguém lá fora", "pessoas detetadas"),
     },
     "solar": {
         "en": ("solar", "solar status", "battery status", "how is the battery"),
@@ -94,6 +102,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("solare", "stato solare", "stato della batteria", "come sta la batteria"),
         "ja": ("ソーラー", "ソーラーの状態", "バッテリーの状態"),
         "zh": ("太阳能", "太阳能状态", "电池状态"),
+        "pt": ("solar", "estado solar", "estado da bateria", "como está a bateria"),
     },
     "electrical": {
         "en": ("power", "power consumption", "electrical status", "how much power am i using"),
@@ -103,6 +112,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("consumo", "consumo elettrico", "stato elettrico", "quanta elettricità sto usando"),
         "ja": ("電力", "電力消費", "電気の状態"),
         "zh": ("用电", "用电量", "电气状态"),
+        "pt": ("consumo", "consumo elétrico", "estado elétrico", "quanta eletricidade estou a usar"),
     },
     "network": {
         "en": ("network", "network status", "is the internet working", "do i have internet"),
@@ -112,6 +122,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("rete", "stato della rete", "internet funziona", "ho internet"),
         "ja": ("ネットワーク", "ネットワークの状態", "インターネットは使えますか"),
         "zh": ("网络", "网络状态", "网络正常吗"),
+        "pt": ("rede", "estado da rede", "a internet funciona", "tenho internet"),
     },
     "time": {
         "en": ("time", "what time is it", "what is the time"),
@@ -121,6 +132,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("ora", "che ora è", "che ore sono"),
         "ja": ("時間", "今何時ですか"),
         "zh": ("时间", "现在几点"),
+        "pt": ("hora", "que horas são", "diga as horas"),
     },
     "help": {
         "en": ("help", "what can you do", "what can i say", "commands"),
@@ -130,6 +142,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("aiuto", "cosa puoi fare", "cosa posso dire", "comandi"),
         "ja": ("ヘルプ", "何ができますか", "何と言えばいいですか"),
         "zh": ("帮助", "你能做什么", "我能说什么"),
+        "pt": ("ajuda", "o que podes fazer", "o que posso dizer", "comandos"),
     },
     "lights_on": {
         "en": ("lights on", "turn on the lights", "switch on the lights"),
@@ -139,6 +152,7 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("luci accese", "accendi le luci", "accendere le luci"),
         "ja": ("電気をつけて", "ライトをつけて"),
         "zh": ("开灯", "打开灯"),
+        "pt": ("luzes acesas", "acende as luzes", "acender as luzes"),
     },
     "lights_off": {
         "en": ("lights off", "turn off the lights", "switch off the lights"),
@@ -148,5 +162,6 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "it": ("luci spente", "spegni le luci", "spegnere le luci"),
         "ja": ("電気を消して", "ライトを消して"),
         "zh": ("关灯", "关闭灯"),
+        "pt": ("luzes apagadas", "apaga as luzes", "apagar as luzes"),
     },
 }

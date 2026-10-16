@@ -36,6 +36,7 @@ SPEECH_BY_LANGUAGE = {
     "it": {CONFIRMATION_NEEDED: "Conferma, per favore", ACCEPTED: "Comando accettato", CONFIRMATION_REFUSED: "Conferma rifiutata", "": "Comando non riconosciuto"},
     "ja": {CONFIRMATION_NEEDED: "\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044", ACCEPTED: "\u30b3\u30de\u30f3\u30c9\u3092\u53d7\u3051\u4ed8\u3051\u307e\u3057\u305f", CONFIRMATION_REFUSED: "\u78ba\u8a8d\u304c\u62d2\u5426\u3055\u308c\u307e\u3057\u305f", "": "\u30b3\u30de\u30f3\u30c9\u3092\u8a8d\u8b58\u3067\u304d\u307e\u305b\u3093"},
     "zh": {CONFIRMATION_NEEDED: "\u8bf7\u786e\u8ba4", ACCEPTED: "\u547d\u4ee4\u5df2\u63a5\u53d7", CONFIRMATION_REFUSED: "\u786e\u8ba4\u88ab\u62d2\u7edd", "": "\u65e0\u6cd5\u8bc6\u522b\u547d\u4ee4"},
+    "pt": {CONFIRMATION_NEEDED: "Por favor, confirme", ACCEPTED: "Ordem aceite", CONFIRMATION_REFUSED: "Confirma\u00e7\u00e3o recusada", "": "Ordem n\u00e3o reconhecida"},
 }
 SPEECH = SPEECH_BY_LANGUAGE["en"]   # kept for callers of the English table
 MAX_LINE_BYTES = 2048
