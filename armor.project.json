@@ -12,7 +12,7 @@
     "JSON lines"
   ],
   "deployment_target": "CM5 test bench (systemd) or any computer",
-  "maturity": "functional",
+  "maturity": "established",
   "family": "Core Services",
   "parent": "ARMOR-SERVER",
   "native_version": "0.3.0",

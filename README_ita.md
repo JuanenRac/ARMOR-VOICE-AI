@@ -24,7 +24,7 @@
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-54%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.0-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
@@ -38,7 +38,7 @@
 | | |
 |---|---|
 | Versione | `0.3.0` |
-| Maturità | Funzionale |
+| Maturità | Consolidato |
 | Test | 54 (`python -m unittest discover -s tests`) |
 | Tecnologia | Python 3.11+ |
 | Su hardware reale | Gira come servizio sul banco di prova CM5, interrogato dal server; nessun microfono né motore vocale è stato provato |
