@@ -4,7 +4,7 @@ Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 
 Speech recognition output is untrusted text. It is normalised (Unicode NFKC,
 lower case, punctuation and polite filler removed) and must then equal one of a
-small set of known phrases in English, Spanish, German, French, Italian, Japanese or Chinese. Anything else, including any
+small set of known phrases in English, Spanish, German, French, Italian, Portuguese, Japanese or Chinese. Anything else, including any
 phrase that could mean two different intents, is not understood. The text is
 never forwarded as a shell or device command.
 """

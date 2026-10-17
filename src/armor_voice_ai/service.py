@@ -19,6 +19,7 @@ import hmac
 import json
 import os
 import sys
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -34,9 +35,12 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
     if len(token) < 16:
         raise ValueError("the token must be at least 16 characters")
 
+    turn_slots = threading.BoundedSemaphore(2)
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "armor-voice"
         protocol_version = "HTTP/1.1"
+        timeout = 15   # a client that promises a body and does not send it, or keeps a connection idle, does not hold a thread for ever
 
         def log_message(self, format: str, *args: object) -> None:   # noqa: A002 - the name is the one of the base class
             return   # what was said is never written to a log
@@ -90,10 +94,14 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 self._refuse_unread(length)
                 return self._send(413 if length > MAX_AUDIO_BYTES else 411, {"error": "bad audio length"})
             pcm = self.rfile.read(length)
+            if not turn_slots.acquire(blocking=False):   # each turn starts a speech program: only a couple at a time
+                return self._send(503, {"error": "busy"})
             try:
                 self._send(200, turns.handle(pcm, language, self.client_address[0]))
             except TurnError as error:
                 self._send(error.status, {"error": error.code})
+            finally:
+                turn_slots.release()
 
         def do_POST(self) -> None:   # noqa: N802
             if self.path == "/v1/turn":
@@ -110,7 +118,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 length = -1
             if length < 0 or length > MAX_LINE_BYTES:
                 self._refuse_unread(length)
-                return self._send(413, {"accepted": False, "error": "line too long" if length > MAX_LINE_BYTES else "length required"})
+                return self._send(413 if length > MAX_LINE_BYTES else 411, {"accepted": False, "error": "line too long" if length > MAX_LINE_BYTES else "length required"})
             raw = self.rfile.read(length)
             try:
                 request = json.loads(raw.decode("utf-8"))

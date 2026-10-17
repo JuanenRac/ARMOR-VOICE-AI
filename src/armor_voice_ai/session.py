@@ -3,7 +3,7 @@
 Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 
 * An unknown or ambiguous phrase is not accepted.
-* ``status`` and ``silence`` are accepted at once.
+* the queries, ``silence`` and the lights are accepted at once (the server decides what a ``silence`` by voice is worth: it does not stop a critical alarm from being escalated).
 * ``arm`` and ``disarm`` first return a confirmation token and are **not**
   accepted; only a later turn that echoes the service's own valid token for
   that same intent is accepted.

@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-49%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Tests-53%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.2.9-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分:** 意图规则、八种语言、绑定到说话人的签名确认、本地服务、轮次端点和审计都是真实的并经过测试（49 个测试），服务器在 CM5 测试台上向该服务发起请求。**本仓库不包含任何语音识别或合成引擎**：`/v1/turn` 运行你为它们配置的命令，目前都还没有用真实麦克风试过；打算承载助手的触摸面板还没有在板上运行过。
+**诚实性检查 - 今天真正能运行的部分:** 意图规则、八种语言、绑定到说话人的签名确认、本地服务、轮次端点和审计都是真实的并经过测试（53 个测试），服务器在 CM5 测试台上向该服务发起请求。**本仓库不包含任何语音识别或合成引擎**：`/v1/turn` 运行你为它们配置的命令，目前都还没有用真实麦克风试过；打算承载助手的触摸面板还没有在板上运行过。
 
 ---
 
@@ -37,9 +37,9 @@
 
 | | |
 |---|---|
-| 版本 | `0.2.8` |
-| 成熟度 | 成熟 |
-| 测试 | 49 (`python -m unittest discover -s tests`) |
+| 版本 | `0.2.9` |
+| 成熟度 | 可用 |
+| 测试 | 53 (`python -m unittest discover -s tests`) |
 | 技术栈 | Python 3.11+ |
 | 真实硬件 | 在 CM5 测试台上作为服务运行，由服务器调用；尚未试过麦克风或语音引擎 |
 
@@ -50,7 +50,7 @@
 * **本地 HTTP 服务：**`python -m armor_voice_ai.service` 只监听回环地址，需要令牌，对 `POST /v1/command` 以所要求的语言返回决定；服务器的“服务”菜单会显示运行的是哪个版本。
 * **轮次端点：**`POST /v1/turn` 接收一段录音，运行你配置的语音转文字命令，把指令交给引擎，并用文字转语音命令生成的录音作答；命令、服务器地址及其令牌来自环境变量。
 * **只记录决定，不记录音频：**使用 `--audit-file` 时，每个决定记录意图、结果和转写文本的 SHA-256，绝不记录音频或原话。
-* **只是建议：**被接受的命令会交给 ARMOR-SERVER，由它继续认证和授权；没有本人在屏幕上输入 PIN，就绝不可能用语音撤防。
+* **只是建议：**被接受的命令会交给 ARMOR-SERVER，由它继续认证和授权；在墙面面板上绝不可能用语音撤防（PIN 在屏幕上输入）；在应用中则遵循服务器的 `ARMOR_DISARM_PIN`（请设为 `required`）。
 
 ## 🧩 在 A.R.M.O.R. 中的角色
 
@@ -71,7 +71,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 49 tests
+python -m unittest discover -s tests   # 53 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

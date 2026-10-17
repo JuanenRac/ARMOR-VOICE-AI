@@ -33,7 +33,8 @@ VALID, EXPIRED, INVALID, WRONG_INTENT, REPLAYED, WRONG_SUBJECT = "valid", "expir
 class ConfirmationSigner:
     def __init__(self, secret: bytes | None = None, ttl_s: float = CONFIRMATION_VALIDITY_S, now: Callable[[], float] = time.time) -> None:
         # Without a configured secret a random one is used: pending tokens die with the process, which is the safe failure.
-        self._secret = secret or os.environb.get(b"ARMOR_VOICE_CONFIRM_SECRET")
+        configured = os.environ.get("ARMOR_VOICE_CONFIRM_SECRET")    # (os.environb does not exist on Windows)
+        self._secret = secret or (configured.encode("utf-8") if configured else None)
         if not self._secret:
             self._secret = secrets.token_bytes(32)
             logging.getLogger(__name__).warning("ARMOR_VOICE_CONFIRM_SECRET is not set: a random secret is used and the pending confirmations are lost when the process stops")
@@ -77,6 +78,8 @@ class ConfirmationSigner:
             return WRONG_SUBJECT
         if self._now() > expires:
             return EXPIRED
+        if expires - self._now() > self._ttl + 5.0:
+            return INVALID   # a token cannot live longer than it was ever issued for (a clock that jumped back would stretch it)
         # The nonces of tokens that have expired are of no use any more (an expired token is refused on its own), so they are what is forgotten; one that could still be replayed is
         # NEVER pushed out to make room. When there are too many of those at once, the new token is refused rather than the old one forgotten.
         with self._lock:

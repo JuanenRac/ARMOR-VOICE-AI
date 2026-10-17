@@ -27,14 +27,40 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from shlex import split as shell_split
 
+from .intent import normalize_text
+
 MAX_AUDIO_BYTES = 480_000          # fifteen seconds of 16 kHz, 16-bit mono
-MAX_REPLY_AUDIO_BYTES = 200_000    # what the panel accepts to play (it takes at most 256 KB of answer in all)
+MAX_REPLY_AUDIO_BYTES = 190_000    # what the panel accepts to play: it takes at most 256 KB of answer in all, and the audio goes as base64 (4/3 of its size) inside a JSON
 ENGINE_TIMEOUT_S = 25.0
 PENDING_VALIDITY_S = 30.0
+#: The panel gives up on a turn after twelve seconds. Past nine, once the words are known, the server is not asked: what the person was told (that it failed) and what the house did
+#: must not be two things. And a question that took longer than the panel waits is not remembered, so nobody's next "yes" answers a question they never heard.
+TURN_BUDGET_S = 9.0
+PANEL_WAITS_S = 12.0
+MAX_HEARD_CHARS = 200              # what the server and the intent engine take
+_ENGINE_ENVIRONMENT = ("PATH", "HOME", "LANG", "LANGUAGE", "TMPDIR", "TEMP", "TMP", "SYSTEMROOT", "LD_LIBRARY_PATH", "PYTHONPATH")
 
-YES = {"en": ("yes", "yeah", "confirm", "do it"), "es": ("sí", "si", "confirmo", "adelante", "vale"), "de": ("ja", "bestätige", "mach das"), "fr": ("oui", "confirme", "vas-y"),
+_YES_RAW = {"en": ("yes", "yeah", "confirm", "do it"), "es": ("sí", "si", "confirmo", "adelante", "vale"), "de": ("ja", "bestätige", "mach das"), "fr": ("oui", "confirme", "vas-y"),
        "it": ("sì", "si", "conferma", "vai"), "ja": ("はい", "ええ", "確認"), "zh": ("是", "是的", "确认", "好"), "pt": ("sim", "confirmo", "confirma", "avança", "pode ser")}
-NO = {"en": ("no", "cancel", "stop"), "es": ("no", "cancela", "cancelar"), "de": ("nein", "abbrechen"), "fr": ("non", "annule"), "it": ("no", "annulla"), "ja": ("いいえ", "キャンセル"), "zh": ("不", "不要", "取消"), "pt": ("não", "nao", "cancela", "cancelar")}
+_NO_RAW = {"en": ("no", "cancel", "stop"), "es": ("no", "cancela", "cancelar"), "de": ("nein", "abbrechen"), "fr": ("non", "annule"), "it": ("no", "annulla"), "ja": ("いいえ", "キャンセル"), "zh": ("不", "不要", "取消"), "pt": ("não", "nao", "cancela", "cancelar")}
+
+
+def _normalised(table: dict[str, tuple[str, ...]]) -> dict[str, tuple[str, ...]]:
+    return {language: tuple(normalize_text(word) for word in words) for language, words in table.items()}
+
+
+YES = _normalised(_YES_RAW)
+NO = _normalised(_NO_RAW)
+
+
+def says(words: str, entries: tuple[str, ...], language: str) -> bool:
+    """Whether what was heard (already normalised) is one of the entries, alone or followed by something polite ("yes please", "si por favor" - the filler is gone already, so "oui vas y")."""
+    for entry in entries:
+        if words == entry or words.startswith(entry + " ") or (language in ("ja", "zh") and words.startswith(entry)):
+            return True
+    return False
+
+
 DISARM_REFUSED = {"en": "Disarming needs your PIN: do it on the screen.", "es": "Para desarmar hace falta tu PIN: hazlo en la pantalla.", "de": "Zum Entschärfen brauchst du deine PIN: mach es auf dem Bildschirm.",
                   "fr": "Pour désarmer il faut votre PIN : faites-le sur l'écran.", "it": "Per disarmare serve il tuo PIN: fallo sullo schermo.", "ja": "解除には PIN が必要です。画面で操作してください。", "zh": "撤防需要 PIN，请在屏幕上操作。", "pt": "Para desarmar é preciso o seu PIN: faça-o no ecrã."}
 CANCELLED = {"en": "Cancelled.", "es": "Cancelado.", "de": "Abgebrochen.", "fr": "Annulé.", "it": "Annullato.", "ja": "キャンセルしました。", "zh": "已取消。", "pt": "Cancelado."}
@@ -59,13 +85,15 @@ class CommandEngine:
     @staticmethod
     def _environment(language: str) -> dict[str, str]:
         """What the engine is given to run with: the usual environment without any secret (the tokens of this service and of the server are not for a speech program), and the language."""
-        kept = {key: value for key, value in os.environ.items() if not any(word in key.upper() for word in ("TOKEN", "SECRET", "PASSWORD", "KEY"))}
+        # a short list of what a speech program needs, not a list of what to take away: a secret in a variable nobody thought of never reaches it
+        kept = {key: value for key, value in os.environ.items() if key.upper() in _ENGINE_ENVIRONMENT or key.upper().startswith(("LC_", "ARMOR_VOICE_ENGINE_"))}
         kept["ARMOR_VOICE_LANGUAGE"] = language
         return kept
 
-    def run(self, data: bytes, language: str, limit: int) -> bytes:
+    def run(self, data: bytes, language: str, limit: int, deadline: float | None = None) -> bytes:
+        timeout = self._timeout if deadline is None else max(1.0, min(self._timeout, deadline - time.monotonic()))
         try:
-            done = subprocess.run(self._argv, input=data, capture_output=True, timeout=self._timeout, check=False, env=self._environment(language))
+            done = subprocess.run(self._argv, input=data, capture_output=True, timeout=timeout, check=False, env=self._environment(language))
         except (OSError, subprocess.TimeoutExpired) as error:
             raise TurnError(502, "engine_failed") from error
         if done.returncode != 0 or len(done.stdout) > limit:
@@ -86,10 +114,18 @@ def pcm_from_wav(wav: bytes) -> bytes:
     if len(wav) < 12 or wav[:4] != b"RIFF" or wav[8:12] != b"WAVE":
         raise TurnError(502, "engine_failed")
     position = 12
+    format_ok = False
     while position + 8 <= len(wav):
         name, size = wav[position:position + 4], int.from_bytes(wav[position + 4:position + 8], "little")
+        if name == b"fmt " and size >= 16 and position + 8 + 16 <= len(wav):
+            code, channels, rate, _bytes_s, _align, bits = (int.from_bytes(wav[position + 8 + a:position + 8 + b], "little") for a, b in ((0, 2), (2, 4), (4, 8), (8, 12), (12, 14), (14, 16)))
+            format_ok = code == 1 and channels == 1 and rate == 16_000 and bits == 16   # the panel plays 16 kHz, 16-bit, mono: another rate would sound too fast or too slow
         if name == b"data":
-            return wav[position + 8:position + 8 + size]
+            if not format_ok:
+                raise TurnError(502, "engine_failed")
+            # an engine that writes to a pipe cannot go back to say how long it is: 0 or 0xFFFFFFFF mean "to the end"
+            end = len(wav) if size in (0, 0xFFFFFFFF) else position + 8 + size
+            return wav[position + 8:end]
         position += 8 + size + (size & 1)
     raise TurnError(502, "engine_failed")
 
@@ -136,25 +172,30 @@ class TurnService:
             raise TurnError(501, "server_not_configured")
         if not pcm or len(pcm) > MAX_AUDIO_BYTES or len(pcm) % 2:
             raise TurnError(413 if len(pcm) > MAX_AUDIO_BYTES else 400, "bad_audio")
-        heard = self._stt.run(wav_from_pcm(pcm), language, 4_096).decode("utf-8", "replace").strip()[:400]
+        started = time.monotonic()
+        heard = self._stt.run(wav_from_pcm(pcm), language, 4_096, deadline=started + TURN_BUDGET_S).decode("utf-8", "replace").strip()
         if not heard:
             return self._answer("", NOTHING_HEARD[language], language)
-        words = heard.lower().strip(" .,!?¡¿")
+        if len(heard) > MAX_HEARD_CHARS:      # noise transcribed at length is not a command: the server would refuse it as too long
+            return self._answer(heard[:MAX_HEARD_CHARS], NOTHING_HEARD[language], language)
+        if time.monotonic() - started > TURN_BUDGET_S:
+            raise TurnError(504, "turn_too_slow")   # nothing was asked of the server, so nothing was done
+        words = normalize_text(heard)
         pending = self._take_pending(client)
         if pending is not None:
             original, token = pending
-            if words in NO.get(language, ()):
+            if says(words, NO.get(language, ()), language):
                 return self._answer(heard, CANCELLED[language], language)
-            if words in YES.get(language, ()):
-                return self._finish(heard, self._ask(original, language, token), language, client)
+            if says(words, YES.get(language, ()), language):
+                return self._finish(heard, self._ask(original, language, token), language, client, started)
             # anything else is a new command: the question that was waiting is dropped
-        return self._finish(heard, self._ask(heard, language, None), language, client)
+        return self._finish(heard, self._ask(heard, language, None), language, client, started)
 
-    def _finish(self, heard: str, answer: dict[str, object], language: str, client: str) -> dict[str, object]:
+    def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:
         if answer.get("intent") == "disarm":
             return self._answer(heard, DISARM_REFUSED[language], language)
         token = answer.get("confirmation_token")
-        if isinstance(token, str) and token:
+        if isinstance(token, str) and token and (started is None or time.monotonic() - started <= PANEL_WAITS_S):
             with self._lock:
                 self._pending[client] = (heard, token, self._now() + PENDING_VALIDITY_S)
         return self._answer(heard, str(answer.get("speech") or ""), language)

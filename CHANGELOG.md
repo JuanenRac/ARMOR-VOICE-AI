@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.9] - A confirmation that is understood in every language, and turns that cannot disagree with the panel
+
+- **"Yes" and "no" are recognised the way the commands are:** the spoken answer is normalised (accents, full stops of every script, polite words) before it is compared, so "Yes, please", "Sí, por favor", "はい。" and "是。" confirm, and a "no thanks" cancels. Before only a bare word with ASCII or Spanish punctuation did.
+- **The panel and the house agree:** past nine seconds of listening nothing is asked of the server (the panel gives up at twelve), a question that took longer than the panel waits is not remembered, text longer than the server accepts is "I did not hear anything", and the audio of an answer is limited to what the panel can take once it is base64.
+- **A speech engine gets a short environment** (PATH, HOME, LANG, TMPDIR, `ARMOR_VOICE_ENGINE_*`), not everything minus the names that look like secrets; a WAVE of an engine that writes to a pipe (no length) is read to the end and one that is not 16 kHz 16-bit mono is refused.
+- Two turns at most run at once (a third answers 503), a connection that stops talking is closed after fifteen seconds, a missing length is 411, and a transcript with bytes that are not UTF-8 no longer ends the JSON-lines program.
+- **Windows:** the confirmation secret is read from `os.environ` (`os.environb` does not exist there, so the service could not start); a confirmation token cannot be valid for longer than it was issued for.
+- The manifest and the documents say what this is: a CM5 service with HTTP and JSON lines (no Wyoming or JSON-RPC), eight languages, speech engines chosen by the installation, and `/v1/turn` documented. Tests: 53 (before 49).
+
 ## [0.2.8] - Portuguese, the eighth language
 
 - The voice assistant understands and answers in Portuguese: every command (arm, disarm, status, silence, alarms, nodes, cameras, radar, solar, power, network, time, help, lights on and off), the yes and no of a confirmation and the sentences it says back.

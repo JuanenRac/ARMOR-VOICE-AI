@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-49%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Tests-53%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.2.9-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、ローカルサービス、ターンエンドポイント、監査は実在し、テストされています（49 件）。サーバーは CM5 テストベンチでこのサービスに問い合わせています。**音声認識・合成エンジンはこのリポジトリに含まれません**：`/v1/turn` は設定されたコマンドを実行するだけで、実際のマイクではまだ試されていません。アシスタントを載せる予定のタッチパネルは基板上で動いたことがありません。
+**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、ローカルサービス、ターンエンドポイント、監査は実在し、テストされています（53 件）。サーバーは CM5 テストベンチでこのサービスに問い合わせています。**音声認識・合成エンジンはこのリポジトリに含まれません**：`/v1/turn` は設定されたコマンドを実行するだけで、実際のマイクではまだ試されていません。アシスタントを載せる予定のタッチパネルは基板上で動いたことがありません。
 
 ---
 
@@ -37,9 +37,9 @@
 
 | | |
 |---|---|
-| バージョン | `0.2.8` |
-| 成熟度 | 確立 |
-| テスト | 49 (`python -m unittest discover -s tests`) |
+| バージョン | `0.2.9` |
+| 成熟度 | 機能する |
+| テスト | 53 (`python -m unittest discover -s tests`) |
 | 技術 | Python 3.11+ |
 | 実機での確認 | CM5 テストベンチでサービスとして動作し、サーバーが問い合わせます。マイクや音声エンジンは未検証 |
 
@@ -50,7 +50,7 @@
 * **ローカル HTTP サービス：**`python -m armor_voice_ai.service` はループバックアドレスのみで待ち受け、トークンを要求し、`POST /v1/command` に求められた言語で判断を返します。サーバーのサービスメニューで動作中のバージョンが分かります。
 * **ターンエンドポイント：**`POST /v1/turn` は録音を受け取り、設定した音声認識コマンドを実行し、指示をエンジンに通し、音声合成コマンドで作った録音で答えます。コマンド、サーバーアドレス、そのトークンは環境変数から読みます。
 * **音声ではなく判断を記録：**`--audit-file` を使うと、各判断はインテント、結果、文字起こしの SHA-256 を記録し、音声や生の言葉は決して記録しません。
-* **推奨のみ：**受け付けたコマンドは ARMOR-SERVER に渡され、サーバーが引き続き認証と認可を行います。本人が画面で PIN を入力せずに、音声で解除することは決してできません。
+* **推奨のみ：**受け付けたコマンドは ARMOR-SERVER に渡され、サーバーが引き続き認証と認可を行います。壁パネルでは音声での解除は決してできません（PIN は画面で入力します）。アプリではサーバーの `ARMOR_DISARM_PIN` に従います（`required` に設定してください）。
 
 ## 🧩 A.R.M.O.R. での役割
 
@@ -71,7 +71,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 49 tests
+python -m unittest discover -s tests   # 53 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

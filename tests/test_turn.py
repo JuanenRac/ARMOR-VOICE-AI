@@ -31,7 +31,7 @@ class FakeServer:
 
 
 def engine_saying(text: str) -> CommandEngine:
-    return CommandEngine([sys.executable, "-c", f"import sys; sys.stdin.buffer.read(); print({text!r})"])
+    return CommandEngine([sys.executable, "-c", f"import sys; sys.stdin.buffer.read(); sys.stdout.buffer.write({text!r}.encode('utf-8'))"])
 
 
 class TurnTests(unittest.TestCase):
@@ -65,6 +65,62 @@ class TurnTests(unittest.TestCase):
         service._stt = engine_saying("yes")
         service.handle(SPEECH, "en", "panel-2")
         self.assertEqual(server.asked[-1], ("yes", "en", None), "the yes of another client is just words")
+
+    def test_a_confirmation_in_any_language_with_courtesy_or_full_stops_is_understood(self):
+        cases = [("en", "Yes, please.", True), ("es", "Sí, por favor", True), ("fr", "Oui, vas-y !", True), ("ja", "はい。", True), ("zh", "是。", True), ("de", "Ja.", True),
+                 ("en", "No thanks", False), ("es", "No.", False), ("ja", "いいえ。", False)]
+        for language, said, confirms in cases:
+            server = FakeServer()
+            service = TurnService(engine_saying("arm the system"), None, server)
+            service.handle(SPEECH, language, "panel")
+            service._stt = engine_saying(said)
+            answer = service.handle(SPEECH, language, "panel")
+            if confirms:
+                self.assertEqual(server.asked[-1][2], "tok-1", (language, said))
+            else:
+                self.assertNotEqual(server.asked[-1][2], "tok-1", (language, said))
+                self.assertIn(answer["reply"], ("Cancelled.", "Cancelado.", "キャンセルしました。") + ("The system is armed.",), (language, said))
+
+    def test_a_turn_that_is_too_slow_asks_nothing_of_the_server_and_long_noise_is_not_a_command(self):
+        from armor_voice_ai import turn as turns
+        server = FakeServer()
+        service = TurnService(engine_saying("x" * 300), None, server)
+        self.assertEqual(service.handle(SPEECH, "en", "panel")["reply"], "I did not hear anything.")
+        self.assertEqual(server.asked, [])
+        slow = TurnService(engine_saying("status"), None, server)
+        original = turns.TURN_BUDGET_S
+        turns.TURN_BUDGET_S = -1.0
+        try:
+            with self.assertRaises(TurnError) as caught:
+                slow.handle(SPEECH, "en", "panel")
+        finally:
+            turns.TURN_BUDGET_S = original
+        self.assertEqual(caught.exception.status, 504)
+        self.assertEqual(server.asked, [])
+
+    def test_the_wave_of_an_engine_is_checked_and_a_pipe_wave_is_read_to_the_end(self):
+        samples = b"\x02\x00" * 100
+        good = wav_from_pcm(samples)
+        self.assertEqual(pcm_from_wav(good), samples)
+        unknown_length = good[:40] + (0).to_bytes(4, "little") + good[44:]
+        self.assertEqual(pcm_from_wav(unknown_length), samples)
+        streaming = good[:40] + (0xFFFFFFFF).to_bytes(4, "little") + good[44:]
+        self.assertEqual(pcm_from_wav(streaming), samples)
+        wrong_rate = wav_from_pcm(samples, rate=22_050)
+        with self.assertRaises(TurnError):
+            pcm_from_wav(wrong_rate)
+
+    def test_an_engine_is_given_no_secret_it_was_not_meant_to_have(self):
+        import os
+        os.environ["ARMOR_PGPASS_HINT"] = "x"; os.environ["MY_AUTH_COOKIE"] = "y"; os.environ["ARMOR_VOICE_ENGINE_MODEL"] = "small"
+        try:
+            kept = CommandEngine._environment("en")
+        finally:
+            del os.environ["ARMOR_PGPASS_HINT"], os.environ["MY_AUTH_COOKIE"], os.environ["ARMOR_VOICE_ENGINE_MODEL"]
+        self.assertNotIn("ARMOR_PGPASS_HINT", kept)
+        self.assertNotIn("MY_AUTH_COOKIE", kept)
+        self.assertEqual(kept["ARMOR_VOICE_ENGINE_MODEL"], "small")
+        self.assertEqual(kept["ARMOR_VOICE_LANGUAGE"], "en")
 
     def test_disarming_is_never_done_from_here(self):
         service, server = self.service("disarm the system")

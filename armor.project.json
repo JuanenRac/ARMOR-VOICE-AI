@@ -2,20 +2,20 @@
   "schema_version": "1.0",
   "ecosystem": "A.R.M.O.R.",
   "name": "ARMOR-VOICE-AI",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "role": "Offline speech and intent gateway",
   "stack": "Python 3.11+",
   "technologies": [
     "STT",
     "TTS",
-    "Wyoming",
-    "JSON-RPC"
+    "HTTP",
+    "JSON lines"
   ],
-  "deployment_target": "NVIDIA Jetson Orin NX",
-  "maturity": "established",
+  "deployment_target": "CM5 test bench (systemd) or any computer",
+  "maturity": "functional",
   "family": "Core Services",
   "parent": "ARMOR-SERVER",
-  "native_version": "0.2.8",
+  "native_version": "0.2.9",
   "build": "python -m unittest discover -s tests",
-  "notes": "Closed allow-list of spoken intents in English and Spanish, service-issued signed single-use confirmation tokens for arm and disarm, and a decision-only audit (no audio, no raw text). Offline STT/TTS engines are selected at deployment."
+  "notes": "Closed allow-list of spoken intents in eight languages, service-issued signed single-use confirmation tokens for arm and disarm, and a decision-only audit (no audio, no raw text). The speech engines are programs the installation chooses (ARMOR_VOICE_STT_COMMAND, ARMOR_VOICE_TTS_COMMAND); none is installed with it."
 }

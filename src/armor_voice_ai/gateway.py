@@ -84,8 +84,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--audit-file", type=Path, help="append one line per decision (no audio, no raw text)")
     args = parser.parse_args(argv)
     signer = ConfirmationSigner()
-    for line in sys.stdin:
-        if len(line.encode("utf-8", "replace")) > MAX_LINE_BYTES:
+    for raw in sys.stdin.buffer:
+        line = raw.decode("utf-8", "replace")      # a transcript with bytes that are not UTF-8 is a line like any other, not the end of the program
+        if len(raw) > MAX_LINE_BYTES:
             print('{"accepted":false,"error":"line too long"}', flush=True)
             continue
         try:
