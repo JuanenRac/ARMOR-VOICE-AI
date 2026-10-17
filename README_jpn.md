@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-54%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.10-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.3.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
 </p>
 
@@ -37,7 +37,7 @@
 
 | | |
 |---|---|
-| バージョン | `0.2.10` |
+| バージョン | `0.3.0` |
 | 成熟度 | 機能する |
 | テスト | 54 (`python -m unittest discover -s tests`) |
 | 技術 | Python 3.11+ |
