@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-53%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.9-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-54%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.2.10-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit are real and tested (53 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
+**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit are real and tested (54 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
 
 ---
 
@@ -37,9 +37,9 @@
 
 | | |
 |---|---|
-| Version | `0.2.9` |
+| Version | `0.2.10` |
 | Maturity | Functional |
-| Tests | 53 (`python -m unittest discover -s tests`) |
+| Tests | 54 (`python -m unittest discover -s tests`) |
 | Stack | Python 3.11+ |
 | On real hardware | Running as a service on the CM5 test bench, asked by the server; no microphone or speech engine has been tried |
 
@@ -71,7 +71,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 53 tests
+python -m unittest discover -s tests   # 54 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

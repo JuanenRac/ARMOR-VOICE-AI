@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-53%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.2.9-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-54%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.2.10-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-00E5FF.svg" alt="Maturity">
 </p>
 
 ---
 
-**Verificação de honestidade - o que funciona hoje:** As regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, o serviço local, o ponto de turno e a auditoria são reais e estão testados (53 testes), e o servidor pergunta ao serviço na bancada de testes do CM5. **Nenhum motor de reconhecimento ou síntese de voz faz parte deste repositório**: `/v1/turn` executa os comandos que configurar para eles, e nenhum foi ainda experimentado com um microfone real; o painel tátil destinado a levar o assistente não correu numa placa.
+**Verificação de honestidade - o que funciona hoje:** As regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, o serviço local, o ponto de turno e a auditoria são reais e estão testados (54 testes), e o servidor pergunta ao serviço na bancada de testes do CM5. **Nenhum motor de reconhecimento ou síntese de voz faz parte deste repositório**: `/v1/turn` executa os comandos que configurar para eles, e nenhum foi ainda experimentado com um microfone real; o painel tátil destinado a levar o assistente não correu numa placa.
 
 ---
 
@@ -37,9 +37,9 @@
 
 | | |
 |---|---|
-| Versão | `0.2.9` |
+| Versão | `0.2.10` |
 | Maturidade | Funcional |
-| Testes | 53 (`python -m unittest discover -s tests`) |
+| Testes | 54 (`python -m unittest discover -s tests`) |
 | Tecnologia | Python 3.11+ |
 | Em hardware real | A correr como serviço na bancada de testes do CM5, consultado pelo servidor; nenhum microfone ou motor de voz foi experimentado |
 
@@ -71,7 +71,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 53 tests
+python -m unittest discover -s tests   # 54 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

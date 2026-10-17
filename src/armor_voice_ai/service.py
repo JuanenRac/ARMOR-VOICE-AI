@@ -97,7 +97,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             if not turn_slots.acquire(blocking=False):   # each turn starts a speech program: only a couple at a time
                 return self._send(503, {"error": "busy"})
             try:
-                self._send(200, turns.handle(pcm, language, self.client_address[0]))
+                self._send(200, turns.handle(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0]))
             except TurnError as error:
                 self._send(error.status, {"error": error.code})
             finally:

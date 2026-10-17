@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.10] - Each panel keeps its own question when it comes through the server
+
+- The question a panel was asked is remembered under the name the server gives it (`X-Armor-Client`, sent by the voice route of ARMOR-SERVER that the wall panel uses), not under the address the request came from, which for every panel is the server's own. Without the header it is the address, as before. Tests: 54 (before 53).
+
 ## [0.2.9] - A confirmation that is understood in every language, and turns that cannot disagree with the panel
 
 - **"Yes" and "no" are recognised the way the commands are:** the spoken answer is normalised (accents, full stops of every script, polite words) before it is compared, so "Yes, please", "Sí, por favor", "はい。" and "是。" confirm, and a "no thanks" cancels. Before only a bare word with ASCII or Spanish punctuation did.

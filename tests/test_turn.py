@@ -98,6 +98,26 @@ class TurnTests(unittest.TestCase):
         self.assertEqual(caught.exception.status, 504)
         self.assertEqual(server.asked, [])
 
+    def test_the_client_a_pending_question_belongs_to_can_be_named_by_the_server(self):
+        server = FakeServer()
+        service = TurnService(engine_saying("arm the system"), None, server)
+        httpd = make_server("127.0.0.1", 0, TOKEN, ConfirmationSigner(b"s" * 32), None, service)
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        try:
+            def post(client):
+                request = urllib.request.Request(f"http://127.0.0.1:{httpd.server_address[1]}/v1/turn", data=SPEECH, method="POST",
+                                                 headers={"X-Armor-Voice-Token": TOKEN, "Content-Type": "audio/L16;rate=16000", "X-Armor-Language": "en", "X-Armor-Client": client})
+                return json.loads(urllib.request.urlopen(request, timeout=10).read())
+            self.assertEqual(post("panel-1")["reply"], "Please confirm")
+            service._stt = engine_saying("yes")
+            post("panel-2")
+            self.assertEqual(server.asked[-1][2], None, "another panel's yes confirms nothing")
+            post("panel-1")
+            self.assertEqual(server.asked[-1][2], "tok-1")
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+
     def test_the_wave_of_an_engine_is_checked_and_a_pipe_wave_is_read_to_the_end(self):
         samples = b"\x02\x00" * 100
         good = wav_from_pcm(samples)
