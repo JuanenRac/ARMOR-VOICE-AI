@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-54%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分:** 意图规则、八种语言、绑定到说话人的签名确认、本地服务、轮次端点和审计都是真实的并经过测试（54 个测试），服务器在 CM5 测试台上向该服务发起请求。**本仓库不包含任何语音识别或合成引擎**：`/v1/turn` 运行你为它们配置的命令，目前都还没有用真实麦克风试过；打算承载助手的触摸面板还没有在板上运行过。
+**诚实性检查 - 今天真正能运行的部分:** 意图规则、八种语言、绑定到说话人的签名确认、本地服务、轮次端点和审计都是真实的并经过测试（83 个测试），服务器在 CM5 测试台上向该服务发起请求。**本仓库不包含任何语音识别或合成引擎**：`/v1/turn` 运行你为它们配置的命令，目前都还没有用真实麦克风试过；打算承载助手的触摸面板还没有在板上运行过。
 
 ---
 
@@ -39,7 +39,7 @@
 |---|---|
 | 版本 | `0.3.0` |
 | 成熟度 | 成熟 |
-| 测试 | 54 (`python -m unittest discover -s tests`) |
+| 测试 | 83 (`python -m unittest discover -s tests`) |
 | 技术栈 | Python 3.11+ |
 | 真实硬件 | 在 CM5 测试台上作为服务运行，由服务器调用；尚未试过麦克风或语音引擎 |
 
@@ -71,7 +71,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 54 tests
+python -m unittest discover -s tests   # 83 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```
