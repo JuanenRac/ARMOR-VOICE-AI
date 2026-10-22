@@ -27,7 +27,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from shlex import split as shell_split
 
-from .intent import normalize_text
+from .intent import SILENCE, normalize_text, parse_intent
+from .silence_policy import (ASK_PIN, ASK_YES, DOUBLE_TURN, DOUBLE_TURN_VALIDITY_S, LOCKED, NO_PIN_SET, OFF, PIN, PIN_VALIDITY_S, WRONG_PIN, PinGuard, mode_from_policy, spoken_digits)
 
 MAX_AUDIO_BYTES = 480_000          # fifteen seconds of 16 kHz, 16-bit mono
 MAX_REPLY_AUDIO_BYTES = 190_000    # what the panel accepts to play: it takes at most 256 KB of answer in all, and the audio goes as base64 (4/3 of its size) inside a JSON
@@ -155,8 +156,11 @@ class ServerLink:
 
 class TurnService:
     def __init__(self, stt: CommandEngine | None, tts: CommandEngine | None, server: ServerLink | Callable[[str, str, str | None], dict[str, object]] | None,
-                 now: Callable[[], float] = time.time) -> None:
+                 now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None) -> None:
         self._stt, self._tts, self._now = stt, tts, now
+        self.pin_guard = pin_guard or PinGuard(None)
+        # what a panel was asked before a "silence" is passed on: (the words of the command, the mode, until when)
+        self._silence_wait: dict[str, tuple[str, str, float]] = {}
         self._ask = server.command if isinstance(server, ServerLink) else server
         self._pending: dict[str, tuple[str, str, float]] = {}
         self._lock = threading.Lock()
@@ -165,7 +169,7 @@ class TurnService:
     def can_hear(self) -> bool:
         return self._stt is not None and self._ask is not None
 
-    def handle(self, pcm: bytes, language: str, client: str) -> dict[str, object]:
+    def handle(self, pcm: bytes, language: str, client: str, policy: object = None) -> dict[str, object]:
         if self._stt is None:
             raise TurnError(501, "stt_unavailable")
         if self._ask is None:
@@ -181,6 +185,33 @@ class TurnService:
         if time.monotonic() - started > TURN_BUDGET_S:
             raise TurnError(504, "turn_too_slow")   # nothing was asked of the server, so nothing was done
         words = normalize_text(heard)
+        mode = mode_from_policy(policy)
+        waiting = self._take_silence_wait(client)
+        if waiting is not None:
+            original, waiting_mode = waiting
+            if says(words, NO.get(language, ()), language):
+                return self._answer("" if waiting_mode == PIN else heard, CANCELLED[language], language)
+            if waiting_mode == DOUBLE_TURN and says(words, YES.get(language, ()), language):
+                return self._finish(heard, self._ask(original, language, None), language, client, started)
+            if waiting_mode == PIN:
+                digits = spoken_digits(words, language)
+                if digits:   # a PIN attempt: never kept, never echoed back
+                    verdict = self.pin_guard.check(digits)
+                    if verdict == "ok":
+                        return self._finish("", self._ask(original, language, None), language, client, started)
+                    return self._answer("", {"wrong": WRONG_PIN, "locked": LOCKED}.get(verdict, NO_PIN_SET)[language], language)
+            # anything else is a new command: the question that was waiting is dropped
+        if mode != OFF and parse_intent(heard) == SILENCE:
+            self._take_pending(client)   # a question about arming that was waiting is dropped
+            if mode == PIN:
+                if not self.pin_guard.configured:
+                    return self._answer(heard, NO_PIN_SET[language], language)
+                if self.pin_guard.locked:
+                    return self._answer(heard, LOCKED[language], language)
+            validity = PIN_VALIDITY_S if mode == PIN else DOUBLE_TURN_VALIDITY_S
+            with self._lock:
+                self._silence_wait[client] = (heard, mode, self._now() + validity)
+            return self._answer(heard, (ASK_PIN if mode == PIN else ASK_YES)[language], language)
         pending = self._take_pending(client)
         if pending is not None:
             original, token = pending
@@ -199,6 +230,15 @@ class TurnService:
             with self._lock:
                 self._pending[client] = (heard, token, self._now() + PENDING_VALIDITY_S)
         return self._answer(heard, str(answer.get("speech") or ""), language)
+
+    def _take_silence_wait(self, client: str) -> tuple[str, str] | None:
+        with self._lock:
+            held = self._silence_wait.pop(client, None)
+            for key in [key for key, (_text, _mode, until) in self._silence_wait.items() if until < self._now()]:
+                del self._silence_wait[key]
+        if held is None or held[2] < self._now():
+            return None
+        return held[0], held[1]
 
     def _take_pending(self, client: str) -> tuple[str, str] | None:
         with self._lock:

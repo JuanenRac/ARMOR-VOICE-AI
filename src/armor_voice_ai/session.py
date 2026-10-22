@@ -17,9 +17,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .confirmation import VALID, ConfirmationSigner
-from .intent import SENSITIVE, parse_intent
+from .intent import SENSITIVE, SILENCE, parse_intent
+from .silence_policy import DOUBLE_TURN, OFF, PIN, PinGuard
 
 NOT_UNDERSTOOD, CONFIRMATION_NEEDED, ACCEPTED, CONFIRMATION_REFUSED = "not-understood", "confirmation-needed", "accepted", "confirmation-refused"
+PIN_NEEDED, PIN_REFUSED = "pin-needed", "pin-refused"
 
 
 @dataclass(frozen=True)
@@ -32,11 +34,20 @@ class VoiceDecision:
     reason: str = ""
 
 
-def evaluate(text: str, signer: ConfirmationSigner, confirmation: str | None = None, subject: str = "") -> VoiceDecision:
+def evaluate(text: str, signer: ConfirmationSigner, confirmation: str | None = None, subject: str = "", silence_mode: str = OFF, pin: str | None = None,
+             pin_guard: PinGuard | None = None) -> VoiceDecision:
     intent = parse_intent(text)
     if intent is None:
         return VoiceDecision(False, False, None, NOT_UNDERSTOOD, reason="the phrase is not one of the known commands")
-    if intent not in SENSITIVE:
+    if intent == SILENCE and silence_mode == PIN:
+        # the PIN is the proof: it is checked here, never stored or reported back
+        if pin is None:
+            return VoiceDecision(False, False, intent, PIN_NEEDED, reason="silencing needs the PIN")
+        verdict = (pin_guard or PinGuard(None)).check("".join(ch for ch in pin if ch.isascii() and ch.isdigit()))
+        if verdict == "ok":
+            return VoiceDecision(True, False, intent, ACCEPTED)
+        return VoiceDecision(False, False, intent, PIN_REFUSED, reason=f"the PIN was refused: {verdict}")
+    if intent not in SENSITIVE and not (intent == SILENCE and silence_mode == DOUBLE_TURN):
         return VoiceDecision(True, False, intent, ACCEPTED)
     if confirmation is None:
         return VoiceDecision(False, True, intent, CONFIRMATION_NEEDED, signer.issue(intent, subject), f"say it again with the confirmation within {signer.ttl_s:.0f} s")

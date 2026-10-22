@@ -54,9 +54,9 @@ class LineProtocolTests(unittest.TestCase):
             self.assertEqual(len(entries), 2)
             self.assertTrue(all(len(entry["transcript_sha256"]) == 64 for entry in entries))
 
-    def test_each_language_has_all_four_phrases(self):
+    def test_each_language_has_all_its_phrases(self):
         for language, table in gateway.SPEECH_BY_LANGUAGE.items():
-            self.assertEqual(len(table), 4, language)
+            self.assertEqual(len(table), 6, language)
             self.assertTrue(all(isinstance(text, str) and text.strip() for text in table.values()), language)
 
     def test_the_request_fields_are_checked(self):

@@ -25,12 +25,14 @@ from pathlib import Path
 
 from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
+from .silence_policy import PinGuard, mode_from_header
 from .turn import MAX_AUDIO_BYTES, CommandEngine, ServerLink, TurnError, TurnService
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
 
-def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, audit: Path | None = None, turns: TurnService | None = None) -> ThreadingHTTPServer:
+def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, audit: Path | None = None, turns: TurnService | None = None,
+                pin_guard: PinGuard | None = None) -> ThreadingHTTPServer:
     """A server that answers `POST /v1/command`, `POST /v1/turn` (audio, when a speech engine is configured) and `GET /healthz`; call serve_forever() on it."""
     if len(token) < 16:
         raise ValueError("the token must be at least 16 characters")
@@ -77,6 +79,11 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 return self._send(200, {"ok": True, "service": "armor-voice"})
             self._send(404, {"error": "not found"})
 
+        def _policy_header(self) -> dict[str, str] | None:
+            """The policy the server sent with the turn (`X-Armor-Policy`, a JSON object). No header is no policy; an unreadable one is the strictest silence mode."""
+            raw = self.headers.get("X-Armor-Policy")
+            return None if raw is None else {"silence_confirmation": mode_from_header(raw)}
+
         def _turn(self) -> None:
             """Audio in (16 kHz mono 16-bit PCM), the answer out: what was heard, what to say and, with a speech engine, the audio of it."""
             language = self.headers.get("X-Armor-Language", "en")
@@ -97,7 +104,8 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             if not turn_slots.acquire(blocking=False):   # each turn starts a speech program: only a couple at a time
                 return self._send(503, {"error": "busy"})
             try:
-                self._send(200, turns.handle(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0]))
+                policy = self._policy_header()
+                self._send(200, turns.handle(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0], policy))
             except TurnError as error:
                 self._send(error.status, {"error": error.code})
             finally:
@@ -124,7 +132,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 request = json.loads(raw.decode("utf-8"))
             except (UnicodeDecodeError, ValueError):
                 return self._send(400, {"accepted": False, "error": "invalid json"})
-            self._send(200, handle_request(request, signer, audit))
+            self._send(200, handle_request(request, signer, audit, pin_guard))
 
     return ThreadingHTTPServer((host, port), Handler)
 
@@ -154,8 +162,12 @@ def main(argv: list[str] | None = None) -> None:
     stt = os.environ.get("ARMOR_VOICE_STT_COMMAND", "").strip()
     tts = os.environ.get("ARMOR_VOICE_TTS_COMMAND", "").strip()
     link = ServerLink(os.environ["ARMOR_VOICE_SERVER_URL"], os.environ["ARMOR_VOICE_SERVER_TOKEN"]) if os.environ.get("ARMOR_VOICE_SERVER_URL") and os.environ.get("ARMOR_VOICE_SERVER_TOKEN") else None
-    turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link)
-    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns)
+    try:
+        guard = PinGuard(os.environ.get("ARMOR_VOICE_SILENCE_PIN") or None)
+    except ValueError as error:
+        raise SystemExit(f"ARMOR_VOICE_SILENCE_PIN is not valid: {error}")   # the value itself is never printed
+    turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link, pin_guard=guard)
+    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard)
     print(f"armor-voice listening on {args.host}:{server.server_address[1]}", file=sys.stderr, flush=True)
     try:
         server.serve_forever()

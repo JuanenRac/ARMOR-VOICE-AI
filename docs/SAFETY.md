@@ -65,6 +65,11 @@ rules of that route are:
 * **No identity of the speaker yet.** The turn does not say which panel or which person spoke; the server decides with the token it was given. Adding the panel (and, where it exists,
   the person) to the request is a change of the contract between ARMOR-SERVER and the panel and is not done.
 
+## Silencing by voice
+
+"Silence" is accepted at once unless the installation asks for more: ARMOR-SERVER can send a policy that requires a spoken PIN or a second confirming turn (see `SILENCE_POLICY.md`). The PIN is never logged, kept or
+echoed back, wrong guesses are limited, and a policy that is present but unreadable counts as the second turn.
+
 ## What is recorded
 
 With `--audit-file`, one line per decision: time, intent, outcome and the SHA-256
