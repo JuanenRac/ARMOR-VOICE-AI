@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - SAFETY.md lists the fifteen intents (ten that ask, five that do) with their confirmation, names Portuguese among the languages, and has a section on the wall-panel turn (`/v1/turn`): untrusted text, size and time limits, spoken confirmation only for arming, nothing kept, loopback only and no identity of the speaker yet.
 
 ## [0.3.0] - Each panel keeps its own question when it comes through the server
