@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- SAFETY.md lists the fifteen intents (ten that ask, five that do) with their confirmation, names Portuguese among the languages, and has a section on the wall-panel turn (`/v1/turn`): untrusted text, size and time limits, spoken confirmation only for arming, nothing kept, loopback only and no identity of the speaker yet.
+
 ## [0.3.0] - Each panel keeps its own question when it comes through the server
 
 - The question a panel was asked is remembered under the name the server gives it (`X-Armor-Client`, sent by the voice route of ARMOR-SERVER that the wall panel uses), not under the address the request came from, which for every panel is the server's own. Without the header it is the address, as before. Tests: 54 (before 53).
