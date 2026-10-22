@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- The repository has a security policy, a code of conduct, a contributing guide and a support file.
 - The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - SAFETY.md lists the fifteen intents (ten that ask, five that do) with their confirmation, names Portuguese among the languages, and has a section on the wall-panel turn (`/v1/turn`): untrusted text, size and time limits, spoken confirmation only for arming, nothing kept, loopback only and no identity of the speaker yet.
 
