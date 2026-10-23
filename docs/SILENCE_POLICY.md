@@ -39,4 +39,4 @@ Only "silence" is affected; every other command behaves as before, and arming an
 * Add the setting `voice.silence_confirmation` (`off` by default) and send `policy` on each request to this service: `X-Armor-Policy` on `/v1/turn`, `policy` (and `pin`) on `/v1/command`.
 * Where the server decides on its own what a spoken "silence" is worth (`/api/v1/voice/command`), it should apply the same mode, so that the two routes cannot disagree; this service
   cannot see a request that reaches the server without passing through it.
-* If the wall panel (ARMOR-HMI) calls `/v1/turn` directly, the header has to be added by whatever sits between it and this service (the server's proxy), not by the panel.
+* If the wall panel (ARMOR-NODE-HMI) calls `/v1/turn` directly, the header has to be added by whatever sits between it and this service (the server's proxy), not by the panel.

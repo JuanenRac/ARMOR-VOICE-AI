@@ -54,7 +54,7 @@
 
 ## 🧩 Rolle in A.R.M.O.R.
 
-ARMOR-VOICE-AI macht aus dem Gesagten einen Befehl aus einer geschlossenen Liste und tut nie etwas von selbst: [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) fragt es ab und authentifiziert und autorisiert den Befehl dann genau wie einen Klick in [ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO). Es soll hinter dem Mikrofon des Wandpanels [ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI) leben und bedient den geschriebenen und gesprochenen Assistenten der Android-App.
+ARMOR-VOICE-AI macht aus dem Gesagten einen Befehl aus einer geschlossenen Liste und tut nie etwas von selbst: [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) fragt es ab und authentifiziert und autorisiert den Befehl dann genau wie einen Klick in [ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO). Es soll hinter dem Mikrofon des Wandpanels [ARMOR-NODE-HMI](https://github.com/JuanenRac/ARMOR-NODE-HMI) leben und bedient den geschriebenen und gesprochenen Assistenten der Android-App.
 
 ## 📂 Struktur des Repositorys
 
@@ -83,11 +83,11 @@ Siehe die [Sprachsicherheit](docs/SAFETY.md) und den [Dienst](docs/SERVICE.md).
 **A.R.M.O.R.** (Autonomous Radar & Multimodal Observation Range) ist ein Perimeter-Sicherheitssystem aus unabhängigen Repositorys. Jedes hat eine eigene Version, eigene Tests und ein eigenes README; hier ist die Familie:
 
 * **[ARMOR-COMMON](https://github.com/JuanenRac/ARMOR-COMMON)** - Nachrichtenverträge, Validierer, Konformitätsvektoren und generierte Typen
-* **[ARMOR-RADAR](https://github.com/JuanenRac/ARMOR-RADAR)** - Feldknoten-Firmware für ESP32-S3 mit drei Radaren und eigenem Web-Panel
-* **[ARMOR-SOLAR](https://github.com/JuanenRac/ARMOR-SOLAR)** - Protokolle für Solar-Wechselrichter und -Batterien und die Nachrichten eines Gateway-Knotens
-* **[ARMOR-ELECTRICAL](https://github.com/JuanenRac/ARMOR-ELECTRICAL)** - Elektroknoten: Zähler, die Nachricht der Netzmesswerte und die Regeln fürs Schalten
-* **[ARMOR-ALARM](https://github.com/JuanenRac/ARMOR-ALARM)** - Alarmknoten und Alarmzentrale: Zonen, Scharfschalten, Verzögerungen, Sirene und PIN, mit dem Server oder ohne ihn
-* **[ARMOR-HMI](https://github.com/JuanenRac/ARMOR-HMI)** - Touch-Panel: der Systemzustand auf einem Wandbildschirm, Scharf- und Quittieren sowie das Zuhause des Sprachassistenten
+* **[ARMOR-NODE-RADAR](https://github.com/JuanenRac/ARMOR-NODE-RADAR)** - Feldknoten-Firmware für ESP32-S3 mit drei Radaren und eigenem Web-Panel
+* **[ARMOR-NODE-SOLAR](https://github.com/JuanenRac/ARMOR-NODE-SOLAR)** - Protokolle für Solar-Wechselrichter und -Batterien und die Nachrichten eines Gateway-Knotens
+* **[ARMOR-NODE-ELECTRICAL](https://github.com/JuanenRac/ARMOR-NODE-ELECTRICAL)** - Elektroknoten: Zähler, die Nachricht der Netzmesswerte und die Regeln fürs Schalten
+* **[ARMOR-NODE-ALARM](https://github.com/JuanenRac/ARMOR-NODE-ALARM)** - Alarmknoten und Alarmzentrale: Zonen, Scharfschalten, Verzögerungen, Sirene und PIN, mit dem Server oder ohne ihn
+* **[ARMOR-NODE-HMI](https://github.com/JuanenRac/ARMOR-NODE-HMI)** - Touch-Panel: der Systemzustand auf einem Wandbildschirm, Scharf- und Quittieren sowie das Zuhause des Sprachassistenten
 * **[ARMOR-NETWORK](https://github.com/JuanenRac/ARMOR-NETWORK)** - Das lokale Netzwerk: seine Geräte, das Internet und was sich ändert
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - Zentraler Koordinator: Telemetrie, Alarme, Geräte, Solarmesswerte und Kameras
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Web-Konsole: Kameras, Radar, Alarme, Solarenergie und 2D/3D-Standortdesigner
