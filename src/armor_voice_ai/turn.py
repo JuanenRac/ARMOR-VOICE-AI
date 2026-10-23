@@ -2,7 +2,7 @@
 
 Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 
-The panel of the house (ARMOR-HMI) sends what the microphones heard to `POST /v1/turn` and plays what comes back. This module is the middle of that: the speech engine turns the audio into
+The panel of the house (ARMOR-NODE-HMI) sends what the microphones heard to `POST /v1/turn` and plays what comes back. This module is the middle of that: the speech engine turns the audio into
 words (STT), the words are given to ARMOR-SERVER's own voice route - the one that decides, holds the two-turn confirmation and carries out what was accepted, in the audit trail -
 and the answer is turned into audio (TTS) when an engine for it is configured.
 
