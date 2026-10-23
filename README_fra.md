@@ -67,7 +67,7 @@ ARMOR-VOICE-AI/
 
 ## 🛠️ Environnement de développement
 
-**Prérequis:** Python 3.11+ (standard library only), optional: a speech-to-text and a text-to-speech command for `/v1/turn`
+**Prérequis:** Python 3.11+ (bibliothèque standard uniquement), facultatif : une commande de reconnaissance vocale et une de synthèse vocale pour `/v1/turn`
 
 ```powershell
 $env:PYTHONPATH="src"
@@ -92,6 +92,7 @@ Voir la [sécurité de la voix](docs/SAFETY.md) et le [service](docs/SERVICE.md)
 * **[ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER)** - Coordinateur central : télémétrie, alarmes, appareils, relevés solaires et caméras
 * **[ARMOR-STUDIO](https://github.com/JuanenRac/ARMOR-STUDIO)** - Console web : caméras, radar, alarmes, énergie solaire et concepteur de site 2D/3D
 * **[ARMOR-ANDROID-CONTROL](https://github.com/JuanenRac/ARMOR-ANDROID-CONTROL)** - Client Android de l'opérateur avec radar 2D/3D en direct
+* **[ARMOR-IOS-CONTROL](https://github.com/JuanenRac/ARMOR-IOS-CONTROL)** - Client opérateur iPhone
 * **[ARMOR-SERVER-AI](https://github.com/JuanenRac/ARMOR-SERVER-AI)** - Politique d'inférence visuelle qui explique ses décisions et n'agit jamais
 * **[ARMOR-VISION](https://github.com/JuanenRac/ARMOR-VISION)** - Zones de caméra, masques et règles de détection pour la Jetson Orin NX
 * **ARMOR-VOICE-AI** (ce dépôt) - Intentions vocales hors ligne avec une confirmation impossible à falsifier
