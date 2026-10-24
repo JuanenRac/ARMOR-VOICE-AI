@@ -105,6 +105,13 @@ Le texte produit par un moteur de reconnaissance vocale est une *entrée non fia
 
 **Un tour vocal qui arme le système** (le panneau est interrogé deux fois, et le désarmement est refusé) :
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>Version texte du diagramme (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **Pourquoi il est construit ainsi**
 

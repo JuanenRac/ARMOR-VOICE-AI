@@ -105,6 +105,13 @@ Il testo che esce da un riconoscitore vocale è un *input non attendibile*. Perc
 
 **Un turno vocale che inserisce il sistema** (al pannello si chiede due volte, e il disinserimento viene rifiutato):
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>Versione testuale del diagramma (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **Perché è costruito così**
 

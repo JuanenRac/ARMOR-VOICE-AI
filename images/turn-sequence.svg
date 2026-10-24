@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 930" width="100%" role="img" aria-labelledby="t d">
+<title id="t">A spoken turn that arms the system</title>
+<desc id="d">The wall panel sends audio to ARMOR-VOICE-AI. The service asks the speech engine for the words, asks ARMOR-SERVER, which answers that a confirmation is needed and gives a token. The service says "Please confirm" and the panel is asked a second time; with the answer yes and the token the server accepts. Disarming is refused: it needs a PIN typed on the screen.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D1117"/><stop offset="1" stop-color="#0A0C10"/></linearGradient>
+<linearGradient id="hd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161B22"/><stop offset="1" stop-color="#10151C"/></linearGradient>
+<filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="m_w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#E6EDF3"/></marker>
+<marker id="m_a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#FFB020"/></marker>
+<marker id="m_g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#00FF88"/></marker>
+<marker id="m_c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#00E5FF"/></marker>
+</defs>
+<rect x="1" y="1" width="1198" height="928" rx="18" fill="url(#bg)" stroke="#30363D" stroke-width="2"/>
+<text x="36" y="46" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="start">A spoken turn that arms the system</text>
+<text x="36" y="70" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#8B949E" text-anchor="start">The panel is asked twice, and disarming is refused: it needs a PIN typed on the screen.</text>
+<rect x="24" y="202" width="1152" height="354" rx="12" fill="#00FF88" fill-opacity="0.035" stroke="#00FF88" stroke-opacity="0.18"/>
+<text x="1160" y="222" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#00FF88" text-anchor="end" letter-spacing="2.5">FIRST TURN</text>
+<rect x="24" y="594" width="1152" height="204" rx="12" fill="#00E5FF" fill-opacity="0.035" stroke="#00E5FF" stroke-opacity="0.18"/>
+<text x="1160" y="614" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#00E5FF" text-anchor="end" letter-spacing="2.5">SECOND TURN</text>
+<rect x="25" y="96" width="210" height="64" rx="12" fill="url(#hd)" stroke="#FF6B6B" stroke-width="2"/>
+<text x="130" y="124" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#FF8F8F" text-anchor="middle">Wall panel</text>
+<text x="130" y="146" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="middle">microphone + speaker</text>
+<line x1="130" y1="160" x2="130" y2="856" stroke="#FF6B6B" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="3 6"/>
+<rect x="315" y="96" width="210" height="64" rx="12" fill="url(#hd)" stroke="#00FF88" stroke-width="2"/>
+<text x="420" y="124" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#00FF88" text-anchor="middle">ARMOR-VOICE-AI</text>
+<text x="420" y="146" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="middle">decides, never acts</text>
+<line x1="420" y1="160" x2="420" y2="856" stroke="#00FF88" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="3 6"/>
+<rect x="695" y="96" width="210" height="64" rx="12" fill="url(#hd)" stroke="#00E5FF" stroke-width="2"/>
+<text x="800" y="124" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#00E5FF" text-anchor="middle">ARMOR-SERVER</text>
+<text x="800" y="146" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="middle">the one that acts</text>
+<line x1="800" y1="160" x2="800" y2="856" stroke="#00E5FF" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="3 6"/>
+<rect x="965" y="96" width="210" height="64" rx="12" fill="url(#hd)" stroke="#FFB020" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="1070" y="124" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="700" fill="#FFB020" text-anchor="middle">Speech engines</text>
+<text x="1070" y="146" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="middle">chosen by the installation</text>
+<line x1="1070" y1="160" x2="1070" y2="856" stroke="#FFB020" stroke-opacity="0.35" stroke-width="1.5" stroke-dasharray="3 6"/>
+<path d="M133 232 H417" stroke="#E6EDF3" stroke-width="2" fill="none" marker-end="url(#m_w)" opacity="0.9"/>
+<text x="148" y="223" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#E6EDF3" text-anchor="start">POST /v1/turn (audio, language)</text>
+<circle cx="143" cy="232" r="9" fill="#0D1117" stroke="#E6EDF3" stroke-width="1.4"/>
+<text x="143" y="235.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#E6EDF3" text-anchor="middle">1</text>
+<path d="M423 282 H1067" stroke="#FFB020" stroke-width="2" fill="none" marker-end="url(#m_a)" opacity="0.9"/>
+<text x="438" y="273" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#FFB020" text-anchor="start">STT: WAV on stdin</text>
+<circle cx="433" cy="282" r="9" fill="#0D1117" stroke="#FFB020" stroke-width="1.4"/>
+<text x="433" y="285.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFB020" text-anchor="middle">2</text>
+<path d="M1067 332 H423" stroke="#FFB020" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#m_a)" opacity="0.9"/>
+<text x="438" y="323" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#FFB020" text-anchor="start">"arm the system"</text>
+<circle cx="1057" cy="332" r="9" fill="#0D1117" stroke="#FFB020" stroke-width="1.4"/>
+<text x="1057" y="335.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFB020" text-anchor="middle">3</text>
+<path d="M423 382 H797" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#m_g)" opacity="0.9"/>
+<text x="438" y="373" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#00FF88" text-anchor="start">/api/v1/voice/command {text, language}</text>
+<circle cx="433" cy="382" r="9" fill="#0D1117" stroke="#00FF88" stroke-width="1.4"/>
+<text x="433" y="385.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#00FF88" text-anchor="middle">4</text>
+<path d="M797 432 H423" stroke="#00E5FF" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#m_c)" opacity="0.9"/>
+<text x="438" y="423" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#00E5FF" text-anchor="start">confirmation-needed + token</text>
+<circle cx="787" cy="432" r="9" fill="#0D1117" stroke="#00E5FF" stroke-width="1.4"/>
+<text x="787" y="435.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#00E5FF" text-anchor="middle">5</text>
+<path d="M423 482 H1067" stroke="#FFB020" stroke-width="2" fill="none" marker-end="url(#m_a)" opacity="0.9"/>
+<text x="438" y="473" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#FFB020" text-anchor="start">TTS: "Please confirm"</text>
+<circle cx="433" cy="482" r="9" fill="#0D1117" stroke="#FFB020" stroke-width="1.4"/>
+<text x="433" y="485.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFB020" text-anchor="middle">6</text>
+<path d="M417 532 H133" stroke="#E6EDF3" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#m_w)" opacity="0.9"/>
+<text x="148" y="523" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#E6EDF3" text-anchor="start">heard, reply, audio</text>
+<circle cx="407" cy="532" r="9" fill="#0D1117" stroke="#E6EDF3" stroke-width="1.4"/>
+<text x="407" y="535.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#E6EDF3" text-anchor="middle">7</text>
+<path d="M133 624 H417" stroke="#E6EDF3" stroke-width="2" fill="none" marker-end="url(#m_w)" opacity="0.9"/>
+<text x="148" y="615" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#E6EDF3" text-anchor="start">POST /v1/turn ("yes")</text>
+<circle cx="143" cy="624" r="9" fill="#0D1117" stroke="#E6EDF3" stroke-width="1.4"/>
+<text x="143" y="627.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#E6EDF3" text-anchor="middle">8</text>
+<path d="M423 674 H797" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#m_g)" opacity="0.9"/>
+<text x="438" y="665" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#00FF88" text-anchor="start">/api/v1/voice/command {text, confirmation}</text>
+<circle cx="433" cy="674" r="9" fill="#0D1117" stroke="#00FF88" stroke-width="1.4"/>
+<text x="433" y="677.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#00FF88" text-anchor="middle">9</text>
+<path d="M797 724 H423" stroke="#00E5FF" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#m_c)" opacity="0.9"/>
+<text x="438" y="715" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#00E5FF" text-anchor="start">accepted</text>
+<circle cx="787" cy="724" r="9" fill="#0D1117" stroke="#00E5FF" stroke-width="1.4"/>
+<text x="787" y="727.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#00E5FF" text-anchor="middle">10</text>
+<path d="M417 774 H133" stroke="#E6EDF3" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#m_w)" opacity="0.9"/>
+<text x="148" y="765" font-family="'JetBrains Mono','Cascadia Code',Consolas,'Liberation Mono',monospace" font-size="12.5" font-weight="600" fill="#E6EDF3" text-anchor="start">"Command accepted"</text>
+<circle cx="407" cy="774" r="9" fill="#0D1117" stroke="#E6EDF3" stroke-width="1.4"/>
+<text x="407" y="777.6" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#E6EDF3" text-anchor="middle">11</text>
+<line x1="40" y1="578" x2="1160" y2="578" stroke="#30363D" stroke-dasharray="2 6"/>
+<text x="600.0" y="582" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8B949E" text-anchor="middle">the panel answers "yes" within 30 seconds</text>
+<rect x="315" y="820" width="590" height="52" rx="10" fill="#FFB020" fill-opacity="0.08" stroke="#FFB020" stroke-width="1.6"><animate attributeName="stroke-opacity" values="0.45;1;0.45" dur="3.6s" repeatCount="indefinite"/></rect>
+<text x="610.0" y="842" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#FFB020" text-anchor="middle">"disarm" is refused here: it needs a PIN, typed on the screen</text>
+<text x="610.0" y="860" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8B949E" text-anchor="middle">the token is signed, tied to the command and to the person, valid 30 s, good once</text>
+<!-- motion -->
+<circle r="4" fill="#E6EDF3" filter="url(#glow)" opacity="0"><animateMotion path="M133 232 H417" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0000;0.0727;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.0000;0.0040;0.0727;0.0767;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#FFB020" filter="url(#glow)" opacity="0"><animateMotion path="M423 282 H1067" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0909;0.1636;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.0909;0.0949;0.1636;0.1676;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#FFB020" filter="url(#glow)" opacity="0"><animateMotion path="M1067 332 H423" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.1818;0.2545;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.1818;0.1858;0.2545;0.2585;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#00FF88" filter="url(#glow)" opacity="0"><animateMotion path="M423 382 H797" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2727;0.3455;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.2727;0.2767;0.3455;0.3495;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#00E5FF" filter="url(#glow)" opacity="0"><animateMotion path="M797 432 H423" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3636;0.4364;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.3636;0.3676;0.4364;0.4404;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#FFB020" filter="url(#glow)" opacity="0"><animateMotion path="M423 482 H1067" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4545;0.5273;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.4545;0.4585;0.5273;0.5313;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#E6EDF3" filter="url(#glow)" opacity="0"><animateMotion path="M417 532 H133" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5455;0.6182;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5455;0.5495;0.6182;0.6222;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#E6EDF3" filter="url(#glow)" opacity="0"><animateMotion path="M133 624 H417" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6364;0.7091;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.6364;0.6404;0.7091;0.7131;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#00FF88" filter="url(#glow)" opacity="0"><animateMotion path="M423 674 H797" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.7273;0.8000;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.7273;0.7313;0.8000;0.8040;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#00E5FF" filter="url(#glow)" opacity="0"><animateMotion path="M797 724 H423" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.8182;0.8909;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.8182;0.8222;0.8909;0.8949;1" dur="15.0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#E6EDF3" filter="url(#glow)" opacity="0"><animateMotion path="M417 774 H133" dur="15.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.9091;0.9818;1"/><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.9091;0.9131;0.9818;0.9858;1" dur="15.0s" repeatCount="indefinite"/></circle>
+</svg>

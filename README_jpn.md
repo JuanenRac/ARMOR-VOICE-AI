@@ -105,6 +105,13 @@ ARMOR-VOICE-AI は A.R.M.O.R. の一部で、**人が話したことを 15 の�
 
 **システムを警戒状態にする音声ターン**（パネルには 2 回尋ね、解除は拒否されます）：
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>図のテキスト版（Mermaid）</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **この作りにした理由**
 

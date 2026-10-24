@@ -105,6 +105,13 @@ Der Text, der aus einer Spracherkennung kommt, ist eine *nicht vertrauenswürdig
 
 **Ein gesprochener Turn, der das System scharf schaltet** (das Panel wird zweimal gefragt, und Unscharfschalten wird abgelehnt):
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>Textversion des Diagramms (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **Warum er so gebaut ist**
 

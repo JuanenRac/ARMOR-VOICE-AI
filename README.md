@@ -105,6 +105,13 @@ The text that comes out of a speech recogniser is *untrusted input*. So it is no
 
 **A spoken turn that arms the system** (the panel is asked twice, and disarming is refused):
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>Text version of the diagram (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **Why it is built this way**
 

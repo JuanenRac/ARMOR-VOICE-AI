@@ -105,6 +105,13 @@ ARMOR-VOICE-AI 是 A.R.M.O.R. 中负责把**人说的话转换为十五个命令
 
 **一个完成布防的语音轮次**（面板会被询问两次，撤防会被拒绝）：
 
+<p align="center">
+  <img src="images/turn-sequence.svg" alt="A spoken turn that arms the system: the wall panel, ARMOR-VOICE-AI, ARMOR-SERVER and the speech engines, in eleven numbered messages over two turns" width="100%">
+</p>
+
+<details>
+<summary>图表的文本版本（Mermaid）</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -125,6 +132,8 @@ sequenceDiagram
     V-->>P: "Command accepted"
     Note over V,S: "disarm" is refused here: it needs a PIN, typed on the screen
 ```
+
+</details>
 
 **为什么这样构建**
 
