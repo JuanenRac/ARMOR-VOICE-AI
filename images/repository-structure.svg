@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 960" width="100%" role="img" aria-labelledby="t d">
+<title id="t">Repository structure of ARMOR-VOICE-AI</title>
+<desc id="d">The root of the repository and its main folders and files: the code in src/armor_voice_ai, the tests, the documentation, the tools, the images and the workflow, and the project files.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A0C10"/><stop offset="0.5" stop-color="#0D1117"/><stop offset="1" stop-color="#05070A"/></linearGradient>
+<linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#121821"/><stop offset="1" stop-color="#0B0F15"/></linearGradient>
+<linearGradient id="line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#00FF88"/><stop offset="1" stop-color="#00E5FF"/></linearGradient>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#00FF88" stroke-opacity="0.035"/><circle cx="40" cy="40" r="1" fill="#00FF88" fill-opacity="0.09"/></pattern>
+<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="960" rx="14" fill="url(#bg)"/><rect width="1200" height="960" rx="14" fill="url(#grid)"/>
+<rect x="0.5" y="0.5" width="1199" height="959" rx="14" fill="none" stroke="#1B2530"/>
+<text x="60" y="62" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#00E5FF" text-anchor="start" letter-spacing="4.5">REPOSITORY STRUCTURE</text>
+<text x="60" y="106" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="36" font-weight="700" fill="#FFFFFF" text-anchor="start" letter-spacing="0.5">ARMOR-VOICE-AI</text>
+<rect x="60" y="122" width="150" height="2.5" rx="1.25" fill="url(#line)"><animate attributeName="width" values="40;150;150" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite"/></rect>
+<text x="60" y="152" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#8A97A6" text-anchor="start">Two levels: the folders, and the files that carry the logic.</text>
+<g transform="translate(0,110)">
+<path id="pA" d="M300,373 C335,373 330,260 360,260" fill="none" stroke="#243140" stroke-width="2"/>
+<path d="M300,373 C335,373 330,260 360,260" fill="none" stroke="url(#line)" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 9" opacity="0.9"><animate attributeName="stroke-dashoffset" from="0" to="-30" dur="1.6s" repeatCount="indefinite"/></path>
+<path id="pE" d="M300,373 C335,373 330,736 360,736" fill="none" stroke="#243140" stroke-width="2"/>
+<path d="M300,373 C335,373 330,736 360,736" fill="none" stroke="url(#line)" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 9" opacity="0.9"><animate attributeName="stroke-dashoffset" from="0" to="-30" dur="1.6s" repeatCount="indefinite"/></path>
+<path id="pR" d="M300,373 C340,373 335,424 372,424 H1025" fill="none" stroke="#243140" stroke-width="2"/>
+<path d="M300,373 C340,373 335,424 372,424 H1025" fill="none" stroke="url(#line)" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 9" opacity="0.9"><animate attributeName="stroke-dashoffset" from="0" to="-30" dur="1.6s" repeatCount="indefinite"/></path>
+<path d="M485,424 V440" stroke="url(#line)" stroke-width="2" fill="none"/>
+<circle cx="485" cy="424" r="4" fill="#00E5FF" filter="url(#glow)"/>
+<path d="M760,424 V440" stroke="url(#line)" stroke-width="2" fill="none"/>
+<circle cx="760" cy="424" r="4" fill="#00E5FF" filter="url(#glow)"/>
+<path d="M1025,424 V440" stroke="url(#line)" stroke-width="2" fill="none"/>
+<circle cx="1025" cy="424" r="4" fill="#00E5FF" filter="url(#glow)"/>
+<circle r="3.5" fill="#00FF88" filter="url(#glow)"><animateMotion dur="3.4s" begin="0s" repeatCount="indefinite"><mpath href="#pA"/></animateMotion></circle>
+<circle r="3.5" fill="#00E5FF" filter="url(#glow)"><animateMotion dur="4.2s" begin="0s" repeatCount="indefinite"><mpath href="#pE"/></animateMotion></circle>
+<circle r="3.5" fill="#3D9BFF" filter="url(#glow)"><animateMotion dur="5s" begin="0s" repeatCount="indefinite"><mpath href="#pR"/></animateMotion></circle>
+<circle cx="360" cy="260" r="4.5" fill="#0D1117" stroke="#00FF88" stroke-width="1.5"/>
+<circle cx="360" cy="736" r="4.5" fill="#0D1117" stroke="#00FF88" stroke-width="1.5"/>
+<rect x="60" y="338" width="240" height="70" rx="12" fill="#0F1620" stroke="#2A3A4C" stroke-width="1.2"/>
+<rect x="60" y="338" width="240" height="70" rx="12" fill="none" stroke="#00FF88" stroke-opacity="0.5" stroke-width="1.2" filter="url(#glow)"><animate attributeName="stroke-opacity" values="0.15;0.6;0.15" dur="3.6s" repeatCount="indefinite"/></rect>
+<text x="80" y="369" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="18.5" font-weight="700" fill="#FFFFFF" text-anchor="start">ARMOR-VOICE-AI/</text>
+<text x="80" y="391" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="start" letter-spacing="1">repository root</text>
+<circle cx="300" cy="373" r="5" fill="#00FF88" filter="url(#glow)"/>
+<rect x="360" y="110" width="780" height="300" rx="10" fill="url(#card)" stroke="#1E2A36" stroke-width="1"/>
+<rect x="360" y="124" width="3" height="272" rx="1.5" fill="#00FF88"><animate attributeName="opacity" values="0.55;1;0.55" dur="4s" begin="0s" repeatCount="indefinite"/></rect>
+<text x="382" y="144" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="19" font-weight="700" fill="#F2F6FA" text-anchor="start">src/armor_voice_ai/</text>
+<text x="1122" y="144" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="end" letter-spacing="0.3">the code, standard library only</text>
+<line x1="382" y1="158" x2="1122" y2="158" stroke="#00FF88" stroke-opacity="0.35" stroke-width="1"/>
+<text x="392" y="190" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">phrases.py</text>
+<text x="592" y="190" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">the 420 phrases of the fifteen commands, in eight languages</text>
+<line x1="392" y1="198" x2="1118" y2="198" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="217" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">intent.py</text>
+<text x="592" y="217" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">normalising and exact matching: the closed allow-list</text>
+<line x1="392" y1="225" x2="1118" y2="225" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="244" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">confirmation.py</text>
+<text x="592" y="244" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">signed, single-use, per-person confirmation tokens</text>
+<line x1="392" y1="252" x2="1118" y2="252" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="271" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">silence_policy.py</text>
+<text x="592" y="271" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">off / pin / double_turn, the spoken PIN, the lock</text>
+<line x1="392" y1="279" x2="1118" y2="279" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="298" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">session.py</text>
+<text x="592" y="298" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">the two-turn rule for each command</text>
+<line x1="392" y1="306" x2="1118" y2="306" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="325" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">gateway.py</text>
+<text x="592" y="325" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">JSON lines on stdin and stdout, the audit, the sentences said back</text>
+<line x1="392" y1="333" x2="1118" y2="333" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="352" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">service.py</text>
+<text x="592" y="352" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">the local HTTP service: /healthz, /v1/command, /v1/turn</text>
+<line x1="392" y1="360" x2="1118" y2="360" stroke="#1A2430" stroke-width="1"/>
+<text x="392" y="379" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="14.5" font-weight="600" fill="#E6EDF3" text-anchor="start">turn.py</text>
+<text x="592" y="379" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12.8" font-weight="400" fill="#8A97A6" text-anchor="start">one spoken turn: engines, yes or no, time budget</text>
+<line x1="392" y1="387" x2="1118" y2="387" stroke="#1A2430" stroke-width="1"/>
+<rect x="360" y="440" width="250" height="190" rx="10" fill="url(#card)" stroke="#1E2A36" stroke-width="1"/>
+<rect x="360" y="454" width="3" height="162" rx="1.5" fill="#00E5FF"><animate attributeName="opacity" values="0.55;1;0.55" dur="4s" begin="0.6s" repeatCount="indefinite"/></rect>
+<text x="382" y="474" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="19" font-weight="700" fill="#F2F6FA" text-anchor="start">tests/</text>
+<text x="592" y="474" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="end" letter-spacing="0.3">114 tests</text>
+<line x1="382" y1="488" x2="592" y2="488" stroke="#00E5FF" stroke-opacity="0.35" stroke-width="1"/>
+<text x="382" y="520" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="400" fill="#C9D4DF" text-anchor="start">silence policy</text>
+<text x="382" y="544" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="400" fill="#C9D4DF" text-anchor="start">edge cases</text>
+<text x="382" y="568" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="400" fill="#C9D4DF" text-anchor="start">gateway and turn</text>
+<text x="382" y="592" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="400" fill="#C9D4DF" text-anchor="start">languages and service</text>
+<rect x="635" y="440" width="250" height="190" rx="10" fill="url(#card)" stroke="#1E2A36" stroke-width="1"/>
+<rect x="635" y="454" width="3" height="162" rx="1.5" fill="#3D9BFF"><animate attributeName="opacity" values="0.55;1;0.55" dur="4s" begin="1.2s" repeatCount="indefinite"/></rect>
+<text x="657" y="474" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="19" font-weight="700" fill="#F2F6FA" text-anchor="start">docs/</text>
+<text x="867" y="474" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="end" letter-spacing="0.3">three guides</text>
+<line x1="657" y1="488" x2="867" y2="488" stroke="#3D9BFF" stroke-opacity="0.35" stroke-width="1"/>
+<text x="657" y="516" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">SAFETY.md</text>
+<text x="657" y="532" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">what it may and may not do</text>
+<text x="657" y="552" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">SERVICE.md</text>
+<text x="657" y="568" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">the local HTTP service</text>
+<text x="657" y="588" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">SILENCE_POLICY.md</text>
+<text x="657" y="604" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">the modes and the lock</text>
+<rect x="910" y="440" width="230" height="190" rx="10" fill="url(#card)" stroke="#1E2A36" stroke-width="1"/>
+<rect x="910" y="454" width="3" height="162" rx="1.5" fill="#9AA7FF"><animate attributeName="opacity" values="0.55;1;0.55" dur="4s" begin="1.8s" repeatCount="indefinite"/></rect>
+<text x="932" y="474" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="19" font-weight="700" fill="#F2F6FA" text-anchor="start">support</text>
+<text x="1122" y="474" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="end" letter-spacing="0.3">assets</text>
+<line x1="932" y1="488" x2="1122" y2="488" stroke="#9AA7FF" stroke-opacity="0.35" stroke-width="1"/>
+<text x="932" y="516" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">tools/</text>
+<text x="932" y="532" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">shared CI checks and tooling</text>
+<text x="932" y="552" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">images/</text>
+<text x="932" y="568" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">banner and icon</text>
+<text x="932" y="588" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">.github/</text>
+<text x="932" y="604" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.8" font-weight="400" fill="#7D8A99" text-anchor="start">CI, dashboard notice, templates</text>
+<rect x="360" y="656" width="780" height="176" rx="10" fill="url(#card)" stroke="#1E2A36" stroke-width="1"/>
+<rect x="360" y="670" width="3" height="148" rx="1.5" fill="#00FF88"><animate attributeName="opacity" values="0.55;1;0.55" dur="4s" begin="2.4s" repeatCount="indefinite"/></rect>
+<text x="382" y="690" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="19" font-weight="700" fill="#F2F6FA" text-anchor="start">project files</text>
+<text x="1122" y="690" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#7D8A99" text-anchor="end" letter-spacing="0.3">at the root</text>
+<line x1="382" y1="704" x2="1122" y2="704" stroke="#00FF88" stroke-opacity="0.35" stroke-width="1"/>
+<text x="392" y="732" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">armor.project.json</text>
+<text x="392" y="746" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">manifest: version, role, maturity</text>
+<text x="772" y="732" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">run.sh  run.bat</text>
+<text x="772" y="746" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">start through the shared workflow</text>
+<text x="392" y="766" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">pyproject.toml</text>
+<text x="392" y="780" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">package metadata, the armor-voice-gateway command</text>
+<text x="772" y="766" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">build.sh  build.bat</text>
+<text x="772" y="780" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">build and test through the shared workflow</text>
+<text x="392" y="800" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="13.5" font-weight="600" fill="#E6EDF3" text-anchor="start">CHANGELOG.md</text>
+<text x="392" y="814" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">what changed in each version</text>
+<text x="772" y="800" font-family="'JetBrains Mono','Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace" font-size="11.6" font-weight="600" fill="#E6EDF3" text-anchor="start">SECURITY  SUPPORT  CONTRIBUTING  LICENSE</text>
+<text x="772" y="814" font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.6" font-weight="400" fill="#7D8A99" text-anchor="start">community and licence files</text>
+</g>
+</svg>

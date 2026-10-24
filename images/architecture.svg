@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" role="img" aria-labelledby="t d" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="t">ARMOR-VOICE-AI architecture</title>
+  <desc id="d">A wall panel and the Android assistant talk to ARMOR-SERVER. ARMOR-SERVER asks the voice service on the loopback address, which normalises the transcript, matches it against fifteen commands in eight languages, issues signed single-use confirmations and applies the silence policy. Speech engines are programs the installation chooses.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D1117"/>
+      <stop offset="1" stop-color="#0A0C10"/>
+    </linearGradient>
+    <linearGradient id="svc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00FF88" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#00E5FF" stop-opacity="0.06"/>
+    </linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#00E5FF"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#00FF88"/>
+    </marker>
+    <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#FFB020"/>
+    </marker>
+  </defs>
+
+  <rect x="1" y="1" width="1198" height="638" rx="18" fill="url(#bg)" stroke="#30363D" stroke-width="2"/>
+  <text x="36" y="46" font-size="24" font-weight="700" fill="#FFFFFF">ARMOR-VOICE-AI</text>
+  <text x="36" y="70" font-size="14" fill="#8B949E">A spoken phrase becomes one of fifteen commands, or nothing. It only decides; ARMOR-SERVER acts.</text>
+
+  <!-- callers -->
+  <text x="36" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">CALLERS</text>
+  <rect x="30" y="116" width="240" height="104" rx="12" fill="#161B22" stroke="#30363D"/>
+  <text x="46" y="142" font-size="15" font-weight="700" fill="#C9D1D9">ARMOR-NODE-HMI</text>
+  <text x="46" y="164" font-size="12.5" fill="#8B949E">Wall panel: microphone + speaker</text>
+  <text x="46" y="184" font-size="12.5" fill="#FF6B6B">has not run on a board yet</text>
+  <rect x="46" y="194" width="208" height="3" rx="1.5" fill="#FF6B6B" opacity="0.6"><animate attributeName="opacity" values="0.25;0.85;0.25" dur="2.8s" repeatCount="indefinite"/></rect>
+
+  <rect x="30" y="240" width="240" height="104" rx="12" fill="#161B22" stroke="#30363D"/>
+  <text x="46" y="266" font-size="15" font-weight="700" fill="#C9D1D9">ARMOR-ANDROID-CONTROL</text>
+  <text x="46" y="288" font-size="12.5" fill="#8B949E">Written and spoken assistant</text>
+  <text x="46" y="308" font-size="12.5" fill="#8B949E">of the operator app</text>
+  <rect x="46" y="318" width="208" height="3" rx="1.5" fill="#00FF88" opacity="0.6"><animate attributeName="opacity" values="0.35;0.9;0.35" dur="3.4s" repeatCount="indefinite"/></rect>
+
+  <!-- server -->
+  <text x="316" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">THE ONE THAT ACTS</text>
+  <rect x="310" y="116" width="250" height="228" rx="14" fill="#161B22" stroke="#00E5FF" stroke-width="2"/>
+  <text x="328" y="146" font-size="17" font-weight="700" fill="#00E5FF">ARMOR-SERVER</text>
+  <text x="328" y="172" font-size="12.5" fill="#C9D1D9">/api/v1/voice/command</text>
+  <text x="328" y="194" font-size="12.5" fill="#8B949E">authenticates the person</text>
+  <text x="328" y="214" font-size="12.5" fill="#8B949E">authorises and carries out</text>
+  <text x="328" y="234" font-size="12.5" fill="#8B949E">writes the audit trail</text>
+  <text x="328" y="254" font-size="12.5" fill="#8B949E">holds voice.silence_confirmation</text>
+  <text x="328" y="274" font-size="12.5" fill="#8B949E">PIN to disarm (ARMOR_DISARM_PIN)</text>
+  <text x="328" y="302" font-size="12.5" fill="#00FF88">disarming by voice from the panel:</text>
+  <text x="328" y="320" font-size="12.5" fill="#00FF88">never (the PIN is typed on screen)</text>
+
+  <!-- caller -> server -->
+  <path d="M270 168 H310" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M270 292 H310" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+
+  <!-- service -->
+  <text x="640" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">THE VOICE SERVICE  ·  127.0.0.1:18090  ·  TOKEN</text>
+  <rect x="630" y="116" width="540" height="404" rx="16" fill="url(#svc)" stroke="#00FF88" stroke-width="2"><animate attributeName="stroke-opacity" values="0.55;1;0.55" dur="4s" repeatCount="indefinite"/></rect>
+
+  <rect x="650" y="136" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
+  <text x="666" y="162" font-size="14" font-weight="700" fill="#00FF88">turn.py</text>
+  <text x="666" y="184" font-size="12" fill="#C9D1D9">audio, then words, then the answer</text>
+  <text x="666" y="202" font-size="12" fill="#8B949E">9 s budget, 2 turns at once</text>
+  <text x="666" y="220" font-size="12" fill="#8B949E">a spoken yes or no confirms</text>
+
+  <rect x="910" y="136" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/></rect>
+  <text x="926" y="162" font-size="14" font-weight="700" fill="#00FF88">intent.py + phrases.py</text>
+  <text x="926" y="184" font-size="12" fill="#C9D1D9">NFKC, no accents, no filler words</text>
+  <text x="926" y="202" font-size="12" fill="#8B949E">exact match, 8 languages,</text>
+  <text x="926" y="220" font-size="12" fill="#8B949E">15 commands, 200 characters at most</text>
+
+  <rect x="650" y="264" width="240" height="108" rx="10" fill="#161B22" stroke="#00E5FF" stroke-opacity="0.8"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/></rect>
+  <text x="666" y="290" font-size="14" font-weight="700" fill="#00E5FF">confirmation.py</text>
+  <text x="666" y="312" font-size="12" fill="#C9D1D9">HMAC-SHA-256 token, 30 s, once</text>
+  <text x="666" y="330" font-size="12" fill="#8B949E">bound to the intent and to the</text>
+  <text x="666" y="348" font-size="12" fill="#8B949E">person; arm and disarm only</text>
+
+  <rect x="910" y="264" width="240" height="108" rx="10" fill="#161B22" stroke="#00E5FF" stroke-opacity="0.8"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
+  <text x="926" y="290" font-size="14" font-weight="700" fill="#00E5FF">silence_policy.py</text>
+  <text x="926" y="312" font-size="12" fill="#C9D1D9">off  |  pin  |  double_turn</text>
+  <text x="926" y="330" font-size="12" fill="#8B949E">3 wrong PINs lock it for 5 min;</text>
+  <text x="926" y="348" font-size="12" fill="#8B949E">an unreadable policy is strict</text>
+
+  <rect x="650" y="392" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/></rect>
+  <text x="666" y="418" font-size="14" font-weight="700" fill="#00FF88">session.py</text>
+  <text x="666" y="440" font-size="12" fill="#C9D1D9">the two-turn rule: the ten that</text>
+  <text x="666" y="458" font-size="12" fill="#8B949E">ask, silence and the lights pass;</text>
+  <text x="666" y="476" font-size="12" fill="#8B949E">arm and disarm need the token</text>
+
+  <rect x="910" y="392" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/></rect>
+  <text x="926" y="418" font-size="14" font-weight="700" fill="#00FF88">gateway.py  +  audit</text>
+  <text x="926" y="440" font-size="12" fill="#C9D1D9">JSON lines or HTTP, same rules</text>
+  <text x="926" y="458" font-size="12" fill="#8B949E">one line per decision: intent,</text>
+  <text x="926" y="476" font-size="12" fill="#8B949E">outcome, SHA-256 (no audio, no text)</text>
+
+  <!-- server <-> service -->
+  <path d="M560 150 H630" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text x="562" y="143" font-size="9.5" fill="#00FF88">/v1/command</text>
+  <path d="M560 212 H630" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+  <text x="575" y="205" font-size="10.5" fill="#00FF88">/v1/turn</text>
+  <path d="M630 276 H560" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <text x="568" y="269" font-size="10.5" fill="#00E5FF">ServerLink</text>
+
+  <!-- engines -->
+  <text x="316" y="378" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">CHOSEN BY THE INSTALLATION</text>
+  <rect x="310" y="390" width="250" height="110" rx="12" fill="#161B22" stroke="#FFB020" stroke-width="2" stroke-dasharray="7 5"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="3s" repeatCount="indefinite"/></rect>
+  <text x="328" y="418" font-size="14" font-weight="700" fill="#FFB020">Speech engines</text>
+  <text x="328" y="440" font-size="12" fill="#C9D1D9">ARMOR_VOICE_STT_COMMAND</text>
+  <text x="328" y="458" font-size="12" fill="#C9D1D9">ARMOR_VOICE_TTS_COMMAND</text>
+  <text x="328" y="480" font-size="11.5" fill="#8B949E">not shipped; no shell, short env</text>
+  <path d="M650 446 H560" stroke="#FFB020" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#aa)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.4s" repeatCount="indefinite"/></path>
+  <text x="572" y="437" font-size="10.5" fill="#FFB020">stdin / stdout</text>
+
+  <!-- legend -->
+  <g font-size="12">
+    <rect x="36" y="548" width="14" height="14" rx="3" fill="none" stroke="#00FF88" stroke-width="2"/>
+    <text x="58" y="560" fill="#C9D1D9">decides, tested (114 tests)</text>
+    <rect x="266" y="548" width="14" height="14" rx="3" fill="none" stroke="#00E5FF" stroke-width="2"/>
+    <text x="288" y="560" fill="#C9D1D9">signed and policy parts, or the server</text>
+    <rect x="566" y="548" width="14" height="14" rx="3" fill="none" stroke="#FFB020" stroke-width="2" stroke-dasharray="3 2"/>
+    <text x="588" y="560" fill="#C9D1D9">engine you configure, never tried with a real microphone</text>
+    <rect x="946" y="548" width="14" height="14" rx="3" fill="#FF6B6B" opacity="0.7"/>
+    <text x="968" y="560" fill="#C9D1D9">not run on a board</text>
+  </g>
+  <text x="36" y="604" font-size="12" fill="#6E7681">Nothing is kept: the audio is not stored and the log carries a hash of the words, never the words.</text>
+  <!-- motion -->
+  <path d="M270 168 H310" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+  <circle r="3.2" fill="#00E5FF"><animateMotion path="M270 168 H310" dur="1.8s" begin="0.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.00s" repeatCount="indefinite"/></circle>
+  <path d="M270 292 H310" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+  <circle r="3.2" fill="#00E5FF"><animateMotion path="M270 292 H310" dur="1.8s" begin="0.35s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.35s" repeatCount="indefinite"/></circle>
+  <path d="M560 150 H630" stroke="#00FF88" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+  <circle r="3.2" fill="#00FF88"><animateMotion path="M560 150 H630" dur="1.8s" begin="0.70s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.70s" repeatCount="indefinite"/></circle>
+  <path d="M560 212 H630" stroke="#00FF88" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+  <circle r="3.2" fill="#00FF88"><animateMotion path="M560 212 H630" dur="1.8s" begin="1.05s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.05s" repeatCount="indefinite"/></circle>
+  <path d="M630 276 H560" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+  <circle r="3.2" fill="#00E5FF"><animateMotion path="M630 276 H560" dur="1.8s" begin="1.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.40s" repeatCount="indefinite"/></circle>
+  <circle r="3.2" fill="#FFB020"><animateMotion path="M650 446 H560" dur="1.8s" begin="1.75s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.75s" repeatCount="indefinite"/></circle>
+</svg>
