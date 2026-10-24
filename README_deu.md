@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die acht Sprachen, die signierte Bestätigung, die an ihren Sprecher gebunden ist, der lokale Dienst, der Turn-Endpunkt und das Audit sind real und getestet (83 Tests), und der Server fragt den Dienst am CM5-Testaufbau ab. **Keine Spracherkennungs- oder Synthese-Engine ist Teil dieses Repositorys**: `/v1/turn` führt die Befehle aus, die Sie dafür einstellen, und keiner wurde bisher mit einem echten Mikrofon erprobt; das Touchpanel, das den Assistenten tragen soll, lief noch nicht auf einer Platine.
+**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die acht Sprachen, die signierte Bestätigung, die an ihren Sprecher gebunden ist, der lokale Dienst, der Turn-Endpunkt und das Audit sind real und getestet (114 Tests), und der Server fragt den Dienst am CM5-Testaufbau ab. **Keine Spracherkennungs- oder Synthese-Engine ist Teil dieses Repositorys**: `/v1/turn` führt die Befehle aus, die Sie dafür einstellen, und keiner wurde bisher mit einem echten Mikrofon erprobt; das Touchpanel, das den Assistenten tragen soll, lief noch nicht auf einer Platine.
 
 ---
 
@@ -39,9 +39,24 @@
 |---|---|
 | Version | `0.3.1` |
 | Reifegrad | Etabliert |
-| Tests | 83 (`python -m unittest discover -s tests`) |
+| Tests | 114 (`python -m unittest discover -s tests`) |
 | Technik | Python 3.11+ |
 | Auf echter Hardware | Läuft als Dienst am CM5-Testaufbau, vom Server abgefragt; weder Mikrofon noch Sprach-Engine wurden erprobt |
+
+## 🚦 Projektstatus
+
+Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heute ist. Sie beruht auf dem, was das Repository zeigen kann (Tests, Builds, Läufe), nicht auf dem, was geplant ist.
+
+🟢 Fertig und überprüft · 🟡 Funktioniert, mit bekannten Grenzen · 🟠 Teilweise fertig oder noch nicht überprüft · 🔴 Nicht gemacht oder funktioniert nicht
+
+| Bereich | Stand | Was das hier bedeutet |
+|---|---|---|
+| Software | 🟡 | Die Absichtsregeln, der lokale Dienst und der Turn-Endpunkt laufen als Dienst auf dem CM5-Prüfstand, aber keine Spracherkennungs- oder Sprachsynthese-Engine gehört zum Repository: Er führt die Befehle aus, die Sie dafür einrichten. |
+| Tests | 🟢 | 114 Tests bestehen (`python -m unittest discover -s tests`): die Absichtsregeln, die acht Sprachen, die an den Sprecher gebundene signierte Bestätigung, der lokale Dienst, der Turn-Endpunkt und das Audit. |
+| Hardware | 🔴 | Weder ein Mikrofon noch eine Sprach-Engine wurde erprobt, und das Touch-Panel, das den Assistenten tragen soll, lief nie auf einer Platine. |
+| Sicherheit | 🟡 | Die Bestätigung ist signiert und an den Sprecher gebunden, und das Audit ist auf dem Host getestet; es gab keine unabhängige Prüfung. |
+| Integration | 🟡 | Der Server fragt den Dienst auf dem CM5-Prüfstand ab; der Sprachablauf mit dem Touch-Panel lief noch nicht. |
+| Dokumentation | 🟢 | Acht Sprachen und das Änderungsprotokoll sind aktuell. |
 
 ## 🎯 Überblick
 
@@ -71,7 +86,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 83 tests
+python -m unittest discover -s tests   # 114 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Vérification d'honnêteté - ce qui fonctionne aujourd'hui:** Les règles d'intention, les huit langues, la confirmation signée liée à son locuteur, le service local, le point de tour et l'audit sont réels et testés (83 tests), et le serveur interroge le service sur le banc de test CM5. **Aucun moteur de reconnaissance ni de synthèse vocale ne fait partie de ce dépôt** : `/v1/turn` exécute les commandes que vous configurez pour eux, et aucun n'a encore été essayé avec un vrai microphone ; le panneau tactile censé porter l'assistant n'a pas tourné sur une carte.
+**Vérification d'honnêteté - ce qui fonctionne aujourd'hui:** Les règles d'intention, les huit langues, la confirmation signée liée à son locuteur, le service local, le point de tour et l'audit sont réels et testés (114 tests), et le serveur interroge le service sur le banc de test CM5. **Aucun moteur de reconnaissance ni de synthèse vocale ne fait partie de ce dépôt** : `/v1/turn` exécute les commandes que vous configurez pour eux, et aucun n'a encore été essayé avec un vrai microphone ; le panneau tactile censé porter l'assistant n'a pas tourné sur une carte.
 
 ---
 
@@ -39,9 +39,24 @@
 |---|---|
 | Version | `0.3.1` |
 | Maturité | Établi |
-| Tests | 83 (`python -m unittest discover -s tests`) |
+| Tests | 114 (`python -m unittest discover -s tests`) |
 | Technologie | Python 3.11+ |
 | Sur matériel réel | Tourne comme service sur le banc de test CM5, interrogé par le serveur ; aucun microphone ni moteur vocal n'a été essayé |
+
+## 🚦 État du projet
+
+Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'hui. Elle est écrite d'après ce que le dépôt peut montrer (tests, compilations, exécutions), pas d'après ce qui est prévu.
+
+🟢 Fait et vérifié · 🟡 Fonctionne, avec des limites connues · 🟠 À moitié fait ou pas encore vérifié · 🔴 Pas fait ou ne fonctionne pas
+
+| Domaine | État | Ce que cela veut dire ici |
+|---|---|---|
+| Logiciel | 🟡 | Les règles d'intention, le service local et le point d'entrée des tours tournent comme service sur le banc d'essai CM5, mais aucun moteur de reconnaissance ou de synthèse vocale ne fait partie du dépôt : il exécute les commandes que vous configurez pour eux. |
+| Tests | 🟢 | 114 tests réussissent (`python -m unittest discover -s tests`) : les règles d'intention, les huit langues, la confirmation signée liée à son locuteur, le service local, le point d'entrée des tours et l'audit. |
+| Matériel | 🔴 | Aucun microphone ni moteur vocal n'a été essayé, et le panneau tactile censé porter l'assistant n'a pas tourné sur une carte. |
+| Sécurité | 🟡 | La confirmation est signée et liée à son locuteur, et l'audit est testé sur l'hôte ; il n'y a pas eu de revue indépendante. |
+| Intégration | 🟡 | Le serveur interroge le service sur le banc d'essai CM5 ; le flux vocal avec le panneau tactile n'a pas tourné. |
+| Documentation | 🟢 | Huit langues et le journal des modifications sont à jour. |
 
 ## 🎯 Présentation
 
@@ -71,7 +86,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 83 tests
+python -m unittest discover -s tests   # 114 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、ローカルサービス、ターンエンドポイント、監査は実在し、テストされています（83 件）。サーバーは CM5 テストベンチでこのサービスに問い合わせています。**音声認識・合成エンジンはこのリポジトリに含まれません**：`/v1/turn` は設定されたコマンドを実行するだけで、実際のマイクではまだ試されていません。アシスタントを載せる予定のタッチパネルは基板上で動いたことがありません。
+**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、ローカルサービス、ターンエンドポイント、監査は実在し、テストされています（114 件）。サーバーは CM5 テストベンチでこのサービスに問い合わせています。**音声認識・合成エンジンはこのリポジトリに含まれません**：`/v1/turn` は設定されたコマンドを実行するだけで、実際のマイクではまだ試されていません。アシスタントを載せる予定のタッチパネルは基板上で動いたことがありません。
 
 ---
 
@@ -39,9 +39,24 @@
 |---|---|
 | バージョン | `0.3.1` |
 | 成熟度 | 確立 |
-| テスト | 83 (`python -m unittest discover -s tests`) |
+| テスト | 114 (`python -m unittest discover -s tests`) |
 | 技術 | Python 3.11+ |
 | 実機での確認 | CM5 テストベンチでサービスとして動作し、サーバーが問い合わせます。マイクや音声エンジンは未検証 |
+
+## 🚦 プロジェクトの状況
+
+各行はこのリポジトリの一部分で、信号は今日どこまで進んでいるかを示します。計画ではなく、リポジトリが示せるもの（テスト、ビルド、実行）に基づいて書かれています。
+
+🟢 完了・検証済み · 🟡 動作する（既知の制限あり） · 🟠 一部のみ、または未検証 · 🔴 未実装または動作しない
+
+| 領域 | 状態 | ここでの意味 |
+|---|---|---|
+| ソフトウェア | 🟡 | 意図の規則、ローカルサービス、ターンのエンドポイントは CM5 テストベンチ上でサービスとして動いていますが、音声認識・合成エンジンはリポジトリに含まれません。設定したコマンドを実行するだけです。 |
+| テスト | 🟢 | 114 件のテストが通ります（`python -m unittest discover -s tests`）：意図の規則、8 言語、話者に結び付いた署名付き確認、ローカルサービス、ターンのエンドポイント、監査。 |
+| ハードウェア | 🔴 | マイクも音声エンジンも試しておらず、アシスタントを載せるタッチパネルもボード上では動かしていません。 |
+| セキュリティ | 🟡 | 確認は署名され、話者に結び付けられています。監査はホストでテスト済みです。独立したレビューはありません。 |
+| 連携 | 🟡 | サーバーは CM5 テストベンチ上でこのサービスに問い合わせます。タッチパネルとの音声フローはまだ動かしていません。 |
+| ドキュメント | 🟢 | 8 言語と変更履歴は最新です。 |
 
 ## 🎯 概要
 
@@ -71,7 +86,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 83 tests
+python -m unittest discover -s tests   # 114 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

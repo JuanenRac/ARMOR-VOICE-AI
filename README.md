@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit are real and tested (83 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
+**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit are real and tested (114 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
 
 ---
 
@@ -39,9 +39,24 @@
 |---|---|
 | Version | `0.3.1` |
 | Maturity | Established |
-| Tests | 83 (`python -m unittest discover -s tests`) |
+| Tests | 114 (`python -m unittest discover -s tests`) |
 | Stack | Python 3.11+ |
 | On real hardware | Running as a service on the CM5 test bench, asked by the server; no microphone or speech engine has been tried |
+
+## 🚦 Project status
+
+Each line is one part of this repository and the light says how far it is today. It is written from what the repository can show (tests, builds, runs), not from what is planned.
+
+🟢 Done and verified · 🟡 Works, with known limits · 🟠 Partly done or not verified yet · 🔴 Not done or not working
+
+| Area | State | What it means here |
+|---|---|---|
+| Software | 🟡 | The intent rules, the local service and the turn endpoint run as a service on the CM5 test bench, but no speech recognition or synthesis engine is part of the repository: it runs the commands you configure for them. |
+| Tests | 🟢 | 114 tests pass (`python -m unittest discover -s tests`): the intent rules, the eight languages, the signed confirmation tied to its speaker, the local service, the turn endpoint and the audit. |
+| Hardware | 🔴 | No microphone or speech engine has been tried, and the touch panel that is meant to carry the assistant has not run on a board. |
+| Security | 🟡 | The confirmation is signed and tied to its speaker, and the audit is tested on the host; there has been no independent review. |
+| Integration | 🟡 | The server asks the service on the CM5 test bench; the voice flow with the touch panel has not run. |
+| Documentation | 🟢 | Eight languages and the changelog are up to date. |
 
 ## 🎯 Overview
 
@@ -71,7 +86,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 83 tests
+python -m unittest discover -s tests   # 114 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```

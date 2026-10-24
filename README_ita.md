@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-83%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** Le regole di intento, le otto lingue, la conferma firmata legata a chi parla, il servizio locale, l'endpoint di turno e l'audit sono reali e provati (83 test), e il server interroga il servizio sul banco di prova CM5. **Nessun motore di riconoscimento o sintesi vocale fa parte di questo repository**: `/v1/turn` esegue i comandi che configuri per essi, e nessuno è stato ancora provato con un vero microfono; il pannello touch destinato a ospitare l'assistente non ha girato su una scheda.
+**Controllo di onestà - cosa funziona oggi:** Le regole di intento, le otto lingue, la conferma firmata legata a chi parla, il servizio locale, l'endpoint di turno e l'audit sono reali e provati (114 test), e il server interroga il servizio sul banco di prova CM5. **Nessun motore di riconoscimento o sintesi vocale fa parte di questo repository**: `/v1/turn` esegue i comandi che configuri per essi, e nessuno è stato ancora provato con un vero microfono; il pannello touch destinato a ospitare l'assistente non ha girato su una scheda.
 
 ---
 
@@ -39,9 +39,24 @@
 |---|---|
 | Versione | `0.3.1` |
 | Maturità | Consolidato |
-| Test | 83 (`python -m unittest discover -s tests`) |
+| Test | 114 (`python -m unittest discover -s tests`) |
 | Tecnologia | Python 3.11+ |
 | Su hardware reale | Gira come servizio sul banco di prova CM5, interrogato dal server; nessun microfono né motore vocale è stato provato |
+
+## 🚦 Stato del progetto
+
+Ogni riga è una parte di questo repository e il semaforo dice a che punto è oggi. È scritta in base a ciò che il repository può mostrare (test, compilazioni, esecuzioni), non a ciò che è previsto.
+
+🟢 Fatto e verificato · 🟡 Funziona, con limiti noti · 🟠 Fatto a metà o non ancora verificato · 🔴 Non fatto o non funzionante
+
+| Area | Stato | Cosa significa qui |
+|---|---|---|
+| Software | 🟡 | Le regole di intento, il servizio locale e l'endpoint dei turni girano come servizio sul banco di prova CM5, ma nessun motore di riconoscimento o sintesi vocale fa parte del repository: esegue i comandi che configuri per loro. |
+| Test | 🟢 | Superano 114 test (`python -m unittest discover -s tests`): le regole di intento, le otto lingue, la conferma firmata legata al suo parlante, il servizio locale, l'endpoint dei turni e l'audit. |
+| Hardware | 🔴 | Nessun microfono o motore vocale è stato provato e il pannello touch destinato a ospitare l'assistente non ha girato su una scheda. |
+| Sicurezza | 🟡 | La conferma è firmata e legata al suo parlante, e l'audit è testato sull'host; non c'è stata una revisione indipendente. |
+| Integrazione | 🟡 | Il server interroga il servizio sul banco di prova CM5; il flusso vocale con il pannello touch non è stato eseguito. |
+| Documentazione | 🟢 | Otto lingue e il registro delle modifiche sono aggiornati. |
 
 ## 🎯 Panoramica
 
@@ -71,7 +86,7 @@ ARMOR-VOICE-AI/
 
 ```powershell
 $env:PYTHONPATH="src"
-python -m unittest discover -s tests   # 83 tests
+python -m unittest discover -s tests   # 114 tests
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
 python -m armor_voice_ai.service        # the local HTTP service the server asks (loopback only)
 ```
