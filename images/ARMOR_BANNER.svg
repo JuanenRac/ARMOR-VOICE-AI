@@ -231,7 +231,7 @@
       <rect x="0" y="-18" width="222" height="24" rx="4" fill="#00FF88" fill-opacity="0.1" stroke="#00FF88" stroke-opacity="0.4" stroke-width="1">
         <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="4s" repeatCount="indefinite"/>
       </rect>
-      <text x="12" y="-2" font-family="'Inter', 'Segoe UI', 'Roboto', sans-serif" font-weight="700" font-size="11" fill="#00FF88" letter-spacing="2.5">A.R.M.O.R. · PROJECT</text>
+      <text x="12" y="-2" font-family="'Inter', 'Segoe UI', 'Roboto', sans-serif" font-weight="700" font-size="11" fill="#00FF88" letter-spacing="2.5">A.R.M.O.R. · SERVICE</text>
     </g>
 
     <text x="0" y="142" font-family="'Inter', 'Segoe UI', 'Roboto', sans-serif" font-weight="900" font-size="56" fill="#FFFFFF" letter-spacing="5">ARMOR-VOICE-AI</text>
@@ -270,6 +270,6 @@
     <circle cx="2" cy="-2" r="4" fill="#00FF88" filter="url(#glowGreen)">
       <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
     </circle>
-    <text x="14" y="2" font-family="monospace" font-weight="700" font-size="11" fill="#00FF88" letter-spacing="1">PROJECT</text>
+    <text x="14" y="2" font-family="monospace" font-weight="700" font-size="11" fill="#00FF88" letter-spacing="1">SERVICE</text>
   </g>
 </svg>
