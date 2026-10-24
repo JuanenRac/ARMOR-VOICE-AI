@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.3.1] - Silencing by voice can require a PIN or a second turn
 
 - **Silencing by voice can require a PIN or a second turn:** a policy sent by the server (`policy.silence_confirmation`: `off` by default, `pin` or `double_turn`; the `X-Armor-Policy` header on `/v1/turn`, a `policy` field on `/v1/command`) makes the first "silence" ask for the spoken PIN or for a yes. Without a policy nothing changes; an unreadable one counts as the second turn. The PIN (`ARMOR_VOICE_SILENCE_PIN`) is spoken in the eight languages, compared in constant time, never logged, kept or echoed back, three wrong ones lock silencing for every panel for five minutes, and with no PIN set up it fails closed. The contract is in `docs/SILENCE_POLICY.md`. Tests: 114 (before 83).
 - The repository has a security policy, a code of conduct, a contributing guide and a support file.
