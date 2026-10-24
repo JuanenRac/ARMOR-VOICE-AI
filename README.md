@@ -77,7 +77,8 @@ ARMOR-VOICE-AI turns what is said into one of a closed list of commands and neve
 ARMOR-VOICE-AI/
 ├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway (stdin), service (HTTP), turn (speech to text, order, text to speech)
 ├── tests/                gateway, languages, service and turn tests
-└── docs/                 SAFETY.md, SERVICE.md
+├── tools/                the shared CI checks (armor_ci_validate.py, armor_project_tool.py, _armor_readme_parity.py)
+└── docs/                 SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ```
 
 ## 🛠️ Development Environment

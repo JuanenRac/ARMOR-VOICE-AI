@@ -77,7 +77,8 @@ ARMOR-VOICE-AI 把所说的话变成封闭列表中的某个命令，自己从�
 ARMOR-VOICE-AI/
 ├── src/armor_voice_ai/   phrases, intent, confirmation, session, gateway (stdin), service (HTTP), turn (speech to text, order, text to speech)
 ├── tests/                gateway, languages, service and turn tests
-└── docs/                 SAFETY.md, SERVICE.md
+├── tools/                the shared CI checks (armor_ci_validate.py, armor_project_tool.py, _armor_readme_parity.py)
+└── docs/                 SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ```
 
 ## 🛠️ 开发环境
