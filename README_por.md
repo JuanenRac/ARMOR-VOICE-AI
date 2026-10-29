@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Verificação de honestidade - o que funciona hoje:** As regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, a política de silenciamento, o serviço local, o ponto de entrada de turnos e a auditoria são reais e estão testados (114 testes), e o servidor consulta o serviço na bancada de testes do CM5. **Nenhum motor de reconhecimento ou de síntese de voz faz parte deste repositório**: o `/v1/turn` executa os comandos que configurar para isso, e nenhum foi ainda experimentado com um microfone real; o painel tátil que deverá acolher o assistente não funcionou numa placa.
+**Verificação de honestidade - o que funciona hoje:** As regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, a política de silenciamento, o serviço local, o ponto de entrada de turnos e a auditoria são reais e estão testados (118 testes), e o servidor consulta o serviço na bancada de testes do CM5. **Nenhum motor de reconhecimento ou de síntese de voz faz parte deste repositório**: o `/v1/turn` executa os comandos que configurar para isso, e nenhum foi ainda experimentado com um microfone real; o painel tátil que deverá acolher o assistente não funcionou numa placa.
 
 ---
 
@@ -41,7 +41,7 @@
 | Maturidade | Estabelecido |
 | Função | Porta de ligação de voz e intenções offline (família: Core Services, pai: ARMOR-SERVER) |
 | Tecnologia | Python 3.11+, apenas biblioteca padrão |
-| Testes | 114 (`python -m unittest discover -s tests`) |
+| Testes | 118 (`python -m unittest discover -s tests`) |
 | Comandos | 15 (10 que consultam, 5 que atuam), 420 frases, 8 idiomas |
 | Escuta em | `127.0.0.1:18090` (apenas loopback), com token |
 | Funciona em | A bancada de testes do CM5 (como serviço) ou em qualquer computador |
@@ -59,7 +59,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟡 | As regras de intenção, o serviço local e o ponto de entrada de turnos funcionam como serviço na bancada de testes do CM5, mas nenhum motor de reconhecimento ou de síntese de voz faz parte do repositório: executa os comandos que configurar para isso. |
-| Testes | 🟢 | Passam 114 testes (`python -m unittest discover -s tests`): as regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, a política de silenciamento, o serviço local, o ponto de entrada de turnos e a auditoria. |
+| Testes | 🟢 | Passam 118 testes (`python -m unittest discover -s tests`): as regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, a política de silenciamento, o serviço local, o ponto de entrada de turnos e a auditoria. |
 | Hardware | 🔴 | Não se experimentou nenhum microfone nem motor de voz, e o painel tátil que deverá acolher o assistente não funcionou numa placa. |
 | Segurança | 🟡 | A confirmação é assinada e ligada a quem fala, e a auditoria é testada no equipamento anfitrião; não houve revisão independente. |
 | Integração | 🟡 | O servidor consulta o serviço na bancada de testes do CM5; o fluxo de voz com o painel tátil não funcionou. |
@@ -224,6 +224,7 @@ Desarmar por voz **nunca** se faz a partir do painel de parede. A partir da app 
 | `GET /healthz` | nenhuma | `{"ok": true, "service": "armor-voice"}` |
 | `POST /v1/command` | cabeçalho `X-Armor-Voice-Token` | Corpo `{text, language?, confirmation?, subject?, policy?, pin?}` (2 KB no máximo). Responde o que foi compreendido, um `confirmation_token` quando é preciso um segundo turno e `speech` no idioma pedido |
 | `POST /v1/turn` | o mesmo cabeçalho | Corpo: PCM bruto mono de 16 bits a 16 kHz, `Content-Type: audio/L16;rate=16000`, até 480 000 bytes; cabeçalhos `X-Armor-Language`, `X-Armor-Client`, `X-Armor-Policy`. Responde `{heard, reply, audio?}` |
+| `POST /v1/speak` | o mesmo cabeçalho | Corpo `{text, language}` (no máximo 300 carateres). Responde `{audio}`, a frase dita pelo programa de texto para voz como base64 de PCM mono de 16 bits a 16 kHz (não faz nada acontecer e não guarda nada); 501 sem esse programa |
 
 Uma troca real (o token está abreviado):
 
@@ -313,7 +314,7 @@ O serviço nunca escreve o que foi dito num registo, sejam quais forem as defini
 $env:PYTHONPATH = "src"
 
 # 1. os testes
-python -m unittest discover -s tests                      # 114 testes
+python -m unittest discover -s tests                      # 118 testes
 
 # 2. a porta de ligação, um objeto JSON por linha
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -403,7 +404,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             linhas JSON em stdin/stdout, a auditoria, as frases dadas em resposta
 │   ├── service.py             o serviço HTTP local (/healthz, /v1/command, /v1/turn)
 │   └── turn.py                um turno falado: motores, sim/não, orçamento de tempo
-├── tests/                     114 testes: silêncio, limites, porta de ligação, turno, idiomas, serviço
+├── tests/                     118 testes: silêncio, limites, porta de ligação, turno, idiomas, serviço
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     as verificações de CI partilhadas e as ferramentas do projeto
 ├── images/                    faixa e ícone

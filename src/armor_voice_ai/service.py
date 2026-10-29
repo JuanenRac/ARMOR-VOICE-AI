@@ -15,6 +15,7 @@ is not valid is refused, never guessed at.
 from __future__ import annotations
 
 import argparse
+import base64
 import hmac
 import json
 import os
@@ -26,7 +27,7 @@ from pathlib import Path
 from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
 from .silence_policy import PinGuard, mode_from_header
-from .turn import MAX_AUDIO_BYTES, CommandEngine, ServerLink, TurnError, TurnService
+from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
@@ -111,7 +112,37 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             finally:
                 turn_slots.release()
 
+        def _speak(self) -> None:
+            """A sentence in, its audio out: `{"text", "language"}` gives `{"audio": "<base64 of 16 kHz 16-bit mono PCM>"}`. The speech engine says it and nothing else happens."""
+            if turns is None or not turns.can_speak:
+                return self._send(501, {"error": "tts_unavailable"})
+            try:
+                length = int(self.headers.get("Content-Length", "-1"))
+            except ValueError:
+                length = -1
+            if length <= 0 or length > MAX_SPEAK_CHARS * 4 + 200:
+                self._refuse_unread(length)
+                return self._send(413 if length > 0 else 411, {"error": "bad length"})
+            try:
+                request = json.loads(self.rfile.read(length).decode("utf-8"))
+            except (UnicodeDecodeError, ValueError):
+                return self._send(400, {"error": "invalid json"})
+            if not isinstance(request, dict) or set(request) != {"text", "language"} or not isinstance(request["text"], str) or request["language"] not in SPEECH_BY_LANGUAGE:
+                return self._send(422, {"error": "invalid request shape"})
+            if not turn_slots.acquire(blocking=False):   # each sentence starts a speech program: only a couple at a time
+                return self._send(503, {"error": "busy"})
+            try:
+                self._send(200, {"audio": base64.b64encode(turns.speak(request["text"], request["language"])).decode("ascii")})
+            except TurnError as error:
+                self._send(error.status, {"error": error.code})
+            finally:
+                turn_slots.release()
+
         def do_POST(self) -> None:   # noqa: N802
+            if self.path == "/v1/speak":
+                if not self._authorized():
+                    return self._send(401, {"error": "unauthorized"})
+                return self._speak()
             if self.path == "/v1/turn":
                 if not self._authorized():
                     return self._send(401, {"error": "unauthorized"})

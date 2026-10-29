@@ -39,6 +39,7 @@ PENDING_VALIDITY_S = 30.0
 TURN_BUDGET_S = 9.0
 PANEL_WAITS_S = 12.0
 MAX_HEARD_CHARS = 200              # what the server and the intent engine take
+MAX_SPEAK_CHARS = 300              # the longest sentence `speak` says (an alarm is a few words)
 _ENGINE_ENVIRONMENT = ("PATH", "HOME", "LANG", "LANGUAGE", "TMPDIR", "TEMP", "TMP", "SYSTEMROOT", "LD_LIBRARY_PATH", "PYTHONPATH")
 
 _YES_RAW = {"en": ("yes", "yeah", "confirm", "do it"), "es": ("sí", "si", "confirmo", "adelante", "vale"), "de": ("ja", "bestätige", "mach das"), "fr": ("oui", "confirme", "vas-y"),
@@ -168,6 +169,22 @@ class TurnService:
     @property
     def can_hear(self) -> bool:
         return self._stt is not None and self._ask is not None
+
+    @property
+    def can_speak(self) -> bool:
+        return self._tts is not None
+
+    def speak(self, text: str, language: str) -> bytes:
+        """The samples (16 kHz, 16-bit, mono PCM) of a sentence said out loud, for a panel that plays an alarm without having asked anything. Only the speech engine is used: nothing is
+        understood, nothing is carried out and nothing is kept. Without an engine, or when it fails or makes more than a panel plays, it is an error (the caller keeps its own tone)."""
+        if self._tts is None:
+            raise TurnError(501, "tts_unavailable")
+        if not text or len(text) > MAX_SPEAK_CHARS:
+            raise TurnError(422, "invalid_text")
+        audio = pcm_from_wav(self._tts.run(text.encode("utf-8"), language, MAX_REPLY_AUDIO_BYTES * 2))
+        if not audio or len(audio) > MAX_REPLY_AUDIO_BYTES or len(audio) % 2:
+            raise TurnError(502, "engine_failed")
+        return audio
 
     def handle(self, pcm: bytes, language: str, client: str, policy: object = None) -> dict[str, object]:
         if self._stt is None:

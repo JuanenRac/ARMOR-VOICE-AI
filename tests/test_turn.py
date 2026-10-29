@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import threading
 import unittest
@@ -177,6 +178,66 @@ class TurnTests(unittest.TestCase):
     def test_wave_headers_round_trip(self):
         pcm = b"\x05\x00\x06\x00"
         self.assertEqual(pcm_from_wav(wav_from_pcm(pcm)), pcm)
+
+
+class SpeakTests(unittest.TestCase):
+    """The sentence of an alarm said out loud (`/v1/speak`): the speech engine and nothing else."""
+
+    PCM = b"\x02\x00" * 400
+
+    @staticmethod
+    def saying(pcm: bytes) -> CommandEngine:
+        return CommandEngine([sys.executable, "-c", "import sys; sys.stdin.buffer.read(); sys.stdout.buffer.write(bytes.fromhex(" + repr(wav_from_pcm(pcm).hex()) + "))"])
+
+    def start(self, tts):
+        server = make_server("127.0.0.1", 0, TOKEN, ConfirmationSigner(b"s" * 32), turns=TurnService(None, tts, None))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        return f"http://127.0.0.1:{server.server_address[1]}"
+
+    @staticmethod
+    def post(base, body, token=TOKEN, raw=None):
+        data = raw if raw is not None else json.dumps(body).encode()
+        request = urllib.request.Request(base + "/v1/speak", data=data, method="POST", headers={"Content-Type": "application/json", **({"X-Armor-Voice-Token": token} if token else {})})
+        try:
+            with urllib.request.urlopen(request, timeout=10) as reply:
+                return reply.status, json.loads(reply.read())
+        except urllib.error.HTTPError as error:
+            return error.code, json.loads(error.read() or b"{}")
+
+    def test_a_sentence_comes_back_as_samples(self):
+        base = self.start(self.saying(self.PCM))
+        status, answer = self.post(base, {"text": "Critical alarm. Electrical.", "language": "en"})
+        self.assertEqual(status, 200)
+        import base64
+        self.assertEqual(base64.b64decode(answer["audio"]), self.PCM)
+
+    def test_it_needs_the_token_a_closed_request_and_a_speech_engine(self):
+        base = self.start(self.saying(self.PCM))
+        self.assertEqual(self.post(base, {"text": "x", "language": "en"}, token=None)[0], 401)
+        self.assertEqual(self.post(base, {"text": "x", "language": "en"}, token="w" * 24)[0], 401)
+        self.assertEqual(self.post(base, {"text": "x", "language": "xx"})[0], 422)
+        self.assertEqual(self.post(base, {"text": "x", "language": "en", "extra": 1})[0], 422)
+        self.assertEqual(self.post(base, {"text": 5, "language": "en"})[0], 422)
+        self.assertEqual(self.post(base, None, raw=b"not json")[0], 400)
+        self.assertEqual(self.post(base, {"text": "y" * 301, "language": "en"})[0], 422)
+        self.assertEqual(self.post(base, {"text": "y" * 2000, "language": "en"})[0], 413)
+        self.assertEqual(self.post(self.start(None), {"text": "x", "language": "en"}), (501, {"error": "tts_unavailable"}))
+
+    def test_an_engine_that_fails_or_says_too_much_is_an_error_and_not_a_sound(self):
+        failing = CommandEngine([sys.executable, "-c", "import sys; sys.exit(2)"])
+        self.assertEqual(self.post(self.start(failing), {"text": "x", "language": "en"}), (502, {"error": "engine_failed"}))
+        long_one = self.saying(b"\x01\x00" * 100_000)
+        self.assertEqual(self.post(self.start(long_one), {"text": "x", "language": "en"}), (502, {"error": "engine_failed"}))
+        with self.assertRaises(TurnError):
+            TurnService(None, self.saying(self.PCM), None).speak("", "en")
+
+    def test_the_speech_engine_gets_the_sentence_and_no_secret(self):
+        probe = CommandEngine([sys.executable, "-c", "import sys, os; sys.stdin.buffer.read(); sys.stdout.buffer.write(bytes.fromhex(" + repr(wav_from_pcm(self.PCM).hex()) + ")) if not os.environ.get('ARMOR_VOICE_TOKEN') else sys.exit(9)"])
+        os.environ["ARMOR_VOICE_TOKEN"] = "secret-value-1234567890"
+        self.addCleanup(os.environ.pop, "ARMOR_VOICE_TOKEN", None)
+        self.assertEqual(self.post(self.start(probe), {"text": "x", "language": "en"})[0], 200)
 
 
 class SubjectTests(unittest.TestCase):

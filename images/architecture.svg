@@ -117,7 +117,7 @@
   <!-- legend -->
   <g font-size="12">
     <rect x="36" y="548" width="14" height="14" rx="3" fill="none" stroke="#00FF88" stroke-width="2"/>
-    <text x="58" y="560" fill="#C9D1D9">decides, tested (114 tests)</text>
+    <text x="58" y="560" fill="#C9D1D9">decides, tested (118 tests)</text>
     <rect x="266" y="548" width="14" height="14" rx="3" fill="none" stroke="#00E5FF" stroke-width="2"/>
     <text x="288" y="560" fill="#C9D1D9">signed and policy parts, or the server</text>
     <rect x="566" y="548" width="14" height="14" rx="3" fill="none" stroke="#FFB020" stroke-width="2" stroke-dasharray="3 2"/>

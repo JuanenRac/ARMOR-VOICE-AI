@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-114%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、サイレンスのポリシー、ローカルサービス、ターンのエンドポイント、監査は実在し、テストされています（114 件のテスト）。サーバーは CM5 テストベンチ上でこのサービスに問い合わせます。**音声認識・音声合成のエンジンはこのリポジトリに含まれません**：`/v1/turn` は、あなたが設定したコマンドを実行します。そのどれも、実際のマイクではまだ試していません。アシスタントを載せる予定のタッチパネルは、ボード上ではまだ動いていません。
+**正直さのチェック - 今日動いているもの:** インテントのルール、8 言語、話者に結び付いた署名付き確認、サイレンスのポリシー、ローカルサービス、ターンのエンドポイント、監査は実在し、テストされています（118 件のテスト）。サーバーは CM5 テストベンチ上でこのサービスに問い合わせます。**音声認識・音声合成のエンジンはこのリポジトリに含まれません**：`/v1/turn` は、あなたが設定したコマンドを実行します。そのどれも、実際のマイクではまだ試していません。アシスタントを載せる予定のタッチパネルは、ボード上ではまだ動いていません。
 
 ---
 
@@ -41,7 +41,7 @@
 | 成熟度 | 確立 |
 | 役割 | オフラインの音声・インテントゲートウェイ（ファミリー：Core Services、親：ARMOR-SERVER） |
 | 技術 | Python 3.11+、標準ライブラリのみ |
-| テスト | 114 (`python -m unittest discover -s tests`) |
+| テスト | 118 (`python -m unittest discover -s tests`) |
 | コマンド | 15（問い合わせ 10、操作 5）、420 フレーズ、8 言語 |
 | 待ち受け | `127.0.0.1:18090`（ループバックのみ）、トークンつき |
 | 動作環境 | CM5 テストベンチ（サービスとして）または任意のコンピューター |
@@ -59,7 +59,7 @@
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟡 | インテントのルール、ローカルサービス、ターンのエンドポイントは CM5 テストベンチ上でサービスとして動作していますが、音声認識・音声合成のエンジンはリポジトリに含まれません。設定したコマンドを実行します。 |
-| テスト | 🟢 | 114 件のテストが通ります（`python -m unittest discover -s tests`）：インテントのルール、8 言語、話者に結び付いた署名付き確認、サイレンスのポリシー、ローカルサービス、ターンのエンドポイント、監査。 |
+| テスト | 🟢 | 118 件のテストが通ります（`python -m unittest discover -s tests`）：インテントのルール、8 言語、話者に結び付いた署名付き確認、サイレンスのポリシー、ローカルサービス、ターンのエンドポイント、監査。 |
 | ハードウェア | 🔴 | マイクも音声エンジンも試しておらず、アシスタントを載せる予定のタッチパネルもボード上では動いていません。 |
 | セキュリティ | 🟡 | 確認は署名され話者に結び付いており、監査はホスト上でテストされています。独立したレビューはありません。 |
 | 連携 | 🟡 | サーバーは CM5 テストベンチ上でこのサービスに問い合わせます。タッチパネルとの音声フローはまだ動いていません。 |
@@ -224,6 +224,7 @@ PIN（4〜12 桁、`ARMOR_VOICE_SILENCE_PIN`）は一定時間で比較され、
 | `GET /healthz` | なし | `{"ok": true, "service": "armor-voice"}` |
 | `POST /v1/command` | ヘッダー `X-Armor-Voice-Token` | ボディ `{text, language?, confirmation?, subject?, policy?, pin?}`（最大 2 KB）。理解した内容、2 回目のターンが必要なときの `confirmation_token`、要求された言語の `speech` を返す |
 | `POST /v1/turn` | 同じヘッダー | ボディ：生の 16 kHz 16 ビットモノラル PCM、`Content-Type: audio/L16;rate=16000`、最大 480 000 バイト。ヘッダー `X-Armor-Language`、`X-Armor-Client`、`X-Armor-Policy`。`{heard, reply, audio?}` を返す |
+| `POST /v1/speak` | 同じヘッダー | ボディ `{text, language}`（最大 300 文字）。`{audio}` を返す。音声合成プログラムが読み上げた文を 16 kHz 16 ビットモノラル PCM の base64 で返す（何も実行せず、何も保存しない）。そのプログラムがなければ 501 |
 
 実際のやり取りの例（トークンは短縮しています）：
 
@@ -313,7 +314,7 @@ PIN（4〜12 桁、`ARMOR_VOICE_SILENCE_PIN`）は一定時間で比較され、
 $env:PYTHONPATH = "src"
 
 # 1. テスト
-python -m unittest discover -s tests                      # 114 件のテスト
+python -m unittest discover -s tests                      # 118 件のテスト
 
 # 2. ゲートウェイ、1 行に 1 つの JSON オブジェクト
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -403,7 +404,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             stdin/stdout の JSON Lines、監査、返す文
 │   ├── service.py             ローカル HTTP サービス（/healthz、/v1/command、/v1/turn）
 │   └── turn.py                1 回の音声ターン：エンジン、はい/いいえ、時間の持ち時間
-├── tests/                     114 件のテスト：サイレンス、エッジ、ゲートウェイ、ターン、言語、サービス
+├── tests/                     118 件のテスト：サイレンス、エッジ、ゲートウェイ、ターン、言語、サービス
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     共通の CI チェックとプロジェクトのツール
 ├── images/                    バナーとアイコン
