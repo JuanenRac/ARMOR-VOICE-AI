@@ -13,6 +13,7 @@
   ],
   "deployment_target": "CM5 test bench (systemd) or any computer",
   "maturity": "established",
+  "evidence": "bench",
   "family": "Core Services",
   "parent": "ARMOR-SERVER",
   "native_version": "0.3.1",
