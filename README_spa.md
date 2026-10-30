@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Modo">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Idiomas">
   <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Pruebas">
-  <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Version-0.3.2-0f6cbd.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Madurez">
 </p>
 
@@ -37,7 +37,7 @@
 
 | | |
 |---|---|
-| Versión | `0.3.1` |
+| Versión | `0.3.2` |
 | Madurez | Establecido |
 | Función | Pasarela de voz e intenciones sin conexión (familia: Core Services, padre: ARMOR-SERVER) |
 | Tecnología | Python 3.11+, solo biblioteca estándar |

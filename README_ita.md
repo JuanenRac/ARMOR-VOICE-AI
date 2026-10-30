@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Modalità">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Lingue">
   <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Test">
-  <img src="https://img.shields.io/badge/Version-0.3.1-0f6cbd.svg" alt="Versione">
+  <img src="https://img.shields.io/badge/Version-0.3.2-0f6cbd.svg" alt="Versione">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturità">
 </p>
 
@@ -37,7 +37,7 @@
 
 | | |
 |---|---|
-| Versione | `0.3.1` |
+| Versione | `0.3.2` |
 | Maturità | Consolidato |
 | Ruolo | Gateway vocale e di intenti offline (famiglia: Core Services, genitore: ARMOR-SERVER) |
 | Tecnologia | Python 3.11+, solo libreria standard |
