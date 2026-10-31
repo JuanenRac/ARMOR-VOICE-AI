@@ -196,7 +196,7 @@ def main(argv: list[str] | None = None) -> None:
     try:
         guard = PinGuard(os.environ.get("ARMOR_VOICE_SILENCE_PIN") or None)
     except ValueError as error:
-        raise SystemExit(f"ARMOR_VOICE_SILENCE_PIN is not valid: {error}")   # the value itself is never printed
+        raise SystemExit(f"ARMOR_VOICE_SILENCE_PIN is not valid: {error}") from None   # the value itself is never printed
     turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link, pin_guard=guard)
     server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard)
     print(f"armor-voice listening on {args.host}:{server.server_address[1]}", file=sys.stderr, flush=True)
