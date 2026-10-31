@@ -6,7 +6,7 @@ import unittest
 import urllib.error
 import urllib.request
 
-from armor_voice_ai.confirmation import ConfirmationSigner, INVALID, VALID, WRONG_SUBJECT
+from armor_voice_ai.confirmation import ConfirmationSigner, VALID, WRONG_SUBJECT
 from armor_voice_ai.service import make_server
 from armor_voice_ai.turn import CommandEngine, TurnError, TurnService, pcm_from_wav, wav_from_pcm
 

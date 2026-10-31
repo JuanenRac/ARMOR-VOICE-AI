@@ -51,7 +51,7 @@ class ConfirmationSigner:
         return self._ttl
 
     def _sign(self, body: str) -> str:
-        return hmac.new(self._secret, body.encode("ascii"), hashlib.sha256).hexdigest()
+        return hmac.new(self._secret, body.encode("ascii"), hashlib.sha256).hexdigest()  # type: ignore[arg-type]
 
     def issue(self, intent: str, subject: str = "") -> str:
         """A token for this intent, and for the person who asked (`subject`, as the caller names them): a token asked for by one person is not good for another."""
