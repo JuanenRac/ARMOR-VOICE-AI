@@ -63,6 +63,8 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Hardware | 🔴 | No se ha probado ningún micrófono ni motor de voz, y el panel táctil que debe llevar al asistente no ha funcionado en una placa. |
 | Seguridad | 🟡 | La confirmación está firmada y ligada a quien habla, y la auditoría se prueba en el equipo anfitrión; no ha habido revisión independiente. |
 | Integración | 🟡 | El servidor consulta al servicio en el banco de la CM5; el flujo de voz con el panel táctil no ha funcionado. |
+| Interfaz | 🟡 | Las rutas o los mensajes que ofrece están documentados y probados con un cliente; aún no los han usado todos los clientes |
+| Despliegue | 🟡 | Instalado como servicio en el banco de pruebas de la CM5 con su instalador y su unidad; se reinicia en cada actualización |
 | Documentación | 🟢 | Los ocho idiomas y el registro de cambios están al día. |
 
 ## 🎯 Resumen

@@ -63,6 +63,8 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Hardware | 🔴 | Kein Mikrofon und keine Sprach-Engine wurde ausprobiert, und das Touch-Panel, das den Assistenten tragen soll, lief nicht auf einer Platine. |
 | Sicherheit | 🟡 | Die Bestätigung ist signiert und an ihren Sprecher gebunden, und das Audit ist auf dem Host getestet; es gab keine unabhängige Prüfung. |
 | Integration | 🟡 | Der Server fragt den Dienst auf dem CM5-Prüfstand ab; der Sprachablauf mit dem Touch-Panel lief nicht. |
+| Oberfläche | 🟡 | Die angebotenen Routen oder Nachrichten sind dokumentiert und mit einem Client getestet; noch nicht jeder Client hat sie benutzt |
+| Bereitstellung | 🟡 | Als Dienst auf dem CM5-Prüfstand mit Installer und Unit installiert; bei jeder Aktualisierung neu gestartet |
 | Dokumentation | 🟢 | Acht Sprachen und das Änderungsprotokoll sind aktuell. |
 
 ## 🎯 Überblick

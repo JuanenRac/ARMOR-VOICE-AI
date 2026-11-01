@@ -63,6 +63,8 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Hardware | 🔴 | Nessun microfono né motore vocale è stato provato, e il pannello touch che dovrebbe ospitare l'assistente non ha girato su una scheda. |
 | Sicurezza | 🟡 | La conferma è firmata e legata a chi parla, e l'audit è provato sull'host; non c'è stata una revisione indipendente. |
 | Integrazione | 🟡 | Il server interroga il servizio sul banco di prova CM5; il flusso vocale con il pannello touch non ha girato. |
+| Interfaccia | 🟡 | Le rotte o i messaggi offerti sono documentati e provati con un client; non tutti i client li hanno ancora usati |
+| Distribuzione | 🟡 | Installato come servizio sul banco prova CM5 con il suo installatore e la sua unità; riavviato a ogni aggiornamento |
 | Documentazione | 🟢 | Otto lingue e il registro delle modifiche sono aggiornati. |
 
 ## 🎯 Panoramica

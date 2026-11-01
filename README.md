@@ -63,6 +63,8 @@ Each line is one part of this repository and the light says how far it is today.
 | Hardware | 🔴 | No microphone or speech engine has been tried, and the touch panel that is meant to carry the assistant has not run on a board. |
 | Security | 🟡 | The confirmation is signed and tied to its speaker, and the audit is tested on the host; there has been no independent review. |
 | Integration | 🟡 | The server asks the service on the CM5 test bench; the voice flow with the touch panel has not run. |
+| Interface | 🟡 | The routes or messages it offers are documented and tested with a client; not every client has used them yet |
+| Deployment | 🟡 | Installed as a service on the CM5 test bench with its installer and unit; restarted on every update |
 | Documentation | 🟢 | Eight languages and the changelog are up to date. |
 
 ## 🎯 Overview
