@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-127%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit are real and tested (118 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
+**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit are real and tested (127 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
 
 ---
 
@@ -41,7 +41,7 @@
 | Maturity | Established |
 | Role | Offline speech and intent gateway (family: Core Services, parent: ARMOR-SERVER) |
 | Stack | Python 3.11+, standard library only |
-| Tests | 118 (`python -m unittest discover -s tests`) |
+| Tests | 127 (`python -m unittest discover -s tests`) |
 | Commands | 15 (10 that ask, 5 that act), 420 phrases, 8 languages |
 | Listens on | `127.0.0.1:18090` (loopback only), with a token |
 | Runs on | The CM5 test bench (as a service) or any computer |
@@ -59,7 +59,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟡 | The intent rules, the local service and the turn endpoint run as a service on the CM5 test bench, but no speech recognition or synthesis engine is part of the repository: it runs the commands you configure for them. |
-| Tests | 🟢 | 118 tests pass (`python -m unittest discover -s tests`): the intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit. |
+| Tests | 🟢 | 127 tests pass (`python -m unittest discover -s tests`): the intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit. |
 | Hardware | 🔴 | No microphone or speech engine has been tried, and the touch panel that is meant to carry the assistant has not run on a board. |
 | Security | 🟡 | The confirmation is signed and tied to its speaker, and the audit is tested on the host; there has been no independent review. |
 | Integration | 🟡 | The server asks the service on the CM5 test bench; the voice flow with the touch panel has not run. |
@@ -187,6 +187,7 @@ English, Spanish, German, French, Italian, Japanese, Chinese and European Portug
 |---|---|
 | `off` (default, and when no policy arrives) | Passed on at once |
 | `double_turn` | Not carried out; the service asks to say yes, and a yes within 15 s from the same panel passes the original command on |
+| `challenge` | Not carried out; the service draws a two-digit number that is not said aloud (it goes in `challenge` for the screen of the panel) and only that number, said within 20 s from the same panel, passes the original command on; three wrong ones lock silencing by voice for five minutes |
 | `pin` | Not carried out; the service asks for the PIN, spoken as digits or as digit words in the eight languages; the right PIN within 20 s passes the command on |
 | unreadable or unknown policy | `double_turn`: a broken setting never switches a protection off |
 
@@ -316,7 +317,7 @@ The service never writes what was said to a log, whatever the settings.
 $env:PYTHONPATH = "src"
 
 # 1. the tests
-python -m unittest discover -s tests                      # 118 tests
+python -m unittest discover -s tests                      # 127 tests
 
 # 2. the gateway, one JSON object per line
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -406,7 +407,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             JSON lines on stdin/stdout, the audit, the sentences said back
 │   ├── service.py             the local HTTP service (/healthz, /v1/command, /v1/turn)
 │   └── turn.py                one spoken turn: engines, yes/no, time budget
-├── tests/                     118 tests: silence, edges, gateway, turn, languages, service
+├── tests/                     127 tests: silence, edges, gateway, turn, languages, service
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     the shared CI checks and project tooling
 ├── images/                    banner and icon

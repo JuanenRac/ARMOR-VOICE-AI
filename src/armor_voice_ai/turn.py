@@ -28,7 +28,8 @@ from dataclasses import dataclass
 from shlex import split as shell_split
 
 from .intent import SILENCE, normalize_text, parse_intent
-from .silence_policy import (ASK_PIN, ASK_YES, DOUBLE_TURN, DOUBLE_TURN_VALIDITY_S, LOCKED, NO_PIN_SET, OFF, PIN, PIN_VALIDITY_S, WRONG_PIN, PinGuard, mode_from_policy, spoken_digits)
+from .silence_policy import (ASK_CHALLENGE, ASK_PIN, ASK_YES, CHALLENGE, CHALLENGE_VALIDITY_S, DOUBLE_TURN, DOUBLE_TURN_VALIDITY_S, LOCKED, NO_PIN_SET, OFF, PIN, PIN_VALIDITY_S, WRONG_CHALLENGE, WRONG_PIN,
+                             ChallengeGuard, PinGuard, mode_from_policy, spoken_digits)
 
 MAX_AUDIO_BYTES = 480_000          # fifteen seconds of 16 kHz, 16-bit mono
 MAX_REPLY_AUDIO_BYTES = 190_000    # what the panel accepts to play: it takes at most 256 KB of answer in all, and the audio goes as base64 (4/3 of its size) inside a JSON
@@ -157,9 +158,11 @@ class ServerLink:
 
 class TurnService:
     def __init__(self, stt: CommandEngine | None, tts: CommandEngine | None, server: ServerLink | Callable[[str, str, str | None], dict[str, object]] | None,
-                 now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None) -> None:
+                 now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None, challenge_guard: ChallengeGuard | None = None) -> None:
         self._stt, self._tts, self._now = stt, tts, now
         self.pin_guard = pin_guard or PinGuard(None)
+        self.challenge_guard = challenge_guard or ChallengeGuard()
+        self._challenges: dict[str, str] = {}   # the number each panel was shown, kept only until it is answered or dropped
         # what a panel was asked before a "silence" is passed on: (the words of the command, the mode, until when)
         self._silence_wait: dict[str, tuple[str, str, float]] = {}
         self._ask = server.command if isinstance(server, ServerLink) else server
@@ -207,7 +210,8 @@ class TurnService:
         if waiting is not None:
             original, waiting_mode = waiting
             if says(words, NO.get(language, ()), language):
-                return self._answer("" if waiting_mode == PIN else heard, CANCELLED[language], language)
+                self._forget_challenge(client)
+                return self._answer("" if waiting_mode in (PIN, CHALLENGE) else heard, CANCELLED[language], language)
             if waiting_mode == DOUBLE_TURN and says(words, YES.get(language, ()), language):
                 return self._finish(heard, self._ask(original, language, None), language, client, started)
             if waiting_mode == PIN:
@@ -217,7 +221,16 @@ class TurnService:
                     if verdict == "ok":
                         return self._finish("", self._ask(original, language, None), language, client, started)
                     return self._answer("", {"wrong": WRONG_PIN, "locked": LOCKED}.get(verdict, NO_PIN_SET)[language], language)
+            if waiting_mode == CHALLENGE:
+                expected = self._challenges.pop(client, "")
+                digits = spoken_digits(words, language)
+                if digits and expected:   # a try at the number: never echoed back
+                    verdict = self.challenge_guard.check(expected, digits)
+                    if verdict == "ok":
+                        return self._finish("", self._ask(original, language, None), language, client, started)
+                    return self._answer("", (LOCKED if verdict == "locked" else WRONG_CHALLENGE)[language], language)
             # anything else is a new command: the question that was waiting is dropped
+        self._forget_challenge(client)
         if mode != OFF and parse_intent(heard) == SILENCE:
             self._take_pending(client)   # a question about arming that was waiting is dropped
             if mode == PIN:
@@ -225,10 +238,16 @@ class TurnService:
                     return self._answer(heard, NO_PIN_SET[language], language)
                 if self.pin_guard.locked:
                     return self._answer(heard, LOCKED[language], language)
-            validity = PIN_VALIDITY_S if mode == PIN else DOUBLE_TURN_VALIDITY_S
+            if mode == CHALLENGE and self.challenge_guard.locked:
+                return self._answer(heard, LOCKED[language], language)
+            validity = {PIN: PIN_VALIDITY_S, CHALLENGE: CHALLENGE_VALIDITY_S}.get(mode, DOUBLE_TURN_VALIDITY_S)
+            number = None
             with self._lock:
                 self._silence_wait[client] = (heard, mode, self._now() + validity)
-            return self._answer(heard, (ASK_PIN if mode == PIN else ASK_YES)[language], language)
+                if mode == CHALLENGE:
+                    number = self._challenges[client] = self.challenge_guard.new_number()
+            ask = {PIN: ASK_PIN, CHALLENGE: ASK_CHALLENGE}.get(mode, ASK_YES)
+            return self._answer(heard, ask[language], language, challenge=number)
         pending = self._take_pending(client)
         if pending is not None:
             original, token = pending
@@ -266,8 +285,14 @@ class TurnService:
             return None
         return held[0], held[1]
 
-    def _answer(self, heard: str, reply: str, language: str) -> dict[str, object]:
+    def _forget_challenge(self, client: str) -> None:
+        with self._lock:
+            self._challenges.pop(client, None)
+
+    def _answer(self, heard: str, reply: str, language: str, challenge: str | None = None) -> dict[str, object]:
         result: dict[str, object] = {"heard": heard, "reply": reply}
+        if challenge is not None:
+            result["challenge"] = challenge   # for the screen of the panel only: it is not in `reply`, so it is not said aloud
         if self._tts is not None and reply:
             try:
                 audio = pcm_from_wav(self._tts.run(reply.encode("utf-8"), language, MAX_REPLY_AUDIO_BYTES * 2))

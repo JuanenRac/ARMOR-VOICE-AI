@@ -8,6 +8,9 @@ a mode this service does not know, is taken as `double_turn`: a broken setting n
 
 * `off`: "silence" is accepted at once.
 * `double_turn`: the first "silence" is not carried out; the service asks to say yes, and only a yes within a few seconds is passed on.
+* `challenge`: the first "silence" is not carried out; the service draws a number of two digits that is NOT said aloud: it goes in the answer (`challenge`) for the panel to show on its
+  screen, and only that number, said within a few seconds, is passed on. A loudspeaker or somebody outside the house cannot know the number, so they cannot confirm. Three wrong numbers in
+  a row lock silencing by voice, for every panel, for five minutes. A panel that cannot show the number cannot silence by voice in this mode (it fails closed).
 * `pin`: the first "silence" is not carried out; the service asks for the PIN, spoken digit by digit (or as digits), and only the right PIN is passed on. The PIN is set in the
   environment of this service (`ARMOR_VOICE_SILENCE_PIN`), is compared in constant time, is never written to a log or to the audit file, and is not echoed back in `heard`. Three
   wrong PINs lock silencing by voice, for every panel, for five minutes. With the mode `pin` and no PIN set up nothing is silenced by voice (it fails closed).
@@ -17,17 +20,19 @@ from __future__ import annotations
 
 import hmac
 import json
+import secrets
 import threading
 import time
 import unicodedata
 from collections.abc import Callable
 
-OFF, DOUBLE_TURN, PIN = "off", "double_turn", "pin"
-MODES = (OFF, DOUBLE_TURN, PIN)
+OFF, DOUBLE_TURN, PIN, CHALLENGE = "off", "double_turn", "pin", "challenge"
+MODES = (OFF, DOUBLE_TURN, PIN, CHALLENGE)
 MAX_POLICY_BYTES = 256
 #: How long the service waits for the yes or for the PIN after asking.
 DOUBLE_TURN_VALIDITY_S = 15.0
 PIN_VALIDITY_S = 20.0
+CHALLENGE_VALIDITY_S = 20.0
 MAX_PIN_ATTEMPTS = 3
 LOCKOUT_S = 300.0
 MIN_PIN_DIGITS, MAX_PIN_DIGITS = 4, 12
@@ -129,12 +134,54 @@ class PinGuard:
             return "wrong"
 
 
+class ChallengeGuard:
+    """The numbers of the spoken challenge and the limit on wrong ones. One guard serves every panel, like the PIN's."""
+
+    def __init__(self, now: Callable[[], float] = time.monotonic, draw: Callable[[], int] | None = None) -> None:
+        self._now = now
+        self._draw = draw or (lambda: 10 + secrets.randbelow(90))
+        self._failures = 0
+        self._locked_until = 0.0
+        self._lock = threading.Lock()
+
+    @property
+    def locked(self) -> bool:
+        with self._lock:
+            return self._now() < self._locked_until
+
+    def new_number(self) -> str:
+        """A number from 10 to 99, as text."""
+        return str(self._draw())
+
+    def check(self, expected: str, digits: str) -> str:
+        """`ok`, `wrong` or `locked`. A right number clears the count; the third wrong one locks for LOCKOUT_S."""
+        with self._lock:
+            if self._now() < self._locked_until:
+                return "locked"
+            if hmac.compare_digest(digits.encode("ascii", "replace"), expected.encode("ascii", "replace")):
+                self._failures = 0
+                return "ok"
+            self._failures += 1
+            if self._failures >= MAX_PIN_ATTEMPTS:
+                self._failures = 0
+                self._locked_until = self._now() + LOCKOUT_S
+                return "locked"
+            return "wrong"
+
+
 # ---- what is said ---------------------------------------------------------------------------------------------------------------------------------
 
 ASK_YES = {"en": "Say yes to silence the alarms.", "es": "Di sí para silenciar las alarmas.", "de": "Sag Ja, um die Alarme stummzuschalten.", "fr": "Dites oui pour couper le son des alarmes.",
            "it": "Di' sì per silenziare gli allarmi.", "ja": "アラームを消音するには「はい」と言ってください。", "zh": "说“是”即可静音警报。", "pt": "Diga sim para silenciar os alarmes."}
 ASK_PIN = {"en": "Say your PIN to silence the alarms.", "es": "Di tu PIN para silenciar las alarmas.", "de": "Nenne deine PIN, um die Alarme stummzuschalten.", "fr": "Dites votre PIN pour couper le son des alarmes.",
            "it": "Di' il tuo PIN per silenziare gli allarmi.", "ja": "アラームを消音するには PIN を言ってください。", "zh": "请说出 PIN 以静音警报。", "pt": "Diga o seu PIN para silenciar os alarmes."}
+ASK_CHALLENGE = {"en": "Say the number shown on the screen to silence the alarms.", "es": "Di el número que aparece en la pantalla para silenciar las alarmas.",
+                 "de": "Nenne die Zahl auf dem Bildschirm, um die Alarme stummzuschalten.", "fr": "Dites le nombre affiché à l'écran pour couper le son des alarmes.",
+                 "it": "Di' il numero mostrato sullo schermo per silenziare gli allarmi.", "ja": "アラームを消音するには、画面に表示された数字を言ってください。",
+                 "zh": "请说出屏幕上显示的数字以静音警报。", "pt": "Diga o número que aparece no ecrã para silenciar os alarmes."}
+WRONG_CHALLENGE = {"en": "That is not the number on the screen.", "es": "Ese no es el número de la pantalla.", "de": "Das ist nicht die Zahl auf dem Bildschirm.",
+                   "fr": "Ce n'est pas le nombre affiché à l'écran.", "it": "Non è il numero mostrato sullo schermo.", "ja": "画面に表示された数字ではありません。",
+                   "zh": "这不是屏幕上显示的数字。", "pt": "Esse não é o número que aparece no ecrã."}
 WRONG_PIN = {"en": "That PIN is not right.", "es": "Ese PIN no es correcto.", "de": "Diese PIN ist nicht richtig.", "fr": "Ce PIN n'est pas le bon.", "it": "Questo PIN non è corretto.",
              "ja": "PIN が正しくありません。", "zh": "PIN 不正确。", "pt": "Esse PIN não está correto."}
 LOCKED = {"en": "Silencing by voice is locked for a while: use the screen.", "es": "Silenciar por voz está bloqueado un rato: usa la pantalla.", "de": "Stummschalten per Sprache ist für eine Weile gesperrt: nutze den Bildschirm.",

@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-118%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-127%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分：** 意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计都是真实的，并有测试覆盖（118 项测试），服务器在 CM5 测试台上会向该服务发起查询。**本仓库不包含任何语音识别或语音合成引擎**：`/v1/turn` 运行的是你为它们配置的命令，目前没有任何一个用真实麦克风试过；用来承载该助手的触摸面板还没有在板子上运行过。
+**诚实性检查 - 今天真正能运行的部分：** 意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计都是真实的，并有测试覆盖（127 项测试），服务器在 CM5 测试台上会向该服务发起查询。**本仓库不包含任何语音识别或语音合成引擎**：`/v1/turn` 运行的是你为它们配置的命令，目前没有任何一个用真实麦克风试过；用来承载该助手的触摸面板还没有在板子上运行过。
 
 ---
 
@@ -41,7 +41,7 @@
 | 成熟度 | 成熟 |
 | 角色 | 离线语音与意图网关（系列：Core Services，上级：ARMOR-SERVER） |
 | 技术栈 | Python 3.11+，仅使用标准库 |
-| 测试 | 118 (`python -m unittest discover -s tests`) |
+| 测试 | 127 (`python -m unittest discover -s tests`) |
 | 命令 | 15 个（10 个查询类，5 个执行类），420 个短语，8 种语言 |
 | 监听地址 | `127.0.0.1:18090`（仅限本机回环），需要令牌 |
 | 运行位置 | CM5 测试台（作为服务）或任意计算机 |
@@ -59,7 +59,7 @@
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟡 | 意图规则、本地服务和轮次接口在 CM5 测试台上作为服务运行，但本仓库不包含任何语音识别或语音合成引擎：它运行的是你为此配置的命令。 |
-| 测试 | 🟢 | 118 项测试通过（`python -m unittest discover -s tests`）：意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计。 |
+| 测试 | 🟢 | 127 项测试通过（`python -m unittest discover -s tests`）：意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计。 |
 | 硬件 | 🔴 | 没有试过任何麦克风或语音引擎，用来承载该助手的触摸面板也还没有在板子上运行过。 |
 | 安全 | 🟡 | 确认经过签名并与说话人绑定，审计已在主机上测试；没有经过独立审查。 |
 | 集成 | 🟡 | 服务器在 CM5 测试台上查询该服务；与触摸面板配合的语音流程尚未运行。 |
@@ -187,6 +187,7 @@ sequenceDiagram
 |---|---|
 | `off`（默认，且在没有收到策略时） | 立即转交 |
 | `double_turn` | 不执行；服务要求说“是”，来自同一面板的 15 秒内的“是”会转交原始命令 |
+| `challenge` | 不执行；服务抽取一个不会被朗读出来的两位数（放在 `challenge` 中供面板屏幕显示），只有在 20 秒内由同一面板说出该数字才会转交原始命令；连错三次会将语音静音锁定五分钟 |
 | `pin` | 不执行；服务要求 PIN，可用数字或八种语言的数字词说出；20 秒内说出正确的 PIN 即转交命令 |
 | 无法读取或未知的策略 | `double_turn`：损坏的设置绝不会关闭防护 |
 
@@ -316,7 +317,7 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 $env:PYTHONPATH = "src"
 
 # 1. 测试
-python -m unittest discover -s tests                      # 118 项测试
+python -m unittest discover -s tests                      # 127 项测试
 
 # 2. 网关，每行一个 JSON 对象
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -406,7 +407,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             stdin/stdout 上的 JSON 行、审计、回应的语句
 │   ├── service.py             本地 HTTP 服务（/healthz、/v1/command、/v1/turn）
 │   └── turn.py                一个语音轮次：引擎、是/否、时间预算
-├── tests/                     118 项测试：静音、边界、网关、轮次、语言、服务
+├── tests/                     127 项测试：静音、边界、网关、轮次、语言、服务
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     共享的 CI 检查和项目工具
 ├── images/                    横幅和图标

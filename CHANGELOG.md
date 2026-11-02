@@ -4,6 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A silence mode with a number that is shown, not said:** the policy `silence_confirmation: "challenge"` makes the first "silence" ask for a number of two digits that appears in the answer (`challenge`) for the screen of the panel and is not in the spoken reply; only that number, said within 20 seconds from the same panel, passes the command on. A loudspeaker or somebody outside the house cannot know it. Three wrong numbers in a row lock silencing by voice for five minutes for every panel, a number is good once, and a panel that cannot show it cannot silence by voice in this mode. The text route (`/v1/command`) has no screen and asks for the signed confirmation in this mode, never less. The new sentences are in the eight languages. Nothing changes unless the server sends the new value.
+- Tests: 127 (before 118).
+
 ## [0.3.2] - The service can say a sentence out loud on request, the lights of Project status follow the evidence of the manifest and the pictures of the README from shared tools
 
 - **The lights of Project status follow the evidence of the manifest:** the manifest says how far the repository has been shown to work (`evidence`: `host-test`, `simulator`, `bench` or `field`) and the validator fails when a light is above what that evidence and the maturity allow (`tools/status_lights.py`), so a green that never ran on real hardware cannot come back.

@@ -7,7 +7,7 @@ import urllib.request
 from armor_voice_ai.confirmation import ConfirmationSigner
 from armor_voice_ai.gateway import handle_request
 from armor_voice_ai.service import make_server
-from armor_voice_ai.silence_policy import (DOUBLE_TURN, LOCKOUT_S, MAX_PIN_ATTEMPTS, OFF, PIN, PinGuard, mode_from_header, mode_from_policy, spoken_digits)
+from armor_voice_ai.silence_policy import (ASK_CHALLENGE, CHALLENGE, DOUBLE_TURN, LOCKOUT_S, MAX_PIN_ATTEMPTS, OFF, PIN, WRONG_CHALLENGE, ChallengeGuard, PinGuard, mode_from_header, mode_from_policy, spoken_digits)
 from armor_voice_ai.intent import normalize_text
 from armor_voice_ai.turn import TurnService
 
@@ -306,3 +306,80 @@ class HttpPolicyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChallengeTests(unittest.TestCase):
+    policy = {"silence_confirmation": "challenge"}
+
+    def service(self, *heard, draw=lambda: 47):
+        clock = Clock()
+        server = Server()
+        guard = ChallengeGuard(now=clock, draw=draw)
+        return TurnService(Said(*heard), None, server, now=clock, challenge_guard=guard), server, clock
+
+    def test_the_policy_names_the_mode(self):
+        self.assertEqual(mode_from_policy(self.policy), CHALLENGE)
+        self.assertEqual(mode_from_header('{"silence_confirmation":"challenge"}'), CHALLENGE)
+
+    def test_the_number_goes_to_the_screen_and_is_not_said(self):
+        service, server, _ = self.service("silence the alarm")
+        answer = service.handle(SPEECH, "en", "panel", self.policy)
+        self.assertEqual(answer["challenge"], "47")
+        self.assertNotIn("47", answer["reply"])
+        self.assertEqual(server.asked, [])
+
+    def test_only_the_number_in_time_passes_the_silence_on(self):
+        for said in ("four seven", "4 7", "the number is 47"):
+            service, server, _ = self.service("silence the alarm", said)
+            service.handle(SPEECH, "en", "panel", self.policy)
+            answer = service.handle(SPEECH, "en", "panel", self.policy)
+            self.assertEqual(server.asked, [("silence the alarm", None)], said)
+            self.assertNotIn("challenge", answer)
+
+    def test_a_yes_a_wrong_number_or_a_late_one_do_not(self):
+        for said in ("yes", "48", "silence the alarm"):
+            service, server, _ = self.service("silence the alarm", said)
+            service.handle(SPEECH, "en", "panel", self.policy)
+            service.handle(SPEECH, "en", "panel", self.policy)
+            self.assertEqual([c for c in server.asked if c[0] == "silence the alarm"], [], said)
+        service, server, clock = self.service("silence the alarm", "4 7")
+        service.handle(SPEECH, "en", "panel", self.policy)
+        clock.now += 60
+        service.handle(SPEECH, "en", "panel", self.policy)
+        self.assertEqual([c for c in server.asked if c[0] == "silence the alarm"], [])
+
+    def test_a_number_is_good_once_and_for_the_panel_it_was_shown_to(self):
+        service, server, _ = self.service("silence the alarm", "4 7", "4 7")
+        service.handle(SPEECH, "en", "panel", self.policy)
+        service.handle(SPEECH, "en", "panel", self.policy)
+        service.handle(SPEECH, "en", "panel", self.policy)
+        self.assertEqual(len([c for c in server.asked if c[0] == "silence the alarm"]), 1)
+        service, server, _ = self.service("silence the alarm", "4 7")
+        service.handle(SPEECH, "en", "panel", self.policy)
+        service.handle(SPEECH, "en", "other-panel", self.policy)
+        self.assertEqual([c for c in server.asked if c[0] == "silence the alarm"], [])
+
+    def test_three_wrong_numbers_lock_every_panel(self):
+        service, server, clock = self.service("silence the alarm", "1 1", "silence the alarm", "2 2", "silence the alarm", "3 3", "silence the alarm", "silence the alarm")
+        for _ in range(6):
+            service.handle(SPEECH, "en", "panel", self.policy)
+        locked = service.handle(SPEECH, "en", "panel", self.policy)
+        self.assertIn("locked", locked["reply"])
+        self.assertNotIn("challenge", locked)
+        self.assertEqual(server.asked, [])
+        clock.now += 301
+        self.assertEqual(service.handle(SPEECH, "en", "panel", self.policy)["challenge"], "47")
+
+    def test_the_drawn_numbers_have_two_digits(self):
+        guard = ChallengeGuard()
+        self.assertTrue(all(10 <= int(guard.new_number()) <= 99 for _ in range(200)))
+
+    def test_every_language_has_its_sentences(self):
+        for table in (ASK_CHALLENGE, WRONG_CHALLENGE):
+            self.assertEqual(sorted(table), ["de", "en", "es", "fr", "it", "ja", "pt", "zh"])
+
+    def test_the_text_route_asks_for_the_signed_confirmation_never_less(self):
+        from armor_voice_ai.confirmation import ConfirmationSigner
+        from armor_voice_ai.session import CONFIRMATION_NEEDED, evaluate
+        decision = evaluate("silence the alarm", ConfirmationSigner(b"k" * 32), silence_mode=CHALLENGE)
+        self.assertEqual((decision.accepted, decision.outcome), (False, CONFIRMATION_NEEDED))

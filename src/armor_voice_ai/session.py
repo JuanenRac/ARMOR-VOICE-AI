@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 from .confirmation import VALID, ConfirmationSigner
 from .intent import SENSITIVE, SILENCE, parse_intent
-from .silence_policy import DOUBLE_TURN, OFF, PIN, PinGuard
+from .silence_policy import CHALLENGE, DOUBLE_TURN, OFF, PIN, PinGuard
 
 NOT_UNDERSTOOD, CONFIRMATION_NEEDED, ACCEPTED, CONFIRMATION_REFUSED = "not-understood", "confirmation-needed", "accepted", "confirmation-refused"
 PIN_NEEDED, PIN_REFUSED = "pin-needed", "pin-refused"
@@ -47,7 +47,7 @@ def evaluate(text: str, signer: ConfirmationSigner, confirmation: str | None = N
         if verdict == "ok":
             return VoiceDecision(True, False, intent, ACCEPTED)
         return VoiceDecision(False, False, intent, PIN_REFUSED, reason=f"the PIN was refused: {verdict}")
-    if intent not in SENSITIVE and not (intent == SILENCE and silence_mode == DOUBLE_TURN):
+    if intent not in SENSITIVE and not (intent == SILENCE and silence_mode in (DOUBLE_TURN, CHALLENGE)):   # the challenge needs a screen, which the text route has not: it asks for the signed confirmation, never less
         return VoiceDecision(True, False, intent, ACCEPTED)
     if confirmation is None:
         return VoiceDecision(False, True, intent, CONFIRMATION_NEEDED, signer.issue(intent, subject), f"say it again with the confirmation within {signer.ttl_s:.0f} s")
