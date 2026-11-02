@@ -15,6 +15,14 @@ class LanguageTests(unittest.TestCase):
             for phrase in phrases:
                 self.assertEqual(normalize_text(phrase), phrase, f"{intent}: {phrase!r} is not written in normal form, so it could never match")
 
+    def test_the_voiced_marks_of_kana_are_kept_while_the_accents_of_other_scripts_are_dropped(self):
+        self.assertNotEqual(normalize_text("ば"), normalize_text("は"))
+        self.assertNotEqual(normalize_text("ぱ"), normalize_text("ば"))
+        self.assertEqual(normalize_text("ば"), "ば")
+        self.assertEqual(normalize_text("ば"), "ば")            # the same letter written with its mark apart
+        self.assertEqual(normalize_text("ｶﾞ"), "ガ")                    # half-width kana
+        self.assertEqual(normalize_text("Désarmer l'alarme"), normalize_text("Desarmer l alarme"))
+
     def test_no_phrase_means_two_intents(self):
         seen: dict[str, str] = {}
         for intent, phrases in _PHRASES.items():

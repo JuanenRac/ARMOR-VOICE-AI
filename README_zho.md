@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-127%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-130%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分：** 意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计都是真实的，并有测试覆盖（127 项测试），服务器在 CM5 测试台上会向该服务发起查询。**本仓库不包含任何语音识别或语音合成引擎**：`/v1/turn` 运行的是你为它们配置的命令，目前没有任何一个用真实麦克风试过；用来承载该助手的触摸面板还没有在板子上运行过。
+**诚实性检查 - 今天真正能运行的部分：** 意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计都是真实的，并有测试覆盖（130 项测试），服务器在 CM5 测试台上会向该服务发起查询。**本仓库不包含任何语音识别或语音合成引擎**：`/v1/turn` 运行的是你为它们配置的命令，目前没有任何一个用真实麦克风试过；用来承载该助手的触摸面板还没有在板子上运行过。
 
 ---
 
@@ -41,7 +41,7 @@
 | 成熟度 | 成熟 |
 | 角色 | 离线语音与意图网关（系列：Core Services，上级：ARMOR-SERVER） |
 | 技术栈 | Python 3.11+，仅使用标准库 |
-| 测试 | 127 (`python -m unittest discover -s tests`) |
+| 测试 | 130 (`python -m unittest discover -s tests`) |
 | 命令 | 15 个（10 个查询类，5 个执行类），420 个短语，8 种语言 |
 | 监听地址 | `127.0.0.1:18090`（仅限本机回环），需要令牌 |
 | 运行位置 | CM5 测试台（作为服务）或任意计算机 |
@@ -59,7 +59,7 @@
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟡 | 意图规则、本地服务和轮次接口在 CM5 测试台上作为服务运行，但本仓库不包含任何语音识别或语音合成引擎：它运行的是你为此配置的命令。 |
-| 测试 | 🟢 | 127 项测试通过（`python -m unittest discover -s tests`）：意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计。 |
+| 测试 | 🟢 | 130 项测试通过（`python -m unittest discover -s tests`）：意图规则、八种语言、与说话人绑定的签名确认、静音策略、本地服务、轮次接口和审计。 |
 | 硬件 | 🔴 | 没有试过任何麦克风或语音引擎，用来承载该助手的触摸面板也还没有在板子上运行过。 |
 | 安全 | 🟡 | 确认经过签名并与说话人绑定，审计已在主机上测试；没有经过独立审查。 |
 | 集成 | 🟡 | 服务器在 CM5 测试台上查询该服务；与触摸面板配合的语音流程尚未运行。 |
@@ -80,7 +80,7 @@ ARMOR-VOICE-AI 是 A.R.M.O.R. 中负责把**人说的话转换为十五个命令
 * 当 ARMOR-SERVER 要求时，可让 `silence` 需要口述的 **PIN** 或第二个确认轮次。
 * 既作为**本地 HTTP 服务**运行，也作为面向适配器和测试的 **JSON 行网关**运行。
 * 从壁挂面板接收**一个轮次的音频**，运行你配置的语音引擎，并以文字回答；配有语音合成器时还以音频回答。
-* 记录**决策，绝不记录音频或原话**：只保存转写文本的 SHA-256。
+* 记录**决策，绝不记录音频或原话**：只保存转写文本的带密钥摘要（HMAC-SHA-256）。
 
 **它不做什么**
 
@@ -199,7 +199,7 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 
 ### 决策记录
 
-使用 `--audit-file` 时，每个决策一行 JSON：时间、意图、结果以及转写文本的 SHA-256。绝不记录音频，也绝不记录原话。
+使用 `--audit-file` 时，每个决策一行 JSON：时间、意图、结果以及转写文本的带密钥摘要（HMAC-SHA-256），已知语句的字典无法将其还原（`ARMOR_VOICE_AUDIT_KEY` 让它在重启之间保持可比；`ARMOR_VOICE_AUDIT_TRANSCRIPT` 可选 `hmac`、`sha256` 或 `none`）。绝不记录音频，也绝不记录原话。
 
 ## 🔒 安全与防护
 
@@ -276,6 +276,8 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 |---|---|---|
 | `ARMOR_VOICE_TOKEN` | 是（16 个以上字符） | 调用方在 `X-Armor-Voice-Token` 中发送的令牌（或 `--token-file` 所指文件中的一行 `ARMOR_VOICE_TOKEN=...`） |
 | `ARMOR_VOICE_CONFIRM_SECRET` | 推荐（16 个以上字节） | 为确认签名。没有它时会使用随机密钥，进程停止时待处理的确认会丢失 |
+| `ARMOR_VOICE_AUDIT_KEY` | 可选（16 个以上字符） | 为审计中词语的摘要加密钥，使其在重启之间保持可比。没有它时每次运行使用自己的密钥 |
+| `ARMOR_VOICE_AUDIT_TRANSCRIPT` | 可选 | 审计保留词语的哪种形式：`hmac`（默认）、`sha256`（简单摘要）或 `none` |
 | `ARMOR_VOICE_STT_COMMAND` | `/v1/turn` 需要 | 语音转文字程序：标准输入为音频（WAV），标准输出为文字 |
 | `ARMOR_VOICE_TTS_COMMAND` | 可选 | 文字转语音程序：标准输入为文字，标准输出为 16 kHz 16 位单声道 WAV |
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | `/v1/turn` 需要 | ARMOR-SERVER 以及其语音路由的操作员令牌 |
@@ -317,7 +319,7 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 $env:PYTHONPATH = "src"
 
 # 1. 测试
-python -m unittest discover -s tests                      # 127 项测试
+python -m unittest discover -s tests                      # 130 项测试
 
 # 2. 网关，每行一个 JSON 对象
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -407,7 +409,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             stdin/stdout 上的 JSON 行、审计、回应的语句
 │   ├── service.py             本地 HTTP 服务（/healthz、/v1/command、/v1/turn）
 │   └── turn.py                一个语音轮次：引擎、是/否、时间预算
-├── tests/                     127 项测试：静音、边界、网关、轮次、语言、服务
+├── tests/                     130 项测试：静音、边界、网关、轮次、语言、服务
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     共享的 CI 检查和项目工具
 ├── images/                    横幅和图标

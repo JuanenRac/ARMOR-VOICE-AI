@@ -59,7 +59,7 @@ rules of that route are:
 * **Confirmation is spoken, and only for arming.** The panel has no keyboard, so the service remembers the question it asked this client for half a minute and takes the next turn that
   says *yes* (in the language of the panel) as the confirmation and the next that says *no* as a refusal. Disarming is never done from here: it needs the PIN of a person, and a PIN
   is not said aloud.
-* **Nothing is kept.** The audio is not stored, and the audit line carries the SHA-256 of the text, never the text.
+* **Nothing is kept.** The audio is not stored, and the audit line carries a keyed digest of the text, never the text.
 * **Not on the network in clear.** The service listens on the loopback only: either a proxy of the server forwards the turn, or `--allow-remote` is used behind TLS. The token and the audio
   must not cross the network in clear.
 * **No identity of the speaker yet.** The turn does not say which panel or which person spoke; the server decides with the token it was given. Adding the panel (and, where it exists,
@@ -72,9 +72,15 @@ echoed back, wrong guesses are limited, and a policy that is present but unreada
 
 ## What is recorded
 
-With `--audit-file`, one line per decision: time, intent, outcome and the SHA-256
-of the transcript. **Never audio and never the raw text**, so the log shows what
-was decided without keeping what was said.
+With `--audit-file`, one line per decision: time, intent, outcome and a keyed
+digest (HMAC-SHA-256) of the transcript. **Never audio and never the raw text**,
+so the log shows what was decided without keeping what was said. A plain SHA-256
+of a phrase taken from a list of a couple of hundred can be found by trying them
+all, so the digest is keyed: `ARMOR_VOICE_AUDIT_KEY` (16 or more characters) keeps
+the digests comparable across restarts, and without it each run has its own key.
+`ARMOR_VOICE_AUDIT_TRANSCRIPT` chooses what is kept: `hmac` (the default), `sha256`
+(the plain digest of before, field `transcript_sha256`) or `none` (nothing; also
+what an unknown value means).
 
 ## What this service does not do
 

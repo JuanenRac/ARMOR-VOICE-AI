@@ -133,6 +133,31 @@ def pcm_from_wav(wav: bytes) -> bytes:
     raise TurnError(502, "engine_failed")
 
 
+def check_engines(stt: CommandEngine | None, tts: CommandEngine | None, language: str = "en") -> list[dict[str, object]]:
+    """Runs each configured speech engine once on a sample (a second of silence for hearing, the word "test" for speaking) and says whether it works, how long it took and
+    what it gave back. Nothing is sent anywhere and nothing is kept; the command line of an engine is never part of the report."""
+    report: list[dict[str, object]] = []
+    for name, engine in (("stt", stt), ("tts", tts)):
+        if engine is None:
+            report.append({"engine": name, "configured": False})
+            continue
+        started = time.monotonic()
+        try:
+            if name == "stt":
+                heard = engine.run(wav_from_pcm(bytes(32_000)), language, 4096).decode("utf-8", "replace").strip()
+                detail: dict[str, object] = {"text_chars": len(heard)}
+            else:
+                wav = engine.run(b"test", language, MAX_AUDIO_BYTES * 4)
+                pcm = pcm_from_wav(wav)
+                detail = {"audio_seconds": round(len(pcm) / 32_000, 2), "fits_a_turn": len(pcm) <= MAX_AUDIO_BYTES}
+        except TurnError:
+            report.append({"engine": name, "configured": True, "ok": False, "seconds": round(time.monotonic() - started, 2),
+                           "problem": "the engine failed, timed out or gave an output that is not usable (for speaking: a 16 kHz, 16-bit, mono WAVE)"})
+            continue
+        report.append({"engine": name, "configured": True, "ok": True, "seconds": round(time.monotonic() - started, 2), **detail})
+    return report
+
+
 @dataclass
 class ServerLink:
     """ARMOR-SERVER's route for written and spoken commands, with the operator token of the installation."""

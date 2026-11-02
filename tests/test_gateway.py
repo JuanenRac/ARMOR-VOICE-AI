@@ -182,8 +182,29 @@ class GatewayTests(unittest.TestCase):
             line = audit.read_text(encoding="utf-8")
             entry = json.loads(line)
             self.assertEqual((entry["intent"], entry["outcome"]), ("arm", "confirmation-needed"))
-            self.assertEqual(len(entry["transcript_sha256"]), 64)
+            self.assertEqual(len(entry["transcript_hmac"]), 64)
             self.assertNotIn("please", line.lower())
+
+    def test_the_digest_of_the_words_is_keyed_and_the_plain_one_or_none_are_options(self):
+        import hashlib
+        import os
+        from unittest import mock
+
+        def digest(env):
+            with tempfile.TemporaryDirectory() as directory, mock.patch.dict(os.environ, env):
+                audit = Path(directory) / "voice.log"
+                handle_request({"text": "status"}, signer(), audit)
+                return json.loads(audit.read_text(encoding="utf-8"))
+
+        keyed = digest({"ARMOR_VOICE_AUDIT_KEY": "k" * 20})
+        self.assertNotEqual(keyed["transcript_hmac"], hashlib.sha256(b"status").hexdigest())   # a dictionary of the known phrases does not reverse it
+        self.assertEqual(keyed["transcript_hmac"], digest({"ARMOR_VOICE_AUDIT_KEY": "k" * 20})["transcript_hmac"])
+        self.assertNotEqual(keyed["transcript_hmac"], digest({"ARMOR_VOICE_AUDIT_KEY": "j" * 20})["transcript_hmac"])
+        plain = digest({"ARMOR_VOICE_AUDIT_TRANSCRIPT": "sha256"})
+        self.assertEqual(plain["transcript_sha256"], hashlib.sha256(b"status").hexdigest())
+        for mode in ("none", "something-else"):
+            entry = digest({"ARMOR_VOICE_AUDIT_TRANSCRIPT": mode})
+            self.assertEqual(set(entry), {"at", "intent", "outcome"})
 
     def test_an_unwritable_audit_path_never_breaks_a_command(self):
         answer = handle_request({"text": "status"}, signer(), Path("/nonexistent-dir/voice.log"))

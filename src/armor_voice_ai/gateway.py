@@ -11,14 +11,17 @@ Response:
 
 The caller never states that something was confirmed: it can only echo a token
 the service issued. Only the decision is optionally recorded (intent, outcome,
-time, and a SHA-256 of the transcript), never audio and never the raw text.
+time, and a keyed digest of the transcript, never audio and never the raw text).
 """
 
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import logging
+import os
+import secrets
 import sys
 import time
 from dataclasses import asdict
@@ -71,8 +74,30 @@ def handle_request(request: object, signer: ConfirmationSigner, audit: Path | No
     return answer
 
 
+#: What the audit keeps of the words: "hmac" (the default), "sha256" (the plain digest of before) or "none". A plain digest of a phrase from a list of ~200 can be reversed by trying them all.
+AUDIT_TRANSCRIPT_MODES = ("hmac", "sha256", "none")
+_PROCESS_KEY = secrets.token_bytes(32)
+
+
+def audit_transcript_mode() -> str:
+    """`ARMOR_VOICE_AUDIT_TRANSCRIPT` (hmac, sha256 or none); an unknown value is read as the safest, none."""
+    mode = os.environ.get("ARMOR_VOICE_AUDIT_TRANSCRIPT", "hmac").strip().lower() or "hmac"
+    return mode if mode in AUDIT_TRANSCRIPT_MODES else "none"
+
+
+def _audit_key() -> bytes:
+    """`ARMOR_VOICE_AUDIT_KEY` (16 or more characters) keeps the digests comparable across restarts; without it each run has its own key."""
+    configured = os.environ.get("ARMOR_VOICE_AUDIT_KEY", "").encode()
+    return configured if len(configured) >= 16 else _PROCESS_KEY
+
+
 def _record(path: Path, intent: str | None, outcome: str, text: str) -> None:
-    entry = {"at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "intent": intent, "outcome": outcome, "transcript_sha256": hashlib.sha256(text.encode()).hexdigest()}
+    entry: dict[str, object] = {"at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "intent": intent, "outcome": outcome}
+    mode = audit_transcript_mode()
+    if mode == "hmac":
+        entry["transcript_hmac"] = hmac.new(_audit_key(), text.encode(), hashlib.sha256).hexdigest()
+    elif mode == "sha256":
+        entry["transcript_sha256"] = hashlib.sha256(text.encode()).hexdigest()
     try:
         with path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(entry, separators=(",", ":")) + "\n")

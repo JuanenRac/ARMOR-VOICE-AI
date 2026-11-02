@@ -27,7 +27,7 @@ from pathlib import Path
 from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
 from .silence_policy import PinGuard, mode_from_header
-from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService
+from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService, check_engines
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
@@ -183,10 +183,16 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--port", type=int, default=18090)
     parser.add_argument("--token-file", type=Path, help="a file with a line ARMOR_VOICE_TOKEN=...; else the environment variable of the same name")
     parser.add_argument("--audit-file", type=Path, help="append one line per decision (no audio, no raw text)")
+    parser.add_argument("--check-engines", action="store_true", help="run the speech engines once on a sample, print whether they work and how long they take, and stop (no token needed)")
     parser.add_argument("--allow-remote", action="store_true", help="listen on a non-loopback address (not recommended)")
     args = parser.parse_args(argv)
     if args.host not in LOOPBACK and not args.allow_remote:
         raise SystemExit("refusing to listen on a non-loopback address without --allow-remote")
+    if args.check_engines:
+        stt_command, tts_command = os.environ.get("ARMOR_VOICE_STT_COMMAND", "").strip(), os.environ.get("ARMOR_VOICE_TTS_COMMAND", "").strip()
+        report = check_engines(CommandEngine(stt_command) if stt_command else None, CommandEngine(tts_command) if tts_command else None)
+        print(json.dumps(report, indent=2))
+        raise SystemExit(0 if any(item.get("configured") for item in report) and all(item.get("ok", True) for item in report) else 1)
     token = _read_token(args)
     if len(token) < 16:
         raise SystemExit("a token of at least 16 characters is needed (ARMOR_VOICE_TOKEN)")

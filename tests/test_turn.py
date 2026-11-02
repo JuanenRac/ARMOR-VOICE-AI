@@ -8,7 +8,7 @@ import urllib.request
 
 from armor_voice_ai.confirmation import ConfirmationSigner, VALID, WRONG_SUBJECT
 from armor_voice_ai.service import make_server
-from armor_voice_ai.turn import CommandEngine, TurnError, TurnService, pcm_from_wav, wav_from_pcm
+from armor_voice_ai.turn import CommandEngine, TurnError, TurnService, check_engines, pcm_from_wav, wav_from_pcm
 
 TOKEN = "t" * 24
 SPEECH = b"\x01\x00" * 8_000     # half a second of "audio"
@@ -130,6 +130,22 @@ class TurnTests(unittest.TestCase):
         wrong_rate = wav_from_pcm(samples, rate=22_050)
         with self.assertRaises(TurnError):
             pcm_from_wav(wrong_rate)
+
+    def test_the_check_of_the_engines_says_what_works_without_showing_their_commands(self):
+        tts_code = "import sys; sys.stdout.buffer.write(bytes.fromhex(%r))" % wav_from_pcm(b"\x01\x00" * 8_000).hex()
+        good_tts = CommandEngine([sys.executable, "-c", tts_code])
+        good_stt = CommandEngine([sys.executable, "-c", "import sys; sys.stdin.buffer.read(); print('arm the system')"])
+        report = check_engines(good_stt, good_tts)
+        self.assertEqual([item["engine"] for item in report], ["stt", "tts"])
+        self.assertTrue(all(item["ok"] for item in report))
+        self.assertEqual(report[0]["text_chars"], 14)
+        self.assertEqual((report[1]["audio_seconds"], report[1]["fits_a_turn"]), (0.5, True))
+        self.assertNotIn(sys.executable, json.dumps(report))
+        bad_tts = CommandEngine([sys.executable, "-c", "print('not a wave')"])
+        broken = check_engines(None, bad_tts)
+        self.assertEqual(broken[0], {"engine": "stt", "configured": False})
+        self.assertFalse(broken[1]["ok"])
+        self.assertEqual(check_engines(None, None), [{"engine": "stt", "configured": False}, {"engine": "tts", "configured": False}])
 
     def test_an_engine_is_given_no_secret_it_was_not_meant_to_have(self):
         import os

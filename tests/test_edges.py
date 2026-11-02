@@ -52,7 +52,7 @@ class LineProtocolTests(unittest.TestCase):
             self.assertNotIn("arm the system", text)
             entries = [json.loads(line) for line in text.splitlines()]
             self.assertEqual(len(entries), 2)
-            self.assertTrue(all(len(entry["transcript_sha256"]) == 64 for entry in entries))
+            self.assertTrue(all(len(entry["transcript_hmac"]) == 64 and "transcript_sha256" not in entry for entry in entries))
 
     def test_each_language_has_all_its_phrases(self):
         for language, table in gateway.SPEECH_BY_LANGUAGE.items():

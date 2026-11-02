@@ -35,12 +35,14 @@ _FILLER = re.compile(
     r"per favore|per piacere|ehi)\b"
 )
 _PUNCTUATION = re.compile(r"[^\w\s]")
+_KANA_MARKS = frozenset("\u3099\u309a")
 
 
 def normalize_text(text: str) -> str:
     """Canonical form of a transcript: NFKC, lower case, no accents, punctuation or filler."""
     folded = unicodedata.normalize("NFKD", unicodedata.normalize("NFKC", text).lower())
-    without_accents = "".join(char for char in folded if not unicodedata.combining(char))
+    # The voiced marks of kana (U+3099, U+309A) are part of the letter ("ば" is not "は"): only the accents of the other scripts are dropped.
+    without_accents = unicodedata.normalize("NFC", "".join(char for char in folded if char in _KANA_MARKS or not unicodedata.combining(char)))
     cleaned = _FILLER.sub(" ", _PUNCTUATION.sub(" ", without_accents))
     return " ".join(cleaned.split())
 
