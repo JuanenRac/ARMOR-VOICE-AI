@@ -4,10 +4,11 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.3] - A silence mode with a number that is shown and not said, an audit that no longer keeps a reversible digest, a check of the speech engines before they are needed and the voiced marks of Japanese kept
+
 - **The audit no longer keeps a digest that can be reversed:** the line of each decision carries `transcript_hmac`, an HMAC-SHA-256 of the words keyed by `ARMOR_VOICE_AUDIT_KEY` (or by a key of the run), instead of a plain SHA-256 that a dictionary of the known phrases would reverse; `ARMOR_VOICE_AUDIT_TRANSCRIPT` chooses `hmac` (the default), `sha256` (the old field) or `none`.
 - **The voiced marks of Japanese are no longer dropped when the words are compared:** "ば" and "は" stay different words (only the accents of the other scripts are removed).
 - **The speech engines can be tried before they are needed:** `--check-engines` runs each configured engine once on a sample and prints whether it works, how long it took and what it gave back.
-
 - **A silence mode with a number that is shown, not said:** the policy `silence_confirmation: "challenge"` makes the first "silence" ask for a number of two digits that appears in the answer (`challenge`) for the screen of the panel and is not in the spoken reply; only that number, said within 20 seconds from the same panel, passes the command on. A loudspeaker or somebody outside the house cannot know it. Three wrong numbers in a row lock silencing by voice for five minutes for every panel, a number is good once, and a panel that cannot show it cannot silence by voice in this mode. The text route (`/v1/command`) has no screen and asks for the signed confirmation in this mode, never less. The new sentences are in the eight languages. Nothing changes unless the server sends the new value.
 - Tests: 130 (before 118).
 
