@@ -4,6 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **One matrix of risk by intent:** `intent.RISK` says for every intent whether it asks or does, which confirmation it needs (none, the signed one, or the one the silence policy chooses), whether a PIN is the proof and whether the wall panel may carry it out; the sensitive set and the refusal of disarming from the panel read it instead of naming intents by hand.
+- Tests: 134 (before 130): the matrix, punctuation of Japanese and Chinese transcripts, a spoken reply of 199,000 bytes (words only) and one of 190,000 (with audio), and an engine cut short by the turn budget.
+
 ## [0.3.3] - A silence mode with a number that is shown and not said, an audit that no longer keeps a reversible digest, a check of the speech engines before they are needed and the voiced marks of Japanese kept
 
 - **The audit no longer keeps a digest that can be reversed:** the line of each decision carries `transcript_hmac`, an HMAC-SHA-256 of the words keyed by `ARMOR_VOICE_AUDIT_KEY` (or by a key of the run), instead of a plain SHA-256 that a dictionary of the known phrases would reverse; `ARMOR_VOICE_AUDIT_TRANSCRIPT` chooses `hmac` (the default), `sha256` (the old field) or `none`.

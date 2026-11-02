@@ -27,7 +27,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from shlex import split as shell_split
 
-from .intent import SILENCE, normalize_text, parse_intent
+from .intent import RISK, SILENCE, normalize_text, parse_intent
 from .silence_policy import (ASK_CHALLENGE, ASK_PIN, ASK_YES, CHALLENGE, CHALLENGE_VALIDITY_S, DOUBLE_TURN, DOUBLE_TURN_VALIDITY_S, LOCKED, NO_PIN_SET, OFF, PIN, PIN_VALIDITY_S, WRONG_CHALLENGE, WRONG_PIN,
                              ChallengeGuard, PinGuard, mode_from_policy, spoken_digits)
 
@@ -284,7 +284,8 @@ class TurnService:
         return self._finish(heard, self._ask(heard, language, None), language, client, started)
 
     def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:
-        if answer.get("intent") == "disarm":
+        intent = answer.get("intent")
+        if isinstance(intent, str) and intent in RISK and not RISK[intent].allowed_from_panel:   # the matrix of intent.py: disarming is for the screen, with a PIN
             return self._answer(heard, DISARM_REFUSED[language], language)
         token = answer.get("confirmation_token")
         if isinstance(token, str) and token and (started is None or time.monotonic() - started <= PANEL_WAITS_S):

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from dataclasses import dataclass
 
 from .phrases import PHRASES
 
@@ -21,8 +22,34 @@ ARM, DISARM, STATUS, SILENCE = "arm", "disarm", "status", "silence"
 QUERIES = frozenset({"status", "alarms", "nodes", "cameras", "radar", "solar", "electrical", "network", "time", "help"})
 ACTIONS = frozenset({ARM, DISARM, SILENCE, "lights_on", "lights_off"})
 ALLOWED = QUERIES | ACTIONS
-#: Intents that change the security state and therefore need an explicit confirmation turn.
-SENSITIVE = frozenset({ARM, DISARM})
+
+
+@dataclass(frozen=True)
+class IntentRisk:
+    """What a spoken intent is worth, in one place: whether it only asks or does something, which confirmation it needs, whether a PIN is the proof and whether the wall panel may carry it out."""
+    kind: str                  # "query" (nothing changes) or "action" (the server carries it out)
+    confirmation: str          # "none", "signed" (a token echoed back) or "policy" (the server's silence policy chooses)
+    pin_required: bool         # a PIN, typed on a screen, is the proof (never said aloud)
+    allowed_from_panel: bool   # whether the panel's voice turn may carry it out
+
+
+#: The single matrix of risk by intent. session.py (the text route) and turn.py (the panel turn) both read it, so no intent is special-cased by name elsewhere.
+RISK: dict[str, IntentRisk] = {
+    **{name: IntentRisk("query", "none", False, True) for name in sorted(QUERIES)},
+    ARM: IntentRisk("action", "signed", False, True),
+    DISARM: IntentRisk("action", "signed", True, False),
+    SILENCE: IntentRisk("action", "policy", False, True),
+    "lights_on": IntentRisk("action", "none", False, True),
+    "lights_off": IntentRisk("action", "none", False, True),
+}
+#: Intents that change the security state and therefore need an explicit signed confirmation turn.
+SENSITIVE = frozenset(name for name, risk in RISK.items() if risk.confirmation == "signed")
+
+
+def allowed_from_panel(intent: object) -> bool:
+    """Whether the voice turn of the wall panel may carry out this intent; an intent that is not in the matrix is not allowed."""
+    risk = RISK.get(intent) if isinstance(intent, str) else None
+    return risk is not None and risk.allowed_from_panel
 MAX_TEXT_LENGTH = 200
 
 # Polite words and ways of calling the assistant that are dropped before the phrase is compared (whole words only). Japanese and Chinese are written without

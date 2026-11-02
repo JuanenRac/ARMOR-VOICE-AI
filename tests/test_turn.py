@@ -1,11 +1,15 @@
 import json
 import os
 import sys
+import tempfile
 import threading
+import time
 import unittest
 import urllib.error
 import urllib.request
+from pathlib import Path
 
+from armor_voice_ai.intent import ACTIONS, ALLOWED, QUERIES, RISK, SENSITIVE, allowed_from_panel, parse_intent
 from armor_voice_ai.confirmation import ConfirmationSigner, VALID, WRONG_SUBJECT
 from armor_voice_ai.service import make_server
 from armor_voice_ai.turn import CommandEngine, TurnError, TurnService, check_engines, pcm_from_wav, wav_from_pcm
@@ -158,6 +162,47 @@ class TurnTests(unittest.TestCase):
         self.assertNotIn("MY_AUTH_COOKIE", kept)
         self.assertEqual(kept["ARMOR_VOICE_ENGINE_MODEL"], "small")
         self.assertEqual(kept["ARMOR_VOICE_LANGUAGE"], "en")
+
+    def test_one_matrix_says_what_each_intent_is_worth(self):
+        self.assertEqual(set(RISK), set(ALLOWED))
+        for name in QUERIES:
+            self.assertEqual((RISK[name].kind, RISK[name].confirmation), ("query", "none"))
+        for name in ACTIONS:
+            self.assertEqual(RISK[name].kind, "action")
+        self.assertEqual(SENSITIVE, {"arm", "disarm"})
+        self.assertEqual(RISK["silence"].confirmation, "policy")
+        self.assertTrue(RISK["disarm"].pin_required)
+        self.assertFalse(allowed_from_panel("disarm"))
+        self.assertTrue(allowed_from_panel("arm") and allowed_from_panel("status"))
+        self.assertFalse(allowed_from_panel("something-new") or allowed_from_panel(None))
+
+    def test_the_punctuation_of_a_transcript_in_japanese_and_chinese_does_not_hide_a_command(self):
+        for said in ("状態。", "「状態」", "システムの状態！", "状态！", "状态？", "状态，"):
+            self.assertEqual(parse_intent(said), "status", said)
+        self.assertEqual(parse_intent("Yes please"), None)   # a courtesy is never a command by itself
+
+    def test_a_spoken_reply_of_199000_bytes_goes_as_words_only_and_one_of_190000_goes_with_audio(self):
+        for size, has_audio in ((199_000, False), (190_000, True)):
+            wav = wav_from_pcm(b"\x02\x00" * (size // 2))
+            with tempfile.TemporaryDirectory() as folder:   # a WAVE this size does not fit on a command line
+                path = Path(folder) / "reply.wav"
+                path.write_bytes(wav)
+                tts = CommandEngine([sys.executable, "-c", "import sys; sys.stdin.buffer.read(); sys.stdout.buffer.write(open(sys.argv[1], 'rb').read())", str(path)])
+                service, _ = self.service("status", tts=tts)
+                answer = service.handle(SPEECH, "en", "panel")
+            self.assertEqual("audio" in answer, has_audio, size)
+            self.assertEqual(answer["reply"], "The system is armed.")
+
+    def test_an_engine_without_a_secret_in_its_environment_still_runs_and_a_long_engine_is_cut_short_by_the_turn_budget(self):
+        service, server = self.service("status")
+        slow = CommandEngine([sys.executable, "-c", "import time; time.sleep(30)"], timeout_s=30.0)
+        service._stt = slow
+        started = time.monotonic()
+        with self.assertRaises(TurnError) as raised:
+            service.handle(SPEECH, "en", "panel")
+        self.assertEqual(raised.exception.code, "engine_failed")
+        self.assertLess(time.monotonic() - started, 15)
+        self.assertEqual(server.asked, [])
 
     def test_disarming_is_never_done_from_here(self):
         service, server = self.service("disarm the system")
