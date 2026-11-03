@@ -1,3 +1,3 @@
 """A.R.M.O.R. voice safety gateway."""
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"

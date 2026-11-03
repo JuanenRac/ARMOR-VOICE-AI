@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.4] - The launchers find the shared repository through ARMORCOMMONDIR: build, build-test, test and run (.sh and .bat) use the folder named by that variable when it is set and the sibling ARMOR-COMMON folder otherwise, so a checkout... (and 3 more changes)
+
 - **The launchers find the shared repository through `ARMOR_COMMON_DIR`:** `build`, `build-test`, `test` and `run` (`.sh` and `.bat`) use the folder named by that variable when it is set and the sibling `ARMOR-COMMON` folder otherwise, so a checkout with another layout builds without changing a file.
 - **The transcript of a spoken turn is shown to the server before it is interpreted, so that the server can look for a panic phrase:** `ServerLink.panic_check` calls `POST /api/v1/voice/panic-check` with the operator token and the text just transcribed (three seconds at most); the answer is never read, so the service cannot tell a match from a miss, and a server that does not have the route, that refuses or that does not answer changes nothing in the turn. Whether anything is looked for is the server's setting `voice.panic_phrase` (off by default). Four tests.
 - **One matrix of risk by intent:** `intent.RISK` says for every intent whether it asks or does, which confirmation it needs (none, the signed one, or the one the silence policy chooses), whether a PIN is the proof and whether the wall panel may carry it out; the sensitive set and the refusal of disarming from the panel read it instead of naming intents by hand.
