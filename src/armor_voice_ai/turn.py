@@ -39,6 +39,7 @@ PENDING_VALIDITY_S = 30.0
 #: must not be two things. And a question that took longer than the panel waits is not remembered, so nobody's next "yes" answers a question they never heard.
 TURN_BUDGET_S = 9.0
 PANEL_WAITS_S = 12.0
+PANIC_CHECK_TIMEOUT_S = 3.0        # the check may not eat the budget of the turn
 MAX_HEARD_CHARS = 200              # what the server and the intent engine take
 MAX_SPEAK_CHARS = 300              # the longest sentence `speak` says (an alarm is a few words)
 _ENGINE_ENVIRONMENT = ("PATH", "HOME", "LANG", "LANGUAGE", "TMPDIR", "TEMP", "TMP", "SYSTEMROOT", "LD_LIBRARY_PATH", "PYTHONPATH")
@@ -180,10 +181,22 @@ class ServerLink:
         except (OSError, ValueError) as error:
             raise TurnError(502, "server_not_answering") from error
 
+    def panic_check(self, text: str, language: str) -> None:
+        """Tells the server what was just transcribed, before it is interpreted, so that the server can look for a panic phrase. The answer is always the same and is not read: the gateway
+        never learns whether the words matched, and the turn goes on exactly as it would have. A server that does not know the route, or does not answer, changes nothing."""
+        request = urllib.request.Request(self.url.rstrip("/") + "/api/v1/voice/panic-check", data=json.dumps({"text": text, "language": language}).encode(), method="POST",
+                                         headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor"})
+        try:
+            with urllib.request.urlopen(request, timeout=min(self.timeout_s, PANIC_CHECK_TIMEOUT_S)) as reply:  # noqa: S310 - the address is the installation's own
+                reply.read(1024)
+        except (OSError, ValueError):
+            pass   # urllib.error.HTTPError is an OSError: a refusal or a missing route is not the person's problem
+
 
 class TurnService:
     def __init__(self, stt: CommandEngine | None, tts: CommandEngine | None, server: ServerLink | Callable[[str, str, str | None], dict[str, object]] | None,
-                 now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None, challenge_guard: ChallengeGuard | None = None) -> None:
+                 now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None, challenge_guard: ChallengeGuard | None = None,
+                 panic_check: Callable[[str, str], None] | None = None) -> None:
         self._stt, self._tts, self._now = stt, tts, now
         self.pin_guard = pin_guard or PinGuard(None)
         self.challenge_guard = challenge_guard or ChallengeGuard()
@@ -191,6 +204,8 @@ class TurnService:
         # what a panel was asked before a "silence" is passed on: (the words of the command, the mode, until when)
         self._silence_wait: dict[str, tuple[str, str, float]] = {}
         self._ask = server.command if isinstance(server, ServerLink) else server
+        #: asked with every transcript before it is interpreted; what it answers is never read (see ServerLink.panic_check)
+        self._panic_check = panic_check if panic_check is not None else (server.panic_check if isinstance(server, ServerLink) else None)
         self._pending: dict[str, tuple[str, str, float]] = {}
         self._lock = threading.Lock()
 
@@ -229,6 +244,11 @@ class TurnService:
             return self._answer(heard[:MAX_HEARD_CHARS], NOTHING_HEARD[language], language)
         if time.monotonic() - started > TURN_BUDGET_S:
             raise TurnError(504, "turn_too_slow")   # nothing was asked of the server, so nothing was done
+        if self._panic_check is not None:
+            try:
+                self._panic_check(heard, language)   # BEFORE the words are interpreted; nothing is learnt from it and nothing about the turn changes
+            except Exception:  # noqa: BLE001 - whatever went wrong there must never take the turn with it
+                pass
         words = normalize_text(heard)
         mode = mode_from_policy(policy)
         waiting = self._take_silence_wait(client)

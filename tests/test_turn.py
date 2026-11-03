@@ -241,6 +241,62 @@ class TurnTests(unittest.TestCase):
         self.assertEqual(pcm_from_wav(wav_from_pcm(pcm)), pcm)
 
 
+class PanicCheckTests(unittest.TestCase):
+    """The transcript goes to the server's panic route BEFORE it is interpreted; what comes back is not read, and a failure there never changes the turn."""
+
+    def test_the_transcript_is_checked_before_the_server_is_asked_and_the_turn_is_unchanged(self):
+        events = []
+        server = FakeServer()
+        service = TurnService(engine_saying("the blue heron flies"), None, lambda *a: events.append("command") or server(*a), panic_check=lambda text, language: events.append(("panic", text, language)))
+        answer = service.handle(SPEECH, "en", "panel")
+        self.assertEqual(events, [("panic", "the blue heron flies", "en"), "command"])
+        self.assertEqual(answer["heard"], "the blue heron flies")
+
+    def test_a_check_that_fails_changes_nothing(self):
+        def broken(text, language):
+            raise RuntimeError("down")
+        service = TurnService(engine_saying("status"), None, FakeServer(), panic_check=broken)
+        self.assertEqual(service.handle(SPEECH, "en", "panel"), {"heard": "status", "reply": "The system is armed."})
+
+    def test_nothing_is_checked_when_nothing_was_heard(self):
+        seen = []
+        service = TurnService(engine_saying(""), None, FakeServer(), panic_check=lambda *a: seen.append(a))
+        service.handle(SPEECH, "en", "panel")
+        self.assertEqual(seen, [])
+
+    def test_the_link_asks_the_route_with_the_operator_token_and_ignores_every_answer(self):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        from armor_voice_ai.turn import ServerLink
+        seen = []
+        status = [200]
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                return
+
+            def do_POST(self):
+                seen.append((self.path, self.headers.get("Authorization"), json.loads(self.rfile.read(int(self.headers["Content-Length"])))))
+                self.send_response(status[0])
+                self.send_header("Content-Length", "11")
+                self.end_headers()
+                self.wfile.write(b'{"ok":true}')
+
+        httpd = HTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+        thread.start()
+        try:
+            link = ServerLink(f"http://127.0.0.1:{httpd.server_address[1]}", "o" * 24)
+            for code in (200, 401, 404, 429):   # a match, a refusal, an old server and the rate limit all look the same from here
+                status[0] = code
+                self.assertIsNone(link.panic_check("the blue heron flies at midnight", "en"))
+            self.assertEqual(seen[0], ("/api/v1/voice/panic-check", "Bearer " + "o" * 24, {"text": "the blue heron flies at midnight", "language": "en"}))
+            self.assertEqual(len(seen), 4)
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+        self.assertIsNone(ServerLink("http://127.0.0.1:9", "o" * 24).panic_check("x y z", "en"))   # nobody listening: still nothing raised
+
+
 class SpeakTests(unittest.TestCase):
     """The sentence of an alarm said out loud (`/v1/speak`): the speech engine and nothing else."""
 
