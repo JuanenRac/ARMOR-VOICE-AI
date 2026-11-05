@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The wall panel that spoke is handed back to the server:** `POST /v1/turn` reads the header `X-Armor-Panel` (the node id of the panel, as the server forwards it) and sends it on the `/api/v1/voice/command` and `/api/v1/voice/panic-check` calls, so that what a panel asked is written down as that panel. An id that is not a plain node id is dropped, and a turn without one carries none (the value lives only in that request). Two tests.
+
 ## [0.3.4] - The launchers find the shared repository through ARMORCOMMONDIR: build, build-test, test and run (.sh and .bat) use the folder named by that variable when it is set and the sibling ARMOR-COMMON folder otherwise, so a checkout... (and 3 more changes)
 
 - **The launchers find the shared repository through `ARMOR_COMMON_DIR`:** `build`, `build-test`, `test` and `run` (`.sh` and `.bat`) use the folder named by that variable when it is set and the sibling `ARMOR-COMMON` folder otherwise, so a checkout with another layout builds without changing a file.

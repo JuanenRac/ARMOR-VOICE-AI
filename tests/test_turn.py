@@ -12,7 +12,7 @@ from pathlib import Path
 from armor_voice_ai.intent import ACTIONS, ALLOWED, QUERIES, RISK, SENSITIVE, allowed_from_panel, parse_intent
 from armor_voice_ai.confirmation import ConfirmationSigner, VALID, WRONG_SUBJECT
 from armor_voice_ai.service import make_server
-from armor_voice_ai.turn import CommandEngine, TurnError, TurnService, check_engines, pcm_from_wav, wav_from_pcm
+from armor_voice_ai.turn import CommandEngine, ServerLink, TurnError, TurnService, check_engines, pcm_from_wav, wav_from_pcm
 
 TOKEN = "t" * 24
 SPEECH = b"\x01\x00" * 8_000     # half a second of "audio"
@@ -295,6 +295,47 @@ class PanicCheckTests(unittest.TestCase):
             httpd.shutdown()
             httpd.server_close()
         self.assertIsNone(ServerLink("http://127.0.0.1:9", "o" * 24).panic_check("x y z", "en"))   # nobody listening: still nothing raised
+
+
+class PanelHeaderTests(unittest.TestCase):
+    """The wall panel that spoke is handed back to the server on the command and on the panic check, and only a well-formed id is."""
+
+    def run_turn(self, panel):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+        seen = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                seen.append((self.path, self.headers.get("X-Armor-Panel")))
+                body = b'{"reply":"ok","intent":"status"}'
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+        httpd = HTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        try:
+            service = TurnService(engine_saying("status"), None, ServerLink(f"http://127.0.0.1:{httpd.server_address[1]}", "o" * 24))
+            service.handle(SPEECH, "en", "panel", None, panel)
+            service.handle(SPEECH, "en", "panel")   # a turn with no panel afterwards carries none: nothing leaks between turns
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+        return seen
+
+    def test_the_panel_goes_back_on_both_routes_and_does_not_leak(self):
+        seen = self.run_turn("hmi-kitchen")
+        self.assertEqual(seen[:2], [("/api/v1/voice/panic-check", "hmi-kitchen"), ("/api/v1/voice/command", "hmi-kitchen")])
+        self.assertTrue(all(panel is None for _path, panel in seen[2:]))
+
+    def test_a_malformed_panel_is_dropped(self):
+        seen = self.run_turn("../x y")
+        self.assertTrue(seen and all(panel is None for _path, panel in seen))
 
 
 class SpeakTests(unittest.TestCase):

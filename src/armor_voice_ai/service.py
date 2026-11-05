@@ -106,7 +106,7 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
                 return self._send(503, {"error": "busy"})
             try:
                 policy = self._policy_header()
-                self._send(200, turns.handle(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0], policy))
+                self._send(200, turns.handle(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0], policy, self.headers.get("X-Armor-Panel", "")[:64]))
             except TurnError as error:
                 self._send(error.status, {"error": error.code})
             finally:

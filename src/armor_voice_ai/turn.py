@@ -16,8 +16,10 @@ says yes (in the language of the panel) as the confirmation, and the next that s
 from __future__ import annotations
 
 import base64
+import contextvars
 import json
 import os
+import re
 import subprocess
 import threading
 import time
@@ -159,6 +161,16 @@ def check_engines(stt: CommandEngine | None, tts: CommandEngine | None, language
     return report
 
 
+#: The wall panel whose turn is being handled (its node id, as the server sent it in `X-Armor-Panel`). Each request runs in its own thread, so the value never leaks to another panel.
+CURRENT_PANEL: contextvars.ContextVar[str] = contextvars.ContextVar("armor_panel", default="")
+PANEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
+
+
+def _panel_header() -> dict[str, str]:
+    panel = CURRENT_PANEL.get()
+    return {"X-Armor-Panel": panel} if panel else {}
+
+
 @dataclass
 class ServerLink:
     """ARMOR-SERVER's route for written and spoken commands, with the operator token of the installation."""
@@ -171,7 +183,7 @@ class ServerLink:
         if confirmation:
             body["confirmation"] = confirmation
         request = urllib.request.Request(self.url.rstrip("/") + "/api/v1/voice/command", data=json.dumps(body).encode(), method="POST",
-                                         headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor"})
+                                         headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor", **_panel_header()})
         try:
             with urllib.request.urlopen(request, timeout=self.timeout_s) as reply:  # noqa: S310 - the address is the installation's own
                 return json.loads(reply.read(65_536).decode("utf-8", "replace"))
@@ -185,7 +197,7 @@ class ServerLink:
         """Tells the server what was just transcribed, before it is interpreted, so that the server can look for a panic phrase. The answer is always the same and is not read: the gateway
         never learns whether the words matched, and the turn goes on exactly as it would have. A server that does not know the route, or does not answer, changes nothing."""
         request = urllib.request.Request(self.url.rstrip("/") + "/api/v1/voice/panic-check", data=json.dumps({"text": text, "language": language}).encode(), method="POST",
-                                         headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor"})
+                                         headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor", **_panel_header()})
         try:
             with urllib.request.urlopen(request, timeout=min(self.timeout_s, PANIC_CHECK_TIMEOUT_S)) as reply:  # noqa: S310 - the address is the installation's own
                 reply.read(1024)
@@ -229,7 +241,15 @@ class TurnService:
             raise TurnError(502, "engine_failed")
         return audio
 
-    def handle(self, pcm: bytes, language: str, client: str, policy: object = None) -> dict[str, object]:
+    def handle(self, pcm: bytes, language: str, client: str, policy: object = None, panel: str = "") -> dict[str, object]:
+        """One spoken turn. `panel` is the id of the wall panel that spoke (from `X-Armor-Panel`); it is handed back to the server on the command so that what the panel asked is written down as that panel."""
+        token = CURRENT_PANEL.set(panel if PANEL_ID.match(panel or "") else "")
+        try:
+            return self._handle(pcm, language, client, policy)
+        finally:
+            CURRENT_PANEL.reset(token)
+
+    def _handle(self, pcm: bytes, language: str, client: str, policy: object = None) -> dict[str, object]:
         if self._stt is None:
             raise TurnError(501, "stt_unavailable")
         if self._ask is None:
