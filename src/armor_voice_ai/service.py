@@ -27,13 +27,14 @@ from pathlib import Path
 from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
 from .silence_policy import PinGuard, mode_from_header
+from .wakeword import MAX_CHUNK_BYTES, OpenWakeWordDetector, WakeError, WakeService, load_words
 from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService, check_engines
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
 
 def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, audit: Path | None = None, turns: TurnService | None = None,
-                pin_guard: PinGuard | None = None) -> ThreadingHTTPServer:
+                pin_guard: PinGuard | None = None, wake: WakeService | None = None) -> ThreadingHTTPServer:
     """A server that answers `POST /v1/command`, `POST /v1/turn` (audio, when a speech engine is configured) and `GET /healthz`; call serve_forever() on it."""
     if len(token) < 16:
         raise ValueError("the token must be at least 16 characters")
@@ -138,7 +139,33 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
             finally:
                 turn_slots.release()
 
+        def _wake(self) -> None:
+            """A chunk of audio (16 kHz mono 16-bit PCM, at most two seconds) in; whether the wake word ended in it out. Off unless the service was started with ARMOR_WAKE_WORD=on."""
+            if wake is None:
+                return self._send(403, {"error": "wake_disabled"})
+            language = self.headers.get("X-Armor-Language", "en")
+            if language not in SPEECH_BY_LANGUAGE:
+                return self._send(422, {"error": "invalid language"})
+            if not self.headers.get("Content-Type", "").lower().startswith("audio/l16"):
+                return self._send(415, {"error": "audio/L16;rate=16000 is expected"})
+            try:
+                length = int(self.headers.get("Content-Length", "-1"))
+            except ValueError:
+                length = -1
+            if length <= 0 or length > MAX_CHUNK_BYTES:
+                self._refuse_unread(length)
+                return self._send(413 if length > MAX_CHUNK_BYTES else 411, {"error": "bad audio length"})
+            pcm = self.rfile.read(length)
+            try:
+                self._send(200, wake.process(pcm, language, self.headers.get("X-Armor-Client", "")[:64] or self.client_address[0]))
+            except WakeError as error:
+                self._send(error.status, {"error": error.code})
+
         def do_POST(self) -> None:   # noqa: N802
+            if self.path == "/v1/wake":
+                if not self._authorized():
+                    return self._send(401, {"error": "unauthorized"})
+                return self._wake()
             if self.path == "/v1/speak":
                 if not self._authorized():
                     return self._send(401, {"error": "unauthorized"})
@@ -204,7 +231,15 @@ def main(argv: list[str] | None = None) -> None:
     except ValueError as error:
         raise SystemExit(f"ARMOR_VOICE_SILENCE_PIN is not valid: {error}") from None   # the value itself is never printed
     turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link, pin_guard=guard)
-    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard)
+    wake = None
+    if os.environ.get("ARMOR_WAKE_WORD", "").strip().lower() == "on":
+        try:
+            folder = os.environ.get("ARMOR_WAKE_MODELS", "").strip()
+            config_file = os.environ.get("ARMOR_WAKE_CONFIG", "").strip()
+            wake = WakeService(OpenWakeWordDetector(Path(folder) if folder else None), load_words(Path(config_file) if config_file else None))
+        except (WakeError, ValueError, OSError) as error:
+            raise SystemExit(f"ARMOR_WAKE_WORD=on but the wake word cannot start: {error}") from None
+    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard, wake)
     print(f"armor-voice listening on {args.host}:{server.server_address[1]}", file=sys.stderr, flush=True)
     try:
         server.serve_forever()
