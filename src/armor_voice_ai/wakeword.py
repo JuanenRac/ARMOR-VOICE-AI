@@ -19,7 +19,7 @@ import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Protocol
+from typing import Any, Callable, Protocol
 
 from .gateway import SPEECH_BY_LANGUAGE
 
@@ -89,11 +89,12 @@ class OpenWakeWordDetector:
 
     def __init__(self, model_folder: Path | None = None) -> None:
         try:
-            import numpy  # noqa: PLC0415 - optional dependency, loaded on demand
+            import numpy  # type: ignore[import-not-found]  # noqa: PLC0415 - optional dependency, loaded on demand
             from openwakeword.model import Model  # type: ignore[import-not-found]  # noqa: PLC0415
         except ImportError as error:
             raise WakeError(501, "wake_detector_unavailable") from error
-        self._numpy, self._Model, self._folder, self._models, self._lock = numpy, Model, model_folder, {}, threading.Lock()
+        self._numpy, self._Model, self._folder, self._lock = numpy, Model, model_folder, threading.Lock()
+        self._models: dict[str, Any] = {}
 
     def predict(self, frame: bytes, model: str) -> float:
         with self._lock:
