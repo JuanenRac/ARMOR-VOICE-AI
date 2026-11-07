@@ -19,3 +19,7 @@ server carries out what was accepted, with the session of the person who spoke.
 
 It listens on the loopback address only (it refuses another one without `--allow-remote`), compares the token in constant time, never logs what was said, and signs
 the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. `armor-voice-service --check-engines` runs each configured speech engine once on a sample (a second of silence for hearing, the word "test" for speaking), prints whether it works, how long it took and what it gave back (never its command line) and stops; it needs no token and exits with 1 when an engine fails or none is set up. On the bench it is installed by `ARMOR-DEVOPS/scripts/install_cm5.sh --with-voice`.
+
+## Testing without speech engines
+
+`tests/loopback_engine.py tts|stt` can be given as `ARMOR_VOICE_TTS_COMMAND` and `ARMOR_VOICE_STT_COMMAND` in a test or a bench: it turns text into a WAVE that its own `stt` reads back exactly (and silence into no words), so a whole turn runs in every language with no model, microphone or speaker. It proves the road of a turn, never the quality of a real engine.

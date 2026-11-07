@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Stand-in speech engines for the tests and the bench:** `tests/loopback_engine.py` is a speech-to-text and a text-to-speech command that recognise and say nothing a person could hear (every byte of the text is a block of samples, so a clip it makes reads back exactly and silence reads back as no words). A whole turn - the panel audio, the engine commands, the server voice route and the audio of the answer - now runs in the tests in all eight languages without a model, a microphone or a speaker. A green run proves the plumbing, not how well a real engine hears a voice.
 - **The wall panel that spoke is handed back to the server:** `POST /v1/turn` reads the header `X-Armor-Panel` (the node id of the panel, as the server forwards it) and sends it on the `/api/v1/voice/command` and `/api/v1/voice/panic-check` calls, so that what a panel asked is written down as that panel. An id that is not a plain node id is dropped, and a turn without one carries none (the value lives only in that request). Two tests.
 
 ## [0.3.4] - The launchers find the shared repository through ARMORCOMMONDIR: build, build-test, test and run (.sh and .bat) use the folder named by that variable when it is set and the sibling ARMOR-COMMON folder otherwise, so a checkout... (and 3 more changes)
