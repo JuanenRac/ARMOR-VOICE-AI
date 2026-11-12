@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Tests of the two ways out of the release tool of the wake word models that nobody took:** a release without `--sign` writes the models and the manifest and no signature (a signer that is given but not asked for is not run), and a words file that cannot be read is a message and not a trace, with nothing written.
+
 - **Tests of the branches nobody tried:** the PIN guard and the guard of the spoken number while they are locked (the third wrong try locks, even the right one is refused until the lock ends, a right one clears the count, digits that are not ASCII are wrong), the sentences a panel asks the service to say (no engine, empty or too long, an engine that makes nothing, too much or a torn sample, or fails to run), the audio left out of a reply that is too long, a question that goes stale while another panel speaks, and every wrong field of a request to the gateway.
 
 - **The silence policy says when a phone is a screen:** `docs/SILENCE_POLICY.md` explains that the number of the challenge mode reaches a phone only when its person turned on the spoken turn of the Android or iPhone app (off by default), and that otherwise the phone is still the text route that asks for the signed confirmation.
