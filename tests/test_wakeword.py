@@ -190,5 +190,22 @@ class WakeRouteTests(unittest.TestCase):
         self.assertEqual((status, body["wake"], body["word"]), (200, True, "hey armor"))
 
 
+class ExampleWordsFileTests(unittest.TestCase):
+    def test_the_example_file_names_a_word_for_each_of_the_eight_languages(self):
+        from pathlib import Path
+        from armor_voice_ai.gateway import SPEECH_BY_LANGUAGE
+        path = Path(__file__).resolve().parent.parent / "docs" / "wake_words.example.json"
+        words = parse_words(path.read_text(encoding="utf-8"))
+        self.assertEqual(set(words), set(SPEECH_BY_LANGUAGE))
+        self.assertEqual(len(words), 8)
+        self.assertEqual(len({word.model for word in words.values()}), 8)
+        self.assertEqual((words["en"].phrase, words["es"].phrase), ("hey armor", "oye armor"))
+
+    def test_a_language_without_a_line_is_refused_not_guessed(self):
+        words = parse_words('{"en": {"phrase": "hey armor", "model": "m.onnx"}}')
+        self.assertEqual(set(words), {"en"})
+        self.assertEqual(words["en"].threshold, 0.6)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,10 @@
+{
+  "en": {"phrase": "hey armor", "model": "hey_armor_en.onnx", "threshold": 0.6},
+  "es": {"phrase": "oye armor", "model": "oye_armor_es.onnx", "threshold": 0.6},
+  "de": {"phrase": "hey armor", "model": "hey_armor_de.onnx", "threshold": 0.6},
+  "fr": {"phrase": "dis armor", "model": "dis_armor_fr.onnx", "threshold": 0.6},
+  "it": {"phrase": "ehi armor", "model": "ehi_armor_it.onnx", "threshold": 0.6},
+  "ja": {"phrase": "ねえ アーマー", "model": "nee_armor_ja.onnx", "threshold": 0.6},
+  "zh": {"phrase": "你好 armor", "model": "nihao_armor_zh.onnx", "threshold": 0.6},
+  "pt": {"phrase": "olá armor", "model": "ola_armor_pt.onnx", "threshold": 0.6}
+}

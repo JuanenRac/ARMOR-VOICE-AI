@@ -20,6 +20,10 @@ server carries out what was accepted, with the session of the person who spoke.
 It listens on the loopback address only (it refuses another one without `--allow-remote`), compares the token in constant time, never logs what was said, and signs
 the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. `armor-voice-service --check-engines` runs each configured speech engine once on a sample (a second of silence for hearing, the word "test" for speaking), prints whether it works, how long it took and what it gave back (never its command line) and stops; it needs no token and exits with 1 when an engine fails or none is set up. On the bench it is installed by `ARMOR-DEVOPS/scripts/install_cm5.sh --with-voice`.
 
+## The wake word in the other languages
+
+`docs/wake_words.example.json` is a `wake_words.json` with a line for each of the eight languages (phrase, model file, threshold). Copy it, point `ARMOR_WAKE_CONFIG` at the copy and `ARMOR_WAKE_MODELS` at the folder of the models, and set `ARMOR_WAKE_WORD=on`. Only the English and Spanish models are meant to exist first; for a language whose model file is missing the service answers `wake_model_missing` instead of guessing, so a word is added by training its model (openWakeWord trains one from synthetic speech) and putting the file in the folder. Nothing is switched on by the file itself.
+
 ## Testing without speech engines
 
 `tests/loopback_engine.py tts|stt` can be given as `ARMOR_VOICE_TTS_COMMAND` and `ARMOR_VOICE_STT_COMMAND` in a test or a bench: it turns text into a WAVE that its own `stt` reads back exactly (and silence into no words), so a whole turn runs in every language with no model, microphone or speaker. It proves the road of a turn, never the quality of a real engine.
