@@ -228,6 +228,7 @@ Le désarmement par la voix n'est **jamais** effectué depuis le panneau mural. 
 | `POST /v1/command` | en-tête `X-Armor-Voice-Token` | Corps `{text, language?, confirmation?, subject?, policy?, pin?}` (2 Ko au plus). Répond ce qui a été compris, un `confirmation_token` quand un second tour est nécessaire et `speech` dans la langue demandée |
 | `POST /v1/turn` | le même en-tête | Corps : PCM brut mono 16 bits à 16 kHz, `Content-Type: audio/L16;rate=16000`, jusqu'à 480 000 octets ; en-têtes `X-Armor-Language`, `X-Armor-Client`, `X-Armor-Policy`. Répond `{heard, reply, audio?}` |
 | `POST /v1/speak` | le même en-tête | Corps `{text, language}` (300 caractères au plus). Répond `{audio}`, la phrase dite par le programme de synthèse vocale en base64 de PCM mono 16 bits à 16 kHz (elle ne déclenche rien et ne garde rien) ; 501 sans ce programme |
+| `POST /v1/wake` | le même en-tête | Corps : jusqu'à deux secondes de PCM brut mono 16 bits à 16 kHz (`audio/L16;rate=16000`) ; en-têtes `X-Armor-Language` et `X-Armor-Client`. Répond `{wake: true}` ou `{wake: false}` : si le mot d'éveil s'est terminé dans le morceau. Il ne garde aucun son. Répond 403 `wake_disabled` sauf si le service a démarré avec `ARMOR_WAKE_WORD=on` |
 
 Un échange réel (le jeton est abrégé) :
 
@@ -283,6 +284,8 @@ Résultats : `accepted`, `confirmation-needed`, `confirmation-refused`, `pin-nee
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | pour `/v1/turn` | ARMOR-SERVER et le jeton d'opérateur de sa route vocale |
 | `ARMOR_VOICE_SILENCE_PIN` | pour le mode `pin` | De 4 à 12 chiffres. Une valeur non valide arrête le service au démarrage sans l'afficher |
 | `ARMOR_VOICE_ENGINE_*` | facultative | Transmises aux moteurs vocaux (avec `ARMOR_VOICE_LANGUAGE`, fixée à chaque tour) |
+| `ARMOR_WAKE_WORD` | facultative | `on` démarre le détecteur local de mot d'éveil (openWakeWord, sans cloud) derrière `/v1/wake` ; toute autre valeur le laisse éteint |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | facultatives | Le dossier des modèles du détecteur et le chemin d'un `wake_words.json` (phrase, modèle et seuil pour chaque langue ; sans lui, anglais et espagnol) |
 
 ### Ligne de commande
 
@@ -429,7 +432,7 @@ ARMOR-VOICE-AI/
 **Limites connues aujourd'hui**
 
 * Aucun moteur vocal n'est fourni, et aucun n'a été essayé avec un vrai microphone.
-* Le panneau tactile censé porter l'assistant n'a pas tourné sur une carte ; il n'y a pas de mot d'éveil, c'est appuyer pour parler.
+* Le panneau tactile censé porter l'assistant n'a pas tourné sur une carte ; le détecteur de mot d'éveil est là mais éteint par défaut et le panneau ne l'utilise pas encore, c'est donc appuyer pour parler.
 * Le tour ne dit pas *quel panneau ni quelle personne* a parlé : ARMOR-SERVER décide avec le jeton qu'il a reçu. Les ajouter à la requête est un changement du contrat entre le serveur et le panneau.
 * Pas de revue de sécurité indépendante.
 

@@ -228,6 +228,7 @@ Unscharfschalten per Sprache geschieht **nie** vom Wandpanel aus. Aus der App fo
 | `POST /v1/command` | Header `X-Armor-Voice-Token` | Body `{text, language?, confirmation?, subject?, policy?, pin?}` (höchstens 2 KB). Antwortet mit dem Verstandenen, einem `confirmation_token`, wenn ein zweiter Turn nötig ist, und `speech` in der gewünschten Sprache |
 | `POST /v1/turn` | derselbe Header | Body: rohes 16-kHz-16-Bit-Mono-PCM, `Content-Type: audio/L16;rate=16000`, bis zu 480 000 Bytes; Header `X-Armor-Language`, `X-Armor-Client`, `X-Armor-Policy`. Antwortet `{heard, reply, audio?}` |
 | `POST /v1/speak` | derselbe Header | Body `{text, language}` (höchstens 300 Zeichen). Antwortet `{audio}`, den vom Sprachsyntheseprogramm gesprochenen Satz als Base64 von 16-kHz-16-Bit-Mono-PCM (löst nichts aus und speichert nichts); 501 ohne dieses Programm |
+| `POST /v1/wake` | derselbe Header | Body: bis zu zwei Sekunden rohes 16-kHz-16-Bit-Mono-PCM (`audio/L16;rate=16000`); Header `X-Armor-Language` und `X-Armor-Client`. Antwortet `{wake: true}` oder `{wake: false}`: ob das Aktivierungswort in dem Stück endete. Es speichert kein Audio. Antwortet 403 `wake_disabled`, außer der Dienst wurde mit `ARMOR_WAKE_WORD=on` gestartet |
 
 Ein echter Austausch (der Token ist gekürzt):
 
@@ -283,6 +284,8 @@ Ergebnisse: `accepted`, `confirmation-needed`, `confirmation-refused`, `pin-need
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | für `/v1/turn` | ARMOR-SERVER und der Operator-Token für dessen Sprachroute |
 | `ARMOR_VOICE_SILENCE_PIN` | für den Modus `pin` | 4 bis 12 Ziffern. Ein ungültiger Wert stoppt den Dienst beim Start, ohne ihn auszugeben |
 | `ARMOR_VOICE_ENGINE_*` | optional | An die Sprach-Engines weitergegeben (zusammen mit `ARMOR_VOICE_LANGUAGE`, pro Turn gesetzt) |
+| `ARMOR_WAKE_WORD` | optional | `on` startet den lokalen Aktivierungswort-Detektor (openWakeWord, ohne Cloud) hinter `/v1/wake`; jeder andere Wert lässt ihn aus |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | optional | Der Ordner der Modelle des Detektors und der Pfad einer `wake_words.json` (Phrase, Modell und Schwelle je Sprache; ohne sie Englisch und Spanisch) |
 
 ### Kommandozeile
 
@@ -429,7 +432,7 @@ ARMOR-VOICE-AI/
 **Bekannte Grenzen heute**
 
 * Es wird keine Sprach-Engine mitgeliefert, und keine wurde mit einem echten Mikrofon ausprobiert.
-* Das Touch-Panel, das den Assistenten tragen soll, lief nicht auf einer Platine; es gibt kein Aktivierungswort, es ist Push-to-Talk.
+* Das Touch-Panel, das den Assistenten tragen soll, lief nicht auf einer Platine; der Aktivierungswort-Detektor ist vorhanden, aber standardmäßig aus, und das Panel ruft ihn noch nicht auf, also ist es Push-to-Talk.
 * Der Turn sagt nicht, *welches Panel oder welche Person* gesprochen hat: ARMOR-SERVER entscheidet mit dem Token, den es erhalten hat. Beides der Anfrage hinzuzufügen, ist eine Änderung des Vertrags zwischen Server und Panel.
 * Keine unabhängige Sicherheitsprüfung.
 

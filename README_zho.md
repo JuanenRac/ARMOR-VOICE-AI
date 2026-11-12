@@ -228,6 +228,7 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 | `POST /v1/command` | 请求头 `X-Armor-Voice-Token` | 请求体 `{text, language?, confirmation?, subject?, policy?, pin?}`（最多 2 KB）。返回理解的内容、需要第二个轮次时的 `confirmation_token`，以及所请求语言的 `speech` |
 | `POST /v1/turn` | 同一个请求头 | 请求体：原始 16 kHz 16 位单声道 PCM，`Content-Type: audio/L16;rate=16000`，最多 480 000 字节；请求头 `X-Armor-Language`、`X-Armor-Client`、`X-Armor-Policy`。返回 `{heard, reply, audio?}` |
 | `POST /v1/speak` | 同一个请求头 | 请求体 `{text, language}`（最多 300 个字符）。返回 `{audio}`，即文字转语音程序说出的句子，为 16 kHz 16 位单声道 PCM 的 base64（不会触发任何操作，也不保存任何内容）；没有该程序时返回 501 |
+| `POST /v1/wake` | 同一个请求头 | 请求体：最多两秒的 16 kHz 16 位单声道原始 PCM（`audio/L16;rate=16000`）；请求头 `X-Armor-Language` 和 `X-Armor-Client`。返回 `{wake: true}` 或 `{wake: false}`：唤醒词是否在该片段中结束。不保存音频。除非服务以 `ARMOR_WAKE_WORD=on` 启动，否则返回 403 `wake_disabled` |
 
 一次真实的交互（令牌已缩短）：
 
@@ -283,6 +284,8 @@ PIN（4 到 12 位数字，`ARMOR_VOICE_SILENCE_PIN`）以恒定时间比较，�
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | `/v1/turn` 需要 | ARMOR-SERVER 以及其语音路由的操作员令牌 |
 | `ARMOR_VOICE_SILENCE_PIN` | `pin` 模式需要 | 4 到 12 位数字。无效值会使服务在启动时停止，且不会打印该值 |
 | `ARMOR_VOICE_ENGINE_*` | 可选 | 传给语音引擎（连同每个轮次设置的 `ARMOR_VOICE_LANGUAGE`） |
+| `ARMOR_WAKE_WORD` | 可选 | `on` 会在 `/v1/wake` 之后启动本地唤醒词检测器（openWakeWord，无云）；其他任何值都保持关闭 |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | 可选 | 检测器模型所在的文件夹，以及 `wake_words.json` 的路径（每种语言的短语、模型和阈值；没有它则为英语和西班牙语） |
 
 ### 命令行
 
@@ -429,7 +432,7 @@ ARMOR-VOICE-AI/
 **当前已知限制**
 
 * 没有随附任何语音引擎，也没有任何一个用真实麦克风试过。
-* 用来承载该助手的触摸面板还没有在板子上运行过；没有唤醒词，采用按键说话。
+* 用来承载该助手的触摸面板还没有在板子上运行过；唤醒词检测器已经在这里，但默认关闭，面板还没有调用它，所以仍然是按键说话。
 * 轮次不会说明是*哪个面板或哪个人*在说话：ARMOR-SERVER 根据拿到的令牌做出决定。把它们加入请求属于服务器与面板之间约定的变更。
 * 没有独立的安全审查。
 

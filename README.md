@@ -228,6 +228,7 @@ Disarming by voice is **never** done from the wall panel. From the app it follow
 | `POST /v1/command` | header `X-Armor-Voice-Token` | Body `{text, language?, confirmation?, subject?, policy?, pin?}` (2 KB at most). Answers what was understood, a `confirmation_token` when a second turn is needed and `speech` in the language asked for |
 | `POST /v1/turn` | same header | Body: raw 16 kHz 16-bit mono PCM, `Content-Type: audio/L16;rate=16000`, up to 480 000 bytes; headers `X-Armor-Language`, `X-Armor-Client`, `X-Armor-Policy`. Answers `{heard, reply, audio?}` |
 | `POST /v1/speak` | same header | Body `{text, language}` (300 characters at most). Answers `{audio}`, the sentence said by the text-to-speech program as base64 of 16 kHz 16-bit mono PCM (it makes nothing happen and keeps nothing); 501 without that program |
+| `POST /v1/wake` | same header | Body: up to two seconds of raw 16 kHz 16-bit mono PCM (`audio/L16;rate=16000`); headers `X-Armor-Language` and `X-Armor-Client`. Answers `{wake: true}` or `{wake: false}`: whether the wake word ended in the chunk. It keeps no audio. Answers 403 `wake_disabled` unless the service started with `ARMOR_WAKE_WORD=on` |
 
 A real exchange (the token is shortened):
 
@@ -283,6 +284,8 @@ Outcomes: `accepted`, `confirmation-needed`, `confirmation-refused`, `pin-needed
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | for `/v1/turn` | ARMOR-SERVER and the operator token for its voice route |
 | `ARMOR_VOICE_SILENCE_PIN` | for the `pin` mode | 4 to 12 digits. An invalid value stops the service at start-up without printing it |
 | `ARMOR_VOICE_ENGINE_*` | optional | Passed on to the speech engines (together with `ARMOR_VOICE_LANGUAGE`, set per turn) |
+| `ARMOR_WAKE_WORD` | optional | `on` starts the local wake word detector (openWakeWord, no cloud) behind `/v1/wake`; any other value leaves it off |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | optional | The folder of the detector's models and the path of a `wake_words.json` (phrase, model and threshold for each language; without it, English and Spanish) |
 
 ### Command line
 
@@ -429,7 +432,7 @@ ARMOR-VOICE-AI/
 **Known limits today**
 
 * No speech engine ships with it, and none has been tried with a real microphone.
-* The touch panel that is meant to carry the assistant has not run on a board; there is no wake word, it is push to talk.
+* The touch panel that is meant to carry the assistant has not run on a board; the wake word detector is here but off by default and the panel does not call it yet, so it is push to talk.
 * The turn does not say *which panel or which person* spoke: ARMOR-SERVER decides with the token it was given. Adding them to the request is a change of the contract between the server and the panel.
 * No independent security review.
 

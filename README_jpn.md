@@ -228,6 +228,7 @@ PIN（4〜12 桁、`ARMOR_VOICE_SILENCE_PIN`）は一定時間で比較され、
 | `POST /v1/command` | ヘッダー `X-Armor-Voice-Token` | ボディ `{text, language?, confirmation?, subject?, policy?, pin?}`（最大 2 KB）。理解した内容、2 回目のターンが必要なときの `confirmation_token`、要求された言語の `speech` を返す |
 | `POST /v1/turn` | 同じヘッダー | ボディ：生の 16 kHz 16 ビットモノラル PCM、`Content-Type: audio/L16;rate=16000`、最大 480 000 バイト。ヘッダー `X-Armor-Language`、`X-Armor-Client`、`X-Armor-Policy`。`{heard, reply, audio?}` を返す |
 | `POST /v1/speak` | 同じヘッダー | ボディ `{text, language}`（最大 300 文字）。`{audio}` を返す。音声合成プログラムが読み上げた文を 16 kHz 16 ビットモノラル PCM の base64 で返す（何も実行せず、何も保存しない）。そのプログラムがなければ 501 |
+| `POST /v1/wake` | 同じヘッダー | ボディ：最大 2 秒の 16 kHz・16 ビット・モノラルの生 PCM（`audio/L16;rate=16000`）。ヘッダー `X-Armor-Language` と `X-Armor-Client`。`{wake: true}` または `{wake: false}` を返す：ウェイクワードがそのチャンクで終わったかどうか。音声は保存しない。サービスが `ARMOR_WAKE_WORD=on` で起動していない限り 403 `wake_disabled` を返す |
 
 実際のやり取りの例（トークンは短縮しています）：
 
@@ -283,6 +284,8 @@ PIN（4〜12 桁、`ARMOR_VOICE_SILENCE_PIN`）は一定時間で比較され、
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | `/v1/turn` に必要 | ARMOR-SERVER と、その音声ルート用のオペレータートークン |
 | `ARMOR_VOICE_SILENCE_PIN` | `pin` モードに必要 | 4〜12 桁。無効な値だと値を出力せずに起動時にサービスが停止する |
 | `ARMOR_VOICE_ENGINE_*` | 任意 | 音声エンジンへ渡される（ターンごとに設定される `ARMOR_VOICE_LANGUAGE` とともに） |
+| `ARMOR_WAKE_WORD` | 任意 | `on` で `/v1/wake` の背後にあるローカルのウェイクワード検出器（openWakeWord、クラウドなし）を起動する。他の値では無効のまま |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | 任意 | 検出器のモデルのフォルダと `wake_words.json` のパス（言語ごとのフレーズ、モデル、しきい値。なければ英語とスペイン語） |
 
 ### コマンドライン
 

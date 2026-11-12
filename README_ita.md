@@ -228,6 +228,7 @@ Il disinserimento a voce **non** avviene mai dal pannello a parete. Dall'app seg
 | `POST /v1/command` | intestazione `X-Armor-Voice-Token` | Corpo `{text, language?, confirmation?, subject?, policy?, pin?}` (al massimo 2 KB). Risponde con ciò che è stato capito, un `confirmation_token` quando serve un secondo turno e `speech` nella lingua richiesta |
 | `POST /v1/turn` | la stessa intestazione | Corpo: PCM grezzo mono a 16 bit e 16 kHz, `Content-Type: audio/L16;rate=16000`, fino a 480 000 byte; intestazioni `X-Armor-Language`, `X-Armor-Client`, `X-Armor-Policy`. Risponde `{heard, reply, audio?}` |
 | `POST /v1/speak` | la stessa intestazione | Corpo `{text, language}` (al massimo 300 caratteri). Risponde `{audio}`, la frase pronunciata dal programma di sintesi vocale come base64 di PCM mono a 16 bit e 16 kHz (non fa accadere nulla e non conserva nulla); 501 senza quel programma |
+| `POST /v1/wake` | la stessa intestazione | Corpo: fino a due secondi di PCM grezzo mono a 16 bit a 16 kHz (`audio/L16;rate=16000`); intestazioni `X-Armor-Language` e `X-Armor-Client`. Risponde `{wake: true}` oppure `{wake: false}`: se la parola di attivazione è finita nel pezzo. Non conserva audio. Risponde 403 `wake_disabled` salvo che il servizio sia partito con `ARMOR_WAKE_WORD=on` |
 
 Uno scambio reale (il token è abbreviato):
 
@@ -283,6 +284,8 @@ Esiti: `accepted`, `confirmation-needed`, `confirmation-refused`, `pin-needed`, 
 | `ARMOR_VOICE_SERVER_URL`, `ARMOR_VOICE_SERVER_TOKEN` | per `/v1/turn` | ARMOR-SERVER e il token operatore della sua rotta vocale |
 | `ARMOR_VOICE_SILENCE_PIN` | per la modalità `pin` | Da 4 a 12 cifre. Un valore non valido ferma il servizio all'avvio senza stamparlo |
 | `ARMOR_VOICE_ENGINE_*` | facoltativa | Passate ai motori vocali (insieme a `ARMOR_VOICE_LANGUAGE`, impostata a ogni turno) |
+| `ARMOR_WAKE_WORD` | facoltativa | `on` avvia il rilevatore locale della parola di attivazione (openWakeWord, senza cloud) dietro `/v1/wake`; qualsiasi altro valore lo lascia spento |
+| `ARMOR_WAKE_MODELS`, `ARMOR_WAKE_CONFIG` | facoltative | La cartella dei modelli del rilevatore e il percorso di un `wake_words.json` (frase, modello e soglia per ogni lingua; senza, inglese e spagnolo) |
 
 ### Riga di comando
 
@@ -429,7 +432,7 @@ ARMOR-VOICE-AI/
 **Limiti noti oggi**
 
 * Non include alcun motore vocale, e nessuno è stato provato con un vero microfono.
-* Il pannello touch che dovrebbe ospitare l'assistente non ha girato su una scheda; non c'è una parola di attivazione, è premi per parlare.
+* Il pannello touch che dovrebbe ospitare l'assistente non ha girato su una scheda; il rilevatore della parola di attivazione c'è ma è spento per impostazione predefinita e il pannello non lo usa ancora, quindi è premi per parlare.
 * Il turno non dice *quale pannello o quale persona* ha parlato: ARMOR-SERVER decide con il token che gli è stato dato. Aggiungerli alla richiesta è una modifica del contratto tra il server e il pannello.
 * Nessuna revisione di sicurezza indipendente.
 
