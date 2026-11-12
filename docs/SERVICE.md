@@ -27,3 +27,5 @@ the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. `armor-voice-service --chec
 ## Testing without speech engines
 
 `tests/loopback_engine.py tts|stt` can be given as `ARMOR_VOICE_TTS_COMMAND` and `ARMOR_VOICE_STT_COMMAND` in a test or a bench: it turns text into a WAVE that its own `stt` reads back exactly (and silence into no words), so a whole turn runs in every language with no model, microphone or speaker. It proves the road of a turn, never the quality of a real engine.
+
+The models are trained by a person and travel as assets of a release; [WAKE_TRAINING.md](WAKE_TRAINING.md) gives the training routine, the format the service expects, the check of a model (`python -m armor_voice_ai.wake_model_check`) and the helper that prepares the signed assets (`python -m armor_voice_ai.wake_release`).

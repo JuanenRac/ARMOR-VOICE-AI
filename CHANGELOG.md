@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A routine to train, check and release the wake word models:** `docs/WAKE_TRAINING.md` gives the training steps for the eight languages, the file the service expects (name from `wake_words.json`, 8 KiB to 8 MiB, ONNX with an input of `[batch, 16, 96]` and an output of `[batch, 1]`, weights inside the file) and the release routine. `python -m armor_voice_ai.wake_model_check` verifies a model or a whole folder against `wake_words.json` reading the file with the standard library only, and `python -m armor_voice_ai.wake_release` checks the models, writes a manifest of their hashes and has it signed by the signer of the releases (it never reads a key), so the models can be added to the release as signed assets. 18 tests build models in memory, including a wrong name, a wrong shape, a truncated file, an external weight and a signer that fails.
+
 ## [0.3.5] - The CI checks the coverage floor of this repository: a workflow of its own runs `tools/coverage_check.py` on every push and fails when the lines or the branches covered by the tests fall under the numbers of `docs/coverage_threshold.json` (
 
 - **The CI checks the coverage floor of this repository:** a workflow of its own runs `tools/coverage_check.py` on every push and fails when the lines or the branches covered by the tests fall under the numbers of `docs/coverage_threshold.json` (the shared workflow checks a floor only where there is a `package.json`).
