@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.5] - The CI checks the coverage floor of this repository: a workflow of its own runs `tools/coverage_check.py` on every push and fails when the lines or the branches covered by the tests fall under the numbers of `docs/coverage_threshold.json` (
+
 - **The CI checks the coverage floor of this repository:** a workflow of its own runs `tools/coverage_check.py` on every push and fails when the lines or the branches covered by the tests fall under the numbers of `docs/coverage_threshold.json` (the shared workflow checks a floor only where there is a `package.json`).
 
 - **The service has a coverage floor, and its routes are tested to the edge:** `docs/coverage_threshold.json` holds the least the tests may cover (lines and branches) and `tools/coverage_check.py` runs the tests with coverage and fails under it. The new tests (`tests/test_service_routes.py`) reach the paths the happy path does not: a length header that is not a number, a body shorter than it promised, a service that is busy, the speech and wake routes with and without their parts, the check of the engines, a wrong PIN and a wake word that cannot start. The service module now has 99 % of its lines covered (it had 87 %).
