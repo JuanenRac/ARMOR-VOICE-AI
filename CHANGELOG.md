@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The service has a coverage floor, and its routes are tested to the edge:** `docs/coverage_threshold.json` holds the least the tests may cover (lines and branches) and `tools/coverage_check.py` runs the tests with coverage and fails under it. The new tests (`tests/test_service_routes.py`) reach the paths the happy path does not: a length header that is not a number, a body shorter than it promised, a service that is busy, the speech and wake routes with and without their parts, the check of the engines, a wrong PIN and a wake word that cannot start. The service module now has 99 % of its lines covered (it had 87 %).
+
 - **An example `wake_words.json` for the eight languages:** `docs/wake_words.example.json` names a phrase, a model file and a threshold for English, Spanish, German, French, Italian, Japanese, Chinese and Portuguese (Portugal), and `docs/SERVICE.md` explains how to use it; a language whose model file is not there answers `wake_model_missing`, and the whole feature stays off unless `ARMOR_WAKE_WORD=on`. Two tests read the example through the same parser as the service, and four more run the openWakeWord detector with stand-in modules (library missing, model missing, a model loaded once, no score).
 
 - **The README and the table of settings say how the wake word is switched on:** `POST /v1/wake` (its headers, its answer and the 403 it gives while it is off), `ARMOR_WAKE_WORD`, `ARMOR_WAKE_MODELS` and `ARMOR_WAKE_CONFIG` are in the eight languages, and the limits section no longer says there is no wake word.
