@@ -207,5 +207,69 @@ class ExampleWordsFileTests(unittest.TestCase):
         self.assertEqual(words["en"].threshold, 0.6)
 
 
+class OpenWakeWordDetectorTests(unittest.TestCase):
+    """The detector of openWakeWord with stand-in modules: nothing is installed on the machine that runs the tests."""
+
+    def fake_modules(self, scores):
+        import types
+        loaded = []
+
+        class Model:
+            def __init__(self, wakeword_models, inference_framework):
+                loaded.append((wakeword_models, inference_framework))
+
+            def predict(self, samples):
+                return scores
+
+        numpy = types.SimpleNamespace(int16="int16", frombuffer=lambda frame, dtype: (len(frame), dtype))
+        modules = {"numpy": numpy, "openwakeword": types.ModuleType("openwakeword"), "openwakeword.model": types.SimpleNamespace(Model=Model)}
+        return modules, loaded
+
+    def test_without_the_library_it_says_the_detector_is_unavailable(self):
+        import sys
+        from unittest import mock
+        with mock.patch.dict(sys.modules, {"openwakeword": None, "openwakeword.model": None}):
+            with self.assertRaises(WakeError) as caught:
+                wakeword.OpenWakeWordDetector()
+        self.assertEqual((caught.exception.status, caught.exception.code), (501, "wake_detector_unavailable"))
+
+    def test_a_model_that_is_not_in_the_folder_is_said_not_guessed(self):
+        import sys
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        modules, loaded = self.fake_modules({"hey": 0.9})
+        with mock.patch.dict(sys.modules, modules), tempfile.TemporaryDirectory() as folder:
+            detector = wakeword.OpenWakeWordDetector(Path(folder))
+            with self.assertRaises(WakeError) as caught:
+                detector.predict(frames(1), "missing.onnx")
+        self.assertEqual((caught.exception.status, caught.exception.code), (501, "wake_model_missing"))
+        self.assertEqual(loaded, [])
+
+    def test_a_model_is_loaded_once_from_the_folder_and_the_best_score_is_returned(self):
+        import sys
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        modules, loaded = self.fake_modules({"a": 0.2, "b": 0.8})
+        with mock.patch.dict(sys.modules, modules), tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "hey.onnx").write_bytes(b"model")
+            detector = wakeword.OpenWakeWordDetector(Path(folder))
+            self.assertEqual(detector.predict(frames(1), "hey.onnx"), 0.8)
+            self.assertEqual(detector.predict(frames(1), "hey.onnx"), 0.8)
+        self.assertEqual(len(loaded), 1)
+        self.assertEqual(loaded[0][1], "onnx")
+
+    def test_a_model_that_gives_no_score_counts_as_silence(self):
+        import sys
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        modules, _ = self.fake_modules({})
+        with mock.patch.dict(sys.modules, modules), tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "hey.onnx").write_bytes(b"model")
+            self.assertEqual(wakeword.OpenWakeWordDetector(Path(folder)).predict(frames(1), "hey.onnx"), 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()
