@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The CI checks the coverage floor of this repository:** a workflow of its own runs `tools/coverage_check.py` on every push and fails when the lines or the branches covered by the tests fall under the numbers of `docs/coverage_threshold.json` (the shared workflow checks a floor only where there is a `package.json`).
+
 - **The service has a coverage floor, and its routes are tested to the edge:** `docs/coverage_threshold.json` holds the least the tests may cover (lines and branches) and `tools/coverage_check.py` runs the tests with coverage and fails under it. The new tests (`tests/test_service_routes.py`) reach the paths the happy path does not: a length header that is not a number, a body shorter than it promised, a service that is busy, the speech and wake routes with and without their parts, the check of the engines, a wrong PIN and a wake word that cannot start. The service module now has 99 % of its lines covered (it had 87 %).
 
 - **An example `wake_words.json` for the eight languages:** `docs/wake_words.example.json` names a phrase, a model file and a threshold for English, Spanish, German, French, Italian, Japanese, Chinese and Portuguese (Portugal), and `docs/SERVICE.md` explains how to use it; a language whose model file is not there answers `wake_model_missing`, and the whole feature stays off unless `ARMOR_WAKE_WORD=on`. Two tests read the example through the same parser as the service, and four more run the openWakeWord detector with stand-in modules (library missing, model missing, a model loaded once, no score).
