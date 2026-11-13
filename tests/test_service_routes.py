@@ -147,7 +147,7 @@ class EnginesTests(unittest.TestCase):
 
 class WakeRouteTests(unittest.TestCase):
     def setUp(self):
-        self.running = Running(self, None, WakeService(Quiet(), parse_words(None)))
+        self.running = Running(self, None, WakeService(Quiet(), parse_words(None, generic=False)))
 
     def test_a_chunk_is_listened_to_and_every_wrong_request_is_named(self):
         post = self.running.post

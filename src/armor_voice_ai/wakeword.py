@@ -32,10 +32,15 @@ MAX_CHUNK_BYTES = FRAME_BYTES * 25
 MAX_SESSIONS = 64
 MIN_THRESHOLD, MAX_THRESHOLD = 0.3, 0.99
 
+#: The words of the family's OWN models (hey armor, oye armor), which are trained by the owner and published in the releases of this project: used only when the generic ones are turned off.
 DEFAULT_WORDS: dict[str, dict[str, object]] = {
     "en": {"phrase": "hey armor", "model": "hey_armor_en.onnx", "threshold": 0.6},
     "es": {"phrase": "oye armor", "model": "oye_armor_es.onnx", "threshold": 0.6},
 }
+#: The GENERIC model that openWakeWord publishes (an English phrase, "hey jarvis"): what the service uses when there is no `wake_words.json` and the generic models are not turned off (`ARMOR_WAKE_GENERIC=off`).
+#: It is the same file for every language, because a stock model does not depend on the language of the panel; a word of the language of the house is a line of `wake_words.json`.
+GENERIC_MODEL = "hey_jarvis_v0.1.onnx"
+GENERIC_WORDS: dict[str, dict[str, object]] = {code: {"phrase": "hey jarvis", "model": GENERIC_MODEL, "threshold": 0.5} for code in ("en", "es", "de", "fr", "it", "ja", "zh", "pt")}
 
 
 class WakeError(Exception):
@@ -57,10 +62,11 @@ class WakeWord:
     threshold: float
 
 
-def parse_words(text: str | None) -> dict[str, WakeWord]:
-    """The words of the file ``wake_words.json`` (``{"en": {"phrase", "model", "threshold"}, ...}``), or the two defaults when there is no file. A line that is not valid is refused whole,
-    never half used: a wrong threshold would make the panel listen to everything or to nothing."""
-    data: object = DEFAULT_WORDS if text is None else json.loads(text)
+def parse_words(text: str | None, generic: bool = True) -> dict[str, WakeWord]:
+    """The words of the file ``wake_words.json`` (``{"en": {"phrase", "model", "threshold"}, ...}``), or, when there is no file, the generic model of openWakeWord for the eight languages
+    (``generic``, the default) or the family's own two (hey armor, oye armor). A line that is not valid is refused whole, never half used: a wrong threshold would make the panel listen to
+    everything or to nothing."""
+    data: object = (GENERIC_WORDS if generic else DEFAULT_WORDS) if text is None else json.loads(text)
     if not isinstance(data, dict) or not data:
         raise ValueError("the wake words must be an object with a line for at least one language")
     words: dict[str, WakeWord] = {}
@@ -80,8 +86,13 @@ def parse_words(text: str | None) -> dict[str, WakeWord]:
     return words
 
 
-def load_words(path: Path | None) -> dict[str, WakeWord]:
-    return parse_words(path.read_text(encoding="utf-8") if path is not None else None)
+def load_words(path: Path | None, generic: bool = True) -> dict[str, WakeWord]:
+    return parse_words(path.read_text(encoding="utf-8") if path is not None else None, generic)
+
+
+def generic_models_on(value: str | None) -> bool:
+    """The switch ARMOR_WAKE_GENERIC: the generic models are used unless it says off (or 0, false, no)."""
+    return (value or "").strip().lower() not in ("off", "0", "false", "no")
 
 
 class OpenWakeWordDetector:

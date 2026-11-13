@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The wake word starts with the generic model of openWakeWord:** with `ARMOR_WAKE_WORD=on` and no `wake_words.json`, the service uses the stock model `hey_jarvis_v0.1.onnx` (threshold 0.5) for the eight languages, from the folder `ARMOR_WAKE_MODELS` names; `ARMOR_WAKE_GENERIC=off` uses the family's own two words (hey armor, oye armor) instead, and a `wake_words.json` always wins. The check and the release tools still look at the family's own models. Training the family's own models stays as a later improvement published in the releases. Tests of the defaults and of the switch.
 - **Two edges of the turn are tried:** a speech engine that gives no wave or exits with an error still lets the written answer go (without audio), and the questions that wait for a spoken yes are forgotten when their time is over, also those of other clients.
 - **Tests of the two ways out of the release tool of the wake word models that nobody took:** a release without `--sign` writes the models and the manifest and no signature (a signer that is given but not asked for is not run), and a words file that cannot be read is a message and not a trace, with nothing written.
 

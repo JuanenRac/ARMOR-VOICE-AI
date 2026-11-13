@@ -102,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--signer", help="the command of the signer, e.g. \"node ~/.armor/sign.mjs\"")
     arguments = parser.parse_args(argv)
     try:
-        words = load_words(Path(arguments.words)) if arguments.words else parse_words(None)
+        words = load_words(Path(arguments.words)) if arguments.words else parse_words(None, generic=False)
         signer = shlex.split(arguments.signer, posix=True) if arguments.signer else default_signer()
         files = prepare(Path(arguments.models), arguments.version, Path(arguments.out), words, signer, arguments.sign)
     except (OSError, ValueError) as error:

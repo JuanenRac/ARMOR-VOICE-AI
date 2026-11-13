@@ -27,7 +27,7 @@ from pathlib import Path
 from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
 from .silence_policy import PinGuard, mode_from_header
-from .wakeword import MAX_CHUNK_BYTES, OpenWakeWordDetector, WakeError, WakeService, load_words
+from .wakeword import MAX_CHUNK_BYTES, OpenWakeWordDetector, WakeError, WakeService, generic_models_on, load_words
 from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService, check_engines
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
@@ -236,7 +236,7 @@ def main(argv: list[str] | None = None) -> None:
         try:
             folder = os.environ.get("ARMOR_WAKE_MODELS", "").strip()
             config_file = os.environ.get("ARMOR_WAKE_CONFIG", "").strip()
-            wake = WakeService(OpenWakeWordDetector(Path(folder) if folder else None), load_words(Path(config_file) if config_file else None))
+            wake = WakeService(OpenWakeWordDetector(Path(folder) if folder else None), load_words(Path(config_file) if config_file else None, generic_models_on(os.environ.get("ARMOR_WAKE_GENERIC"))))
         except (WakeError, ValueError, OSError) as error:
             raise SystemExit(f"ARMOR_WAKE_WORD=on but the wake word cannot start: {error}") from None
     server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard, wake)

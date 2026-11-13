@@ -2,6 +2,8 @@
 
 The wake word of the wall panel ([SERVICE.md](SERVICE.md)) is detected by [openWakeWord](https://github.com/dscripka/openWakeWord) on the machine that runs the voice service. The model for each language is a small file that a person trains once and that then travels as an asset of a release of this project. Nothing in this repository trains a model, downloads one or switches the wake word on: the feature stays off unless `ARMOR_WAKE_WORD=on`, and a language without its model answers `wake_model_missing`.
 
+The service starts with the generic model of openWakeWord by default (see [SERVICE.md](SERVICE.md), "The generic wake word"); training the family's own models is a later improvement, published in the releases of this project, and this page is its routine.
+
 This page is the whole routine: what to train, the file the service expects, how to check it and how to add it to a signed release.
 
 ## What to train
