@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Linguaggio">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Modalità">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Lingue">
-  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Test">
+  <img src="https://img.shields.io/badge/Tests-224%20passing-2ea44f.svg" alt="Test">
   <img src="https://img.shields.io/badge/Version-0.3.5-0f6cbd.svg" alt="Versione">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturità">
 </p>
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, le otto lingue, la conferma firmata legata a chi parla, la politica di silenziamento, il servizio locale, l'endpoint dei turni e l'audit sono reali e testati (222 test), e il server interroga il servizio sul banco di prova CM5. **Nessun motore di riconoscimento o di sintesi vocale fa parte di questo repository**: `/v1/turn` esegue i comandi che configuri per questo, e nessuno è stato ancora provato con un vero microfono; il pannello touch che dovrebbe ospitare l'assistente non ha ancora girato su una scheda.
+**Controllo di onestà - cosa funziona oggi:** Le regole degli intenti, le otto lingue, la conferma firmata legata a chi parla, la politica di silenziamento, il servizio locale, l'endpoint dei turni e l'audit sono reali e testati (224 test), e il server interroga il servizio sul banco di prova CM5. **Nessun motore di riconoscimento o di sintesi vocale fa parte di questo repository**: `/v1/turn` esegue i comandi che configuri per questo, e nessuno è stato ancora provato con un vero microfono; il pannello touch che dovrebbe ospitare l'assistente non ha ancora girato su una scheda.
 
 ---
 
@@ -41,7 +41,7 @@
 | Maturità | Consolidato |
 | Ruolo | Gateway vocale e di intenti offline (famiglia: Core Services, genitore: ARMOR-SERVER) |
 | Tecnologia | Python 3.11+, solo libreria standard |
-| Test | 222 (`python -m unittest discover -s tests`) |
+| Test | 224 (`python -m unittest discover -s tests`) |
 | Comandi | 15 (10 che interrogano, 5 che agiscono), 420 frasi, 8 lingue |
 | In ascolto su | `127.0.0.1:18090` (solo loopback), con un token |
 | Gira su | Il banco di prova CM5 (come servizio) o qualsiasi computer |
@@ -59,7 +59,7 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Software | 🟡 | Le regole degli intenti, il servizio locale e l'endpoint dei turni girano come servizio sul banco di prova CM5, ma nessun motore di riconoscimento o di sintesi vocale fa parte del repository: esegue i comandi che configuri per questo. |
-| Test | 🟢 | Superano 222 test (`python -m unittest discover -s tests`): le regole degli intenti, le otto lingue, la conferma firmata legata a chi parla, la politica di silenziamento, il servizio locale, l'endpoint dei turni e l'audit. |
+| Test | 🟢 | Superano 224 test (`python -m unittest discover -s tests`): le regole degli intenti, le otto lingue, la conferma firmata legata a chi parla, la politica di silenziamento, il servizio locale, l'endpoint dei turni e l'audit. |
 | Hardware | 🔴 | Nessun microfono né motore vocale è stato provato, e il pannello touch che dovrebbe ospitare l'assistente non ha girato su una scheda. |
 | Sicurezza | 🟡 | La conferma è firmata e legata a chi parla, e l'audit è provato sull'host; non c'è stata una revisione indipendente. |
 | Integrazione | 🟡 | Il server interroga il servizio sul banco di prova CM5; il flusso vocale con il pannello touch non ha girato. |
@@ -322,7 +322,7 @@ Il servizio non scrive mai ciò che è stato detto in un log, qualunque siano le
 $env:PYTHONPATH = "src"
 
 # 1. i test
-python -m unittest discover -s tests                      # 222 test
+python -m unittest discover -s tests                      # 224 test
 
 # 2. il gateway, un oggetto JSON per riga
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -412,7 +412,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             righe JSON su stdin/stdout, l'audit, le frasi dette in risposta
 │   ├── service.py             il servizio HTTP locale (/healthz, /v1/command, /v1/turn)
 │   └── turn.py                un turno vocale: motori, sì/no, budget di tempo
-├── tests/                     222 test: silenzio, limiti, gateway, turno, lingue, servizio
+├── tests/                     224 test: silenzio, limiti, gateway, turno, lingue, servizio
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     i controlli CI condivisi e gli strumenti del progetto
 ├── images/                    banner e icona

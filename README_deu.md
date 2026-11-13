@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Sprache">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Modus">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Sprachen">
-  <img src="https://img.shields.io/badge/Tests-222%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-224%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.3.5-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Reifegrad">
 </p>
 
 ---
 
-**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die acht Sprachen, die signierte, an ihren Sprecher gebundene Bestätigung, die Stummschaltungsrichtlinie, der lokale Dienst, der Turn-Endpunkt und das Audit sind real und getestet (222 Tests), und der Server fragt den Dienst auf dem CM5-Prüfstand ab. **Keine Spracherkennungs- oder Sprachsynthese-Engine ist Teil dieses Repositorys**: `/v1/turn` führt die Befehle aus, die du dafür konfigurierst, und keiner davon wurde bisher mit einem echten Mikrofon ausprobiert; das Touch-Panel, das den Assistenten tragen soll, lief noch nicht auf einer Platine.
+**Ehrlichkeitsprüfung - was heute läuft:** Die Absichtsregeln, die acht Sprachen, die signierte, an ihren Sprecher gebundene Bestätigung, die Stummschaltungsrichtlinie, der lokale Dienst, der Turn-Endpunkt und das Audit sind real und getestet (224 Tests), und der Server fragt den Dienst auf dem CM5-Prüfstand ab. **Keine Spracherkennungs- oder Sprachsynthese-Engine ist Teil dieses Repositorys**: `/v1/turn` führt die Befehle aus, die du dafür konfigurierst, und keiner davon wurde bisher mit einem echten Mikrofon ausprobiert; das Touch-Panel, das den Assistenten tragen soll, lief noch nicht auf einer Platine.
 
 ---
 
@@ -41,7 +41,7 @@
 | Reifegrad | Etabliert |
 | Rolle | Offline-Sprach- und Absichts-Gateway (Familie: Core Services, übergeordnet: ARMOR-SERVER) |
 | Technik | Python 3.11+, nur Standardbibliothek |
-| Tests | 222 (`python -m unittest discover -s tests`) |
+| Tests | 224 (`python -m unittest discover -s tests`) |
 | Befehle | 15 (10 fragen ab, 5 handeln), 420 Sätze, 8 Sprachen |
 | Lauscht auf | `127.0.0.1:18090` (nur Loopback), mit Token |
 | Läuft auf | Dem CM5-Prüfstand (als Dienst) oder jedem Computer |
@@ -59,7 +59,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Die Absichtsregeln, der lokale Dienst und der Turn-Endpunkt laufen als Dienst auf dem CM5-Prüfstand, aber keine Spracherkennungs- oder Sprachsynthese-Engine ist Teil des Repositorys: Es führt die Befehle aus, die du dafür konfigurierst. |
-| Tests | 🟢 | 222 Tests bestehen (`python -m unittest discover -s tests`): die Absichtsregeln, die acht Sprachen, die signierte, an ihren Sprecher gebundene Bestätigung, die Stummschaltungsrichtlinie, der lokale Dienst, der Turn-Endpunkt und das Audit. |
+| Tests | 🟢 | 224 Tests bestehen (`python -m unittest discover -s tests`): die Absichtsregeln, die acht Sprachen, die signierte, an ihren Sprecher gebundene Bestätigung, die Stummschaltungsrichtlinie, der lokale Dienst, der Turn-Endpunkt und das Audit. |
 | Hardware | 🔴 | Kein Mikrofon und keine Sprach-Engine wurde ausprobiert, und das Touch-Panel, das den Assistenten tragen soll, lief nicht auf einer Platine. |
 | Sicherheit | 🟡 | Die Bestätigung ist signiert und an ihren Sprecher gebunden, und das Audit ist auf dem Host getestet; es gab keine unabhängige Prüfung. |
 | Integration | 🟡 | Der Server fragt den Dienst auf dem CM5-Prüfstand ab; der Sprachablauf mit dem Touch-Panel lief nicht. |
@@ -322,7 +322,7 @@ Der Dienst schreibt das Gesagte nie in ein Protokoll, egal welche Einstellungen 
 $env:PYTHONPATH = "src"
 
 # 1. die Tests
-python -m unittest discover -s tests                      # 222 Tests
+python -m unittest discover -s tests                      # 224 Tests
 
 # 2. das Gateway, ein JSON-Objekt pro Zeile
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
@@ -412,7 +412,7 @@ ARMOR-VOICE-AI/
 │   ├── gateway.py             JSON-Zeilen über stdin/stdout, das Audit, die zurückgesprochenen Sätze
 │   ├── service.py             der lokale HTTP-Dienst (/healthz, /v1/command, /v1/turn)
 │   └── turn.py                ein gesprochener Turn: Engines, Ja/Nein, Zeitbudget
-├── tests/                     222 Tests: Stummschaltung, Grenzfälle, Gateway, Turn, Sprachen, Dienst
+├── tests/                     224 Tests: Stummschaltung, Grenzfälle, Gateway, Turn, Sprachen, Dienst
 ├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
 ├── tools/                     die gemeinsamen CI-Prüfungen und Projektwerkzeuge
 ├── images/                    Banner und Symbol
