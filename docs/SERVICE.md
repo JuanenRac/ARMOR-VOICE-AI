@@ -20,6 +20,10 @@ server carries out what was accepted, with the session of the person who spoke.
 It listens on the loopback address only (it refuses another one without `--allow-remote`), compares the token in constant time, never logs what was said, and signs
 the confirmations with `ARMOR_VOICE_CONFIRM_SECRET`. `armor-voice-service --check-engines` runs each configured speech engine once on a sample (a second of silence for hearing, the word "test" for speaking), prints whether it works, how long it took and what it gave back (never its command line) and stops; it needs no token and exits with 1 when an engine fails or none is set up. On the bench it is installed by `ARMOR-DEVOPS/scripts/install_cm5.sh --with-voice`.
 
+## The generic wake word (the default)
+
+With `ARMOR_WAKE_WORD=on` and no `wake_words.json`, the service uses the GENERIC model that openWakeWord publishes (`hey_jarvis_v0.1.onnx`, the phrase "hey jarvis") for every language of the family: no model of the family is needed to start. Put the file in the folder `ARMOR_WAKE_MODELS` names (any folder you choose; `python -c "import openwakeword; openwakeword.utils.download_models()"` fetches the stock models). `ARMOR_WAKE_GENERIC=off` turns the generic models off and uses the family's own two words instead (hey armor, oye armor), which need their own trained models; a `wake_words.json` always wins over both. Training the family's own models is a later improvement that will be published in the releases of this project ([WAKE_TRAINING.md](WAKE_TRAINING.md)).
+
 ## The wake word in the other languages
 
 `docs/wake_words.example.json` is a `wake_words.json` with a line for each of the eight languages (phrase, model file, threshold). Copy it, point `ARMOR_WAKE_CONFIG` at the copy and `ARMOR_WAKE_MODELS` at the folder of the models, and set `ARMOR_WAKE_WORD=on`. Only the English and Spanish models are meant to exist first; for a language whose model file is missing the service answers `wake_model_missing` instead of guessing, so a word is added by training its model (openWakeWord trains one from synthetic speech) and putting the file in the folder. Nothing is switched on by the file itself.

@@ -8,7 +8,7 @@ import urllib.request
 from armor_voice_ai import wakeword
 from armor_voice_ai.confirmation import ConfirmationSigner
 from armor_voice_ai.service import make_server
-from armor_voice_ai.wakeword import FRAME_BYTES, MAX_CHUNK_BYTES, WakeError, WakeService, parse_words, peak_score
+from armor_voice_ai.wakeword import FRAME_BYTES, GENERIC_MODEL, MAX_CHUNK_BYTES, MAX_THRESHOLD, MIN_THRESHOLD, WakeError, WakeService, generic_models_on, parse_words, peak_score
 
 TOKEN = "t" * 24
 
@@ -39,8 +39,21 @@ class Clock:
 
 
 class WordsTests(unittest.TestCase):
-    def test_the_defaults_are_english_and_spanish_with_their_own_models(self):
+    def test_without_a_file_the_generic_model_is_used_for_the_eight_languages(self):
         words = parse_words(None)
+        self.assertEqual(sorted(words), ["de", "en", "es", "fr", "it", "ja", "pt", "zh"])
+        self.assertEqual({word.model for word in words.values()}, {GENERIC_MODEL})
+        self.assertEqual({word.phrase for word in words.values()}, {"hey jarvis"})
+        self.assertTrue(all(MIN_THRESHOLD <= word.threshold <= MAX_THRESHOLD for word in words.values()))
+
+    def test_the_switch_for_the_generic_models_reads_off_and_its_synonyms(self):
+        for value in (None, "", "on", "yes", "1", " ON "):
+            self.assertTrue(generic_models_on(value), repr(value))
+        for value in ("off", "OFF", " 0 ", "false", "No"):
+            self.assertFalse(generic_models_on(value), repr(value))
+
+    def test_the_defaults_are_english_and_spanish_with_their_own_models(self):
+        words = parse_words(None, generic=False)
         self.assertEqual(sorted(words), ["en", "es"])
         self.assertEqual((words["en"].phrase, words["es"].phrase), ("hey armor", "oye armor"))
         self.assertNotEqual(words["en"].model, words["es"].model)
@@ -75,7 +88,7 @@ class WordsTests(unittest.TestCase):
 class ServiceLogicTests(unittest.TestCase):
     def make(self, scores, cooldown=2.0):
         detector, clock = Scripted(scores), Clock()
-        return WakeService(detector, parse_words(None), cooldown, clock), detector, clock
+        return WakeService(detector, parse_words(None, generic=False), cooldown, clock), detector, clock
 
     def test_two_frames_in_a_row_over_the_threshold_wake_the_panel(self):
         service, detector, _ = self.make([0.1, 0.9, 0.95])
@@ -143,7 +156,7 @@ class ServiceLogicTests(unittest.TestCase):
     def test_a_cooldown_out_of_range_is_refused(self):
         for bad in (-1, 31):
             with self.assertRaises(ValueError):
-                WakeService(Scripted([]), parse_words(None), bad)
+                WakeService(Scripted([]), parse_words(None, generic=False), bad)
 
     def test_the_stand_in_detector_hears_loudness_only(self):
         self.assertEqual(peak_score(b""), 0.0)
@@ -179,7 +192,7 @@ class WakeRouteTests(unittest.TestCase):
         self.assertEqual(self.post(base, frames(1)), (403, {"error": "wake_disabled"}))
 
     def test_a_wake_comes_back_as_json_and_a_bad_request_is_refused(self):
-        base = self.start(WakeService(Scripted([0.9, 0.9]), parse_words(None)))
+        base = self.start(WakeService(Scripted([0.9, 0.9]), parse_words(None, generic=False)))
         self.assertEqual(self.post(base, frames(1), token="wrong")[0], 401)
         self.assertEqual(self.post(base, frames(1), language="xx")[0], 422)
         self.assertEqual(self.post(base, frames(1), content_type="text/plain")[0], 415)

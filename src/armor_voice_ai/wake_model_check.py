@@ -204,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-missing", action="store_true", help="with --folder: a language without a model is not a problem")
     arguments = parser.parse_args(argv)
     try:
-        words = load_words(Path(arguments.words)) if arguments.words else parse_words(None)
+        words = load_words(Path(arguments.words)) if arguments.words else parse_words(None, generic=False)
     except (OSError, ValueError) as error:
         print(f"wake_words.json: {error}", file=sys.stderr)
         return 1
