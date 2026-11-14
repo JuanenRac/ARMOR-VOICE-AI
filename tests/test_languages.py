@@ -87,7 +87,7 @@ class EveryCommandTests(unittest.TestCase):
 
     def test_what_is_heard_with_polite_words_and_without_accents_is_understood(self):
         for heard, intent in (("Por favor, ¿qué hora es?", "time"), ("oiga cuantas alarmas hay", "alarms"), ("Hey, turn on the lights please", "lights_on"), ("Quel est l'état des caméras ?", None),
-                              ("état des caméras", "cameras"), ("Wie viel Strom verbrauche ich?", "electrical"), ("什么", None), ("電気を消して", "lights_off")):
+                              ("état des caméras", "cameras"), ("Wie viel Strom verbrauche ich?", "electrical"), ("什么", None), ("電気を消して", "lights_off"), ("¿Qué cámara ha saltado?", "last_camera"), ("Welche Kamera hat ausgelöst?", "last_camera")):
             self.assertEqual(parse_intent(heard), intent, heard)
 
     def test_a_phrase_that_is_part_of_a_command_is_not_enough(self):

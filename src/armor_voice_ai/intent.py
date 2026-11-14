@@ -19,7 +19,7 @@ from .phrases import PHRASES
 
 ARM, DISARM, STATUS, SILENCE = "arm", "disarm", "status", "silence"
 #: The commands that *ask* (nothing changes) and those that *do*; the server carries out the second kind with the session of the person who asked.
-QUERIES = frozenset({"status", "alarms", "nodes", "cameras", "radar", "solar", "electrical", "network", "time", "help"})
+QUERIES = frozenset({"status", "alarms", "nodes", "cameras", "radar", "solar", "electrical", "network", "time", "help", "last_camera"})
 ACTIONS = frozenset({ARM, DISARM, SILENCE, "lights_on", "lights_off"})
 ALLOWED = QUERIES | ACTIONS
 

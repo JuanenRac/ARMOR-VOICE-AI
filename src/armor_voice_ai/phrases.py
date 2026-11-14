@@ -84,6 +84,16 @@ PHRASES: dict[str, dict[str, tuple[str, ...]]] = {
         "zh": ("摄像头", "摄像头状态", "摄像头正常吗"),
         "pt": ("câmaras", "estado das câmaras", "as câmaras estão online", "as câmaras funcionam"),
     },
+    "last_camera": {
+        "en": ("which camera went off", "which camera saw something", "which camera saw movement", "last camera"),
+        "es": ("qué cámara ha saltado", "qué cámara ha visto algo", "qué cámara ha visto movimiento", "última cámara"),
+        "de": ("welche kamera hat ausgelöst", "welche kamera hat etwas gesehen", "welche kamera hat bewegung gesehen", "letzte kamera"),
+        "fr": ("quelle caméra s'est déclenchée", "quelle caméra a vu quelque chose", "quelle caméra a vu du mouvement", "dernière caméra"),
+        "it": ("quale telecamera è scattata", "quale telecamera ha visto qualcosa", "quale telecamera ha visto movimento", "ultima telecamera"),
+        "ja": ("どのカメラが反応しましたか", "どのカメラが動きを見ましたか", "最後のカメラ"),
+        "zh": ("哪个摄像头触发了", "哪个摄像头看到了动静", "最后一个摄像头"),
+        "pt": ("que câmara disparou", "que câmara viu alguma coisa", "que câmara viu movimento", "última câmara"),
+    },
     "radar": {
         "en": ("radar", "is anyone there", "is there anyone outside", "people detected"),
         "es": ("radar", "hay alguien", "hay alguien fuera", "personas detectadas"),
