@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Silencing the alarm by voice from the panel completes when the server also asks for its own confirmation:** once the person has said yes, said the PIN or the number on the screen, the token the server answered with is echoed back at once instead of leaving the silence waiting for a second yes nobody was asked for. Only a silence is completed this way; arming keeps its two turns, and a wrong PIN asks nothing of the server.
 - **The address of the server is checked and a redirect is not followed:** the operator token goes only to `ARMOR_VOICE_SERVER_URL`; a redirect from it is refused, and an address that is neither `https` nor plain http to this machine logs a warning (`ARMOR_VOICE_ALLOW_PLAIN_SERVER=0` refuses it, the default `1` keeps the previous behaviour). The service and the Wyoming handler share the same check. Tests for the rule, the switch and the redirect.
 
 - **The manifest says the evidence is a simulator, and the Integration light of the status table is orange:** the intent rules and the service have run on the test bench, but no microphone or speech engine has, so the project no longer claims bench evidence.
