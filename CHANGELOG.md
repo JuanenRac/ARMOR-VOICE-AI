@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The manifest says the evidence is a simulator, and the Integration light of the status table is orange:** the intent rules and the service have run on the test bench, but no microphone or speech engine has, so the project no longer claims bench evidence.
 ## [0.3.6] - Wyoming handler for Home Assistant, last camera question, generic wake word and wider tests
 
 - **A Wyoming handler for Home Assistant's Assist, off by default:** `python -m armor_voice_ai.wyoming` (it starts only with `ARMOR_VOICE_WYOMING=on`) answers the `describe` and `transcript` events of the Wyoming protocol over the same closed list of commands: a question of the list (`QUERIES`) is asked to the server and its speech comes back as `handled`; a command that does something is never carried out from there (the answer says to use the app or the panel), and words that are not on the list are `not-handled`. It listens on the loopback address only unless `--allow-remote` (the protocol has no token), takes no audio, limits the size and number of events and connections, and never logs what was said. The fixed texts are in the eight languages. Tried on a computer with a stand-in server and a real local connection; not tried against a Home Assistant.
