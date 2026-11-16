@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The address of the server is checked and a redirect is not followed:** the operator token goes only to `ARMOR_VOICE_SERVER_URL`; a redirect from it is refused, and an address that is neither `https` nor plain http to this machine logs a warning (`ARMOR_VOICE_ALLOW_PLAIN_SERVER=0` refuses it, the default `1` keeps the previous behaviour). The service and the Wyoming handler share the same check. Tests for the rule, the switch and the redirect.
+
 - **The manifest says the evidence is a simulator, and the Integration light of the status table is orange:** the intent rules and the service have run on the test bench, but no microphone or speech engine has, so the project no longer claims bench evidence.
 ## [0.3.6] - Wyoming handler for Home Assistant, last camera question, generic wake word and wider tests
 

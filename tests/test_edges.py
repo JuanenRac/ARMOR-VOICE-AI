@@ -13,7 +13,7 @@ from unittest import mock
 
 from armor_voice_ai import gateway, service
 from armor_voice_ai.confirmation import EXPIRED, INVALID, REPLAYED, VALID, WRONG_INTENT, WRONG_SUBJECT, ConfirmationSigner
-from armor_voice_ai.turn import CommandEngine, ServerLink, TurnError, TurnService, pcm_from_wav, says, wav_from_pcm
+from armor_voice_ai.turn import CommandEngine, ServerLink, TurnError, TurnService, pcm_from_wav, plain_server_refusal, says, server_link_from_env, wav_from_pcm
 
 
 def run_gateway(raw_lines: bytes, *arguments: str) -> list[dict]:
@@ -117,6 +117,7 @@ class SignerEdgeTests(unittest.TestCase):
 class StandInServer(BaseHTTPRequestHandler):
     answer: tuple[int, bytes] = (200, b"{}")
     seen: list[dict] = []
+    location: str | None = None
 
     def log_message(self, *args):
         pass
@@ -126,6 +127,8 @@ class StandInServer(BaseHTTPRequestHandler):
         StandInServer.seen.append({"path": self.path, "auth": self.headers.get("Authorization"), "body": json.loads(self.rfile.read(length)), "requested_with": self.headers.get("X-Requested-With")})
         status, payload = StandInServer.answer
         self.send_response(status)
+        if StandInServer.location:
+            self.send_header("Location", StandInServer.location)
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
@@ -145,6 +148,7 @@ class ServerLinkTests(unittest.TestCase):
 
     def setUp(self):
         StandInServer.seen = []
+        StandInServer.location = None
         StandInServer.answer = (200, b'{"speech":"ok"}')
 
     def test_the_command_goes_to_the_voice_route_with_the_token_and_the_marker_header(self):
@@ -166,6 +170,31 @@ class ServerLinkTests(unittest.TestCase):
         with self.assertRaises(TurnError) as caught:
             ServerLink(self.url, "t", timeout_s=3).command("status", "en", None)
         self.assertEqual((caught.exception.status, caught.exception.code), (502, "server_403"))
+
+    def test_a_redirect_is_not_followed_so_the_token_never_goes_elsewhere(self):
+        StandInServer.answer = (302, b"")
+        StandInServer.location = self.url + "/elsewhere"
+        with self.assertRaises(TurnError) as caught:
+            ServerLink(self.url, "operator-token", timeout_s=3).command("status", "en", None)
+        self.assertEqual(caught.exception.code, "server_302")
+        self.assertEqual(len(StandInServer.seen), 1)   # the address named in Location was never asked
+
+    def test_the_address_rule_accepts_https_and_this_machine_only(self):
+        for good in ("https://armor-server.local", "http://127.0.0.1:8080", "http://localhost", "http://[::1]:80"):
+            self.assertIsNone(plain_server_refusal(good), good)
+        for bad in ("http://armor-server.local", "http://192.168.0.10", "ftp://127.0.0.1", "file:///etc/passwd", "https://", "armor-server.local"):
+            self.assertIsNotNone(plain_server_refusal(bad), bad)
+
+    def test_a_plain_address_to_another_machine_warns_by_default_and_is_refused_when_the_switch_is_off(self):
+        env = {"ARMOR_VOICE_SERVER_URL": "http://192.168.0.10", "ARMOR_VOICE_SERVER_TOKEN": "t" * 24}
+        with self.assertLogs("armor_voice_ai", level="WARNING"):
+            self.assertIsNotNone(server_link_from_env(env))
+        with self.assertRaises(SystemExit) as caught:
+            server_link_from_env({**env, "ARMOR_VOICE_ALLOW_PLAIN_SERVER": "0"})
+        self.assertIn("must not cross a network in clear", str(caught.exception))
+        self.assertNotIn("t" * 24, str(caught.exception))
+        self.assertIsNone(server_link_from_env({"ARMOR_VOICE_SERVER_URL": "http://192.168.0.10"}))   # no token: no link
+        self.assertIsNotNone(server_link_from_env({**env, "ARMOR_VOICE_SERVER_URL": "https://armor-server.local", "ARMOR_VOICE_ALLOW_PLAIN_SERVER": "0"}))
 
     def test_a_server_that_is_not_there_or_sends_garbage_is_not_answering(self):
         with self.assertRaises(TurnError) as caught:

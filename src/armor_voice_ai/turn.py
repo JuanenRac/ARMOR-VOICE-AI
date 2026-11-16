@@ -17,13 +17,16 @@ from __future__ import annotations
 
 import base64
 import contextvars
+import ipaddress
 import json
+import logging
 import os
 import re
 import subprocess
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -171,6 +174,47 @@ def _panel_header() -> dict[str, str]:
     return {"X-Armor-Panel": panel} if panel else {}
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """The operator token goes to the address that was configured and nowhere else: a redirect is an answer, not a place to follow."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):   # noqa: ANN001
+        return None
+
+
+_OPENER = urllib.request.build_opener(_NoRedirect)
+LOG = logging.getLogger("armor_voice_ai")
+
+
+def plain_server_refusal(url: str) -> str | None:
+    """None when the operator token may be sent to `url` (https, or plain http to this same machine), otherwise the reason."""
+    parsed = urllib.parse.urlparse(url)
+    host = parsed.hostname or ""
+    local = host == "localhost"
+    if not local:
+        try:
+            local = ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            local = False
+    if (parsed.scheme == "https" and host) or (parsed.scheme == "http" and local):
+        return None
+    return "ARMOR_VOICE_SERVER_URL must be https://..., or http:// to this same machine (127.0.0.1 or localhost): the operator token must not cross a network in clear"
+
+
+def server_link_from_env(environ: dict[str, str] | None = None) -> ServerLink | None:
+    """The link to ARMOR-SERVER from ARMOR_VOICE_SERVER_URL and ARMOR_VOICE_SERVER_TOKEN, or None when either is missing. A plain-http address to another machine is refused when
+    ARMOR_VOICE_ALLOW_PLAIN_SERVER=0; by default (1) it is accepted as before and a warning says the token travels in clear."""
+    env = os.environ if environ is None else environ
+    url, token = env.get("ARMOR_VOICE_SERVER_URL", ""), env.get("ARMOR_VOICE_SERVER_TOKEN", "")
+    if not url or not token:
+        return None
+    problem = plain_server_refusal(url)
+    if problem:
+        if env.get("ARMOR_VOICE_ALLOW_PLAIN_SERVER", "1").strip() == "0":
+            raise SystemExit(problem + " (ARMOR_VOICE_ALLOW_PLAIN_SERVER=0)")
+        LOG.warning("%s; accepted because ARMOR_VOICE_ALLOW_PLAIN_SERVER is not 0", problem)
+    return ServerLink(url, token)
+
+
 @dataclass
 class ServerLink:
     """ARMOR-SERVER's route for written and spoken commands, with the operator token of the installation."""
@@ -185,7 +229,7 @@ class ServerLink:
         request = urllib.request.Request(self.url.rstrip("/") + "/api/v1/voice/command", data=json.dumps(body).encode(), method="POST",
                                          headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor", **_panel_header()})
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout_s) as reply:  # noqa: S310 - the address is the installation's own
+            with _OPENER.open(request, timeout=self.timeout_s) as reply:  # noqa: S310 - the address is the installation's own
                 return json.loads(reply.read(65_536).decode("utf-8", "replace"))
         except urllib.error.HTTPError as error:
             error.close()
@@ -199,7 +243,7 @@ class ServerLink:
         request = urllib.request.Request(self.url.rstrip("/") + "/api/v1/voice/panic-check", data=json.dumps({"text": text, "language": language}).encode(), method="POST",
                                          headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.token}", "X-Requested-With": "armor", **_panel_header()})
         try:
-            with urllib.request.urlopen(request, timeout=min(self.timeout_s, PANIC_CHECK_TIMEOUT_S)) as reply:  # noqa: S310 - the address is the installation's own
+            with _OPENER.open(request, timeout=min(self.timeout_s, PANIC_CHECK_TIMEOUT_S)) as reply:  # noqa: S310 - the address is the installation's own
                 reply.read(1024)
         except (OSError, ValueError):
             pass   # urllib.error.HTTPError is an OSError: a refusal or a missing route is not the person's problem
