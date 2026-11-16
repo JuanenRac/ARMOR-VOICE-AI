@@ -35,6 +35,19 @@ class Server:
         return {"accepted": True, "executed": True, "intent": "silence", "outcome": "accepted", "speech": "Alarms acknowledged."}
 
 
+class ConfirmingServer:
+    """A server whose own silence_confirmation is on: the first ask is answered with its token, the ask that echoes the token is carried out."""
+
+    def __init__(self):
+        self.asked = []
+
+    def __call__(self, text, language, confirmation):
+        self.asked.append((text, confirmation))
+        if confirmation is None:
+            return {"accepted": False, "executed": False, "intent": "silence", "outcome": "confirmation-needed", "confirmation_token": "server-token", "speech": "Say it again to confirm."}
+        return {"accepted": True, "executed": True, "intent": "silence", "outcome": "accepted", "speech": "Alarms acknowledged."}
+
+
 class Clock:
     def __init__(self):
         self.now = 1000.0
@@ -383,3 +396,47 @@ class ChallengeTests(unittest.TestCase):
         from armor_voice_ai.session import CONFIRMATION_NEEDED, evaluate
         decision = evaluate("silence the alarm", ConfirmationSigner(b"k" * 32), silence_mode=CHALLENGE)
         self.assertEqual((decision.accepted, decision.outcome), (False, CONFIRMATION_NEEDED))
+
+
+class ServerConfirmationTests(unittest.TestCase):
+    """The server asks for its own confirmation of a silence as well: what the person proved on the panel completes it, in one go."""
+
+    def run_turns(self, policy, *heard):
+        server, clock = ConfirmingServer(), Clock()
+        service = TurnService(Said(*heard), None, server, now=clock, pin_guard=PinGuard(SECRET_PIN, now=clock))
+        return service, server
+
+    def test_double_turn_yes_completes_a_silence_the_server_wanted_confirmed(self):
+        policy = {"silence_confirmation": "double_turn"}
+        service, server = self.run_turns(policy, "silence the alarm", "yes")
+        service.handle(SPEECH, "en", "panel", policy)
+        answer = service.handle(SPEECH, "en", "panel", policy)
+        self.assertEqual(answer["reply"], "Alarms acknowledged.")
+        self.assertEqual(server.asked, [("silence the alarm", None), ("silence the alarm", "server-token")])
+
+    def test_the_right_pin_completes_it_too_and_is_not_kept(self):
+        policy = {"silence_confirmation": "pin"}
+        service, server = self.run_turns(policy, "silence the alarm", "4821")
+        service.handle(SPEECH, "en", "panel", policy)
+        answer = service.handle(SPEECH, "en", "panel", policy)
+        self.assertEqual(answer["reply"], "Alarms acknowledged.")
+        self.assertEqual(server.asked[-1], ("silence the alarm", "server-token"))
+        self.assertNotIn("4821", json.dumps(answer))
+
+    def test_a_wrong_pin_still_asks_nothing_of_the_server(self):
+        policy = {"silence_confirmation": "pin"}
+        service, server = self.run_turns(policy, "silence the alarm", "1111")
+        service.handle(SPEECH, "en", "panel", policy)
+        service.handle(SPEECH, "en", "panel", policy)
+        self.assertEqual(server.asked, [])
+
+    def test_only_a_silence_is_completed_this_way(self):
+        asked = []
+
+        def server(text, language, confirmation):
+            asked.append((text, confirmation))
+            return {"accepted": False, "executed": False, "intent": "arm", "outcome": "confirmation-needed", "confirmation_token": "t2", "speech": "Say yes."}
+
+        service = TurnService(Said("arm the system"), None, server)
+        service.handle(SPEECH, "en", "panel", {"silence_confirmation": "off"})
+        self.assertEqual(asked, [("arm the system", None)])

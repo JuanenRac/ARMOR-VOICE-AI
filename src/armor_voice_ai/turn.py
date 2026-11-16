@@ -322,13 +322,13 @@ class TurnService:
                 self._forget_challenge(client)
                 return self._answer("" if waiting_mode in (PIN, CHALLENGE) else heard, CANCELLED[language], language)
             if waiting_mode == DOUBLE_TURN and says(words, YES.get(language, ()), language):
-                return self._finish(heard, self._ask(original, language, None), language, client, started)
+                return self._finish(heard, self._ask_checked(original, language), language, client, started)
             if waiting_mode == PIN:
                 digits = spoken_digits(words, language)
                 if digits:   # a PIN attempt: never kept, never echoed back
                     verdict = self.pin_guard.check(digits)
                     if verdict == "ok":
-                        return self._finish("", self._ask(original, language, None), language, client, started)
+                        return self._finish("", self._ask_checked(original, language), language, client, started)
                     return self._answer("", {"wrong": WRONG_PIN, "locked": LOCKED}.get(verdict, NO_PIN_SET)[language], language)
             if waiting_mode == CHALLENGE:
                 expected = self._challenges.pop(client, "")
@@ -336,7 +336,7 @@ class TurnService:
                 if digits and expected:   # a try at the number: never echoed back
                     verdict = self.challenge_guard.check(expected, digits)
                     if verdict == "ok":
-                        return self._finish("", self._ask(original, language, None), language, client, started)
+                        return self._finish("", self._ask_checked(original, language), language, client, started)
                     return self._answer("", (LOCKED if verdict == "locked" else WRONG_CHALLENGE)[language], language)
             # anything else is a new command: the question that was waiting is dropped
         self._forget_challenge(client)
@@ -366,6 +366,19 @@ class TurnService:
                 return self._finish(heard, self._ask(original, language, token), language, client, started)
             # anything else is a new command: the question that was waiting is dropped
         return self._finish(heard, self._ask(heard, language, None), language, client, started)
+
+    def _ask_checked(self, original: str, language: str) -> dict[str, object]:
+        """Asks the server for a silence that the person has just proved here (a yes, the PIN or the number on the screen). A server that also asks for its own confirmation of a
+        silence answers with the token of its own signer: it is echoed back at once, because the person's proof is what that confirmation is for. Without this the silence would stay
+        waiting for a second yes that nobody was told to say. Only a silence is completed this way; any other intent keeps its own two turns."""
+        ask = self._ask
+        if ask is None:
+            raise TurnError(501, "server_not_configured")
+        answer = ask(original, language, None)
+        token = answer.get("confirmation_token")
+        if answer.get("intent") == SILENCE and not answer.get("accepted") and isinstance(token, str) and token:
+            return ask(original, language, token)
+        return answer
 
     def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:
         intent = answer.get("intent")
