@@ -371,10 +371,13 @@ class TurnService:
         """Asks the server for a silence that the person has just proved here (a yes, the PIN or the number on the screen). A server that also asks for its own confirmation of a
         silence answers with the token of its own signer: it is echoed back at once, because the person's proof is what that confirmation is for. Without this the silence would stay
         waiting for a second yes that nobody was told to say. Only a silence is completed this way; any other intent keeps its own two turns."""
-        answer = self._ask(original, language, None)
+        ask = self._ask
+        if ask is None:
+            raise TurnError(501, "server_not_configured")
+        answer = ask(original, language, None)
         token = answer.get("confirmation_token")
         if answer.get("intent") == SILENCE and not answer.get("accepted") and isinstance(token, str) and token:
-            return self._ask(original, language, token)
+            return ask(original, language, token)
         return answer
 
     def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:
