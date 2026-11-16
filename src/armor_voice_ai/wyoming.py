@@ -29,7 +29,7 @@ from collections.abc import Callable
 
 from .gateway import SPEECH_BY_LANGUAGE
 from .intent import MAX_TEXT_LENGTH, QUERIES, RISK, parse_intent
-from .turn import ServerLink, TurnError
+from .turn import TurnError, server_link_from_env
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 DEFAULT_PORT = 10400
@@ -206,8 +206,8 @@ def main() -> None:
     args = parser.parse_args()
     if os.environ.get("ARMOR_VOICE_WYOMING", "").strip().lower() != "on":
         raise SystemExit("the Wyoming service is off: set ARMOR_VOICE_WYOMING=on to start it")
-    url, token = os.environ.get("ARMOR_VOICE_SERVER_URL", ""), os.environ.get("ARMOR_VOICE_SERVER_TOKEN", "")
-    ask = ServerLink(url, token).command if url and token else None
+    link = server_link_from_env()
+    ask = link.command if link else None
     server = make_server(args.host, args.port, Handler(ask, args.language, _version()), args.allow_remote)
     try:
         server.serve_forever()

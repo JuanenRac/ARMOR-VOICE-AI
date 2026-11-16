@@ -28,7 +28,7 @@ from .confirmation import ConfirmationSigner
 from .gateway import MAX_LINE_BYTES, SPEECH_BY_LANGUAGE, handle_request
 from .silence_policy import PinGuard, mode_from_header
 from .wakeword import MAX_CHUNK_BYTES, OpenWakeWordDetector, WakeError, WakeService, generic_models_on, load_words
-from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, ServerLink, TurnError, TurnService, check_engines
+from .turn import MAX_AUDIO_BYTES, MAX_SPEAK_CHARS, CommandEngine, TurnError, TurnService, check_engines, server_link_from_env
 
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
@@ -225,7 +225,7 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit("a token of at least 16 characters is needed (ARMOR_VOICE_TOKEN)")
     stt = os.environ.get("ARMOR_VOICE_STT_COMMAND", "").strip()
     tts = os.environ.get("ARMOR_VOICE_TTS_COMMAND", "").strip()
-    link = ServerLink(os.environ["ARMOR_VOICE_SERVER_URL"], os.environ["ARMOR_VOICE_SERVER_TOKEN"]) if os.environ.get("ARMOR_VOICE_SERVER_URL") and os.environ.get("ARMOR_VOICE_SERVER_TOKEN") else None
+    link = server_link_from_env()
     try:
         guard = PinGuard(os.environ.get("ARMOR_VOICE_SILENCE_PIN") or None)
     except ValueError as error:
