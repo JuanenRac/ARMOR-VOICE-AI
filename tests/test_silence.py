@@ -440,3 +440,53 @@ class ServerConfirmationTests(unittest.TestCase):
         service = TurnService(Said("arm the system"), None, server)
         service.handle(SPEECH, "en", "panel", {"silence_confirmation": "off"})
         self.assertEqual(asked, [("arm the system", None)])
+
+
+class RealGatewayTests(unittest.TestCase):
+    """The panel turn against the real command evaluation, as the server asks it (policy of the server, subject of the panel, no PIN on the wire)."""
+
+    def setUp(self):
+        self.signer = ConfirmationSigner(b"k" * 32)
+        self.asked = []
+
+    def server(self, policy, subject="operator"):
+        def ask(text, language, confirmation):
+            self.asked.append(confirmation)
+            request = {"text": text, "language": language, "subject": subject, "policy": policy}
+            if confirmation:
+                request["confirmation"] = confirmation
+            answer = handle_request(request, self.signer, None, PinGuard(None))
+            return {**answer, "executed": bool(answer.get("accepted"))}
+        return ask
+
+    def test_the_pin_said_on_the_panel_completes_a_silence_the_service_asked_the_pin_for(self):
+        policy = {"silence_confirmation": "pin"}
+        clock = Clock()
+        service = TurnService(Said("silence the alarm", "4821"), None, self.server(policy), now=clock, pin_guard=PinGuard(SECRET_PIN, now=clock), signer=self.signer)
+        service.handle(SPEECH, "en", "panel", policy)
+        answer = service.handle(SPEECH, "en", "panel", policy)
+        self.assertEqual(answer["reply"], "Command accepted")
+        self.assertEqual(self.asked[0], None)
+        self.assertTrue(self.asked[-1])
+        self.assertNotIn("4821", json.dumps(answer))
+
+    def test_without_the_signer_the_old_behaviour_stays(self):
+        policy = {"silence_confirmation": "pin"}
+        clock = Clock()
+        service = TurnService(Said("silence the alarm", "4821"), None, self.server(policy), now=clock, pin_guard=PinGuard(SECRET_PIN, now=clock))
+        service.handle(SPEECH, "en", "panel", policy)
+        self.assertNotEqual(service.handle(SPEECH, "en", "panel", policy)["reply"], "Command accepted")
+
+    def test_a_wrong_pin_asks_nothing_and_a_token_is_bound_to_its_subject_and_single_use(self):
+        policy = {"silence_confirmation": "pin"}
+        clock = Clock()
+        service = TurnService(Said("silence the alarm", "1111"), None, self.server(policy), now=clock, pin_guard=PinGuard(SECRET_PIN, now=clock), signer=self.signer)
+        service.handle(SPEECH, "en", "panel", policy)
+        service.handle(SPEECH, "en", "panel", policy)
+        self.assertEqual(self.asked, [])
+        token = self.signer.issue("silence", "panel:west")
+        request = {"text": "silence the alarm", "language": "en", "policy": policy, "confirmation": token}
+        self.assertFalse(handle_request({**request, "subject": "panel:east"}, self.signer, None, PinGuard(None))["accepted"])
+        self.assertTrue(handle_request({**request, "subject": "panel:west"}, self.signer, None, PinGuard(None))["accepted"])
+        self.assertFalse(handle_request({**request, "subject": "panel:west"}, self.signer, None, PinGuard(None))["accepted"], "a token is good once")
+        self.assertFalse(handle_request({"text": "arm the system", "language": "en", "policy": policy, "confirmation": self.signer.issue("silence", "x"), "subject": "x"}, self.signer, None, PinGuard(None))["accepted"])

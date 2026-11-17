@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A silence by PIN said on the panel is now carried out:** with the server policy `pin` the service asked the server side for a PIN that the panel had already checked and never sends, so the command stayed waiting. The turn now hands on a single use confirmation of the service, bound to the panel (or to the operator when none is behind the turn), after the person has proved the PIN here; the PIN itself is still never kept or sent. `off`, `double_turn` and `challenge` are unchanged.
+
 - **A disarm said at the panel is refused before the server is asked:** the matrix of risks is read as soon as the words are understood, so the server receives no call at all for an intent that only the screen may carry out (the check on its answer stays as a second barrier). The panic phrase is still looked for first and the answer to the person is the same. Tests in the eight languages with every phrase of the disarm list.
 
 - **Silencing the alarm by voice from the panel completes when the server also asks for its own confirmation:** once the person has said yes, said the PIN or the number on the screen, the token the server answered with is echoed back at once instead of leaving the silence waiting for a second yes nobody was asked for. Only a silence is completed this way; arming keeps its two turns, and a wrong PIN asks nothing of the server.
