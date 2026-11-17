@@ -324,13 +324,13 @@ class TurnService:
                 self._forget_challenge(client)
                 return self._answer("" if waiting_mode in (PIN, CHALLENGE) else heard, CANCELLED[language], language)
             if waiting_mode == DOUBLE_TURN and says(words, YES.get(language, ()), language):
-                return self._finish(heard, self._ask_checked(original, language), language, client, started)
+                return self._finish(heard, self._ask_checked(original, language), language, client, started, original)
             if waiting_mode == PIN:
                 digits = spoken_digits(words, language)
                 if digits:   # a PIN attempt: never kept, never echoed back
                     verdict = self.pin_guard.check(digits)
                     if verdict == "ok":
-                        return self._finish("", self._ask_checked(original, language), language, client, started)
+                        return self._finish("", self._ask_checked(original, language), language, client, started, original)
                     return self._answer("", {"wrong": WRONG_PIN, "locked": LOCKED}.get(verdict, NO_PIN_SET)[language], language)
             if waiting_mode == CHALLENGE:
                 expected = self._challenges.pop(client, "")
@@ -338,7 +338,7 @@ class TurnService:
                 if digits and expected:   # a try at the number: never echoed back
                     verdict = self.challenge_guard.check(expected, digits)
                     if verdict == "ok":
-                        return self._finish("", self._ask_checked(original, language), language, client, started)
+                        return self._finish("", self._ask_checked(original, language), language, client, started, original)
                     return self._answer("", (LOCKED if verdict == "locked" else WRONG_CHALLENGE)[language], language)
             # anything else is a new command: the question that was waiting is dropped
         self._forget_challenge(client)
@@ -369,7 +369,7 @@ class TurnService:
             if says(words, NO.get(language, ()), language):
                 return self._answer(heard, CANCELLED[language], language)
             if says(words, YES.get(language, ()), language):
-                return self._finish(heard, self._ask(original, language, token), language, client, started)
+                return self._finish(heard, self._ask(original, language, token), language, client, started, original)
             # anything else is a new command: the question that was waiting is dropped
         return self._finish(heard, self._ask(heard, language, None), language, client, started)
 
@@ -391,14 +391,16 @@ class TurnService:
             return ask(original, language, self._signer.issue(SILENCE, f"panel:{panel}" if panel else "operator"))
         return answer
 
-    def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:
+    def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None, original: str | None = None) -> dict[str, object]:
+        """`heard` is what the person just said (a yes, or nothing for a PIN); `original` is the order that was waiting for that proof. When the answer asks for one more confirmation it
+        is the ORDER that is kept for it, never the proof: keeping the yes would send "yes" to the server as if it were the command."""
         intent = answer.get("intent")
         if isinstance(intent, str) and intent in RISK and not RISK[intent].allowed_from_panel:   # the matrix of intent.py: disarming is for the screen, with a PIN
             return self._answer(heard, DISARM_REFUSED[language], language)
         token = answer.get("confirmation_token")
         if isinstance(token, str) and token and (started is None or time.monotonic() - started <= PANEL_WAITS_S):
             with self._lock:
-                self._pending[client] = (heard, token, self._now() + PENDING_VALIDITY_S)
+                self._pending[client] = (heard if original is None else original, token, self._now() + PENDING_VALIDITY_S)
         return self._answer(heard, str(answer.get("speech") or ""), language)
 
     def _take_silence_wait(self, client: str) -> tuple[str, str] | None:
