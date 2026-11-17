@@ -32,6 +32,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from shlex import split as shell_split
 
+from .confirmation import ConfirmationSigner
 from .intent import RISK, SILENCE, normalize_text, parse_intent
 from .silence_policy import (ASK_CHALLENGE, ASK_PIN, ASK_YES, CHALLENGE, CHALLENGE_VALIDITY_S, DOUBLE_TURN, DOUBLE_TURN_VALIDITY_S, LOCKED, NO_PIN_SET, OFF, PIN, PIN_VALIDITY_S, WRONG_CHALLENGE, WRONG_PIN,
                              ChallengeGuard, PinGuard, mode_from_policy, spoken_digits)
@@ -252,8 +253,9 @@ class ServerLink:
 class TurnService:
     def __init__(self, stt: CommandEngine | None, tts: CommandEngine | None, server: ServerLink | Callable[[str, str, str | None], dict[str, object]] | None,
                  now: Callable[[], float] = time.time, pin_guard: PinGuard | None = None, challenge_guard: ChallengeGuard | None = None,
-                 panic_check: Callable[[str, str], None] | None = None) -> None:
+                 panic_check: Callable[[str, str], None] | None = None, signer: ConfirmationSigner | None = None) -> None:
         self._stt, self._tts, self._now = stt, tts, now
+        self._signer = signer   # the signer of this service: with it a silence that the person proved on the panel (the PIN) is completed with a confirmation of its own
         self.pin_guard = pin_guard or PinGuard(None)
         self.challenge_guard = challenge_guard or ChallengeGuard()
         self._challenges: dict[str, str] = {}   # the number each panel was shown, kept only until it is answered or dropped
@@ -382,6 +384,11 @@ class TurnService:
         token = answer.get("confirmation_token")
         if answer.get("intent") == SILENCE and not answer.get("accepted") and isinstance(token, str) and token:
             return ask(original, language, token)
+        if answer.get("intent") == SILENCE and not answer.get("accepted") and self._signer is not None:
+            # with the PIN as the policy the service asks for a PIN it was never given (the PIN is proved here and never travels): what the person proved is passed on as a confirmation
+            # of the service's own signer, bound to the same subject the server gives the turn (the panel, or the operator token when no panel is behind it)
+            panel = CURRENT_PANEL.get()
+            return ask(original, language, self._signer.issue(SILENCE, f"panel:{panel}" if panel else "operator"))
         return answer
 
     def _finish(self, heard: str, answer: dict[str, object], language: str, client: str, started: float | None = None) -> dict[str, object]:

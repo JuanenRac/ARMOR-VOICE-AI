@@ -40,6 +40,8 @@ def evaluate(text: str, signer: ConfirmationSigner, confirmation: str | None = N
     if intent is None:
         return VoiceDecision(False, False, None, NOT_UNDERSTOOD, reason="the phrase is not one of the known commands")
     if intent == SILENCE and silence_mode == PIN:
+        if confirmation is not None and signer.verify(confirmation, intent, subject) == VALID:
+            return VoiceDecision(True, False, intent, ACCEPTED)   # the panel proved the PIN itself and this service signed that: the token is single use and bound to the subject
         # the PIN is the proof: it is checked here, never stored or reported back
         if pin is None:
             return VoiceDecision(False, False, intent, PIN_NEEDED, reason="silencing needs the PIN")

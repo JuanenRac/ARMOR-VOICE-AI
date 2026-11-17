@@ -230,7 +230,8 @@ def main(argv: list[str] | None = None) -> None:
         guard = PinGuard(os.environ.get("ARMOR_VOICE_SILENCE_PIN") or None)
     except ValueError as error:
         raise SystemExit(f"ARMOR_VOICE_SILENCE_PIN is not valid: {error}") from None   # the value itself is never printed
-    turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link, pin_guard=guard)
+    signer = ConfirmationSigner()
+    turns = TurnService(CommandEngine(stt) if stt else None, CommandEngine(tts) if tts else None, link, pin_guard=guard, signer=signer)
     wake = None
     if os.environ.get("ARMOR_WAKE_WORD", "").strip().lower() == "on":
         try:
@@ -239,7 +240,7 @@ def main(argv: list[str] | None = None) -> None:
             wake = WakeService(OpenWakeWordDetector(Path(folder) if folder else None), load_words(Path(config_file) if config_file else None, generic_models_on(os.environ.get("ARMOR_WAKE_GENERIC"))))
         except (WakeError, ValueError, OSError) as error:
             raise SystemExit(f"ARMOR_WAKE_WORD=on but the wake word cannot start: {error}") from None
-    server = make_server(args.host, args.port, token, ConfirmationSigner(), args.audit_file, turns, guard, wake)
+    server = make_server(args.host, args.port, token, signer, args.audit_file, turns, guard, wake)
     print(f"armor-voice listening on {args.host}:{server.server_address[1]}", file=sys.stderr, flush=True)
     try:
         server.serve_forever()
