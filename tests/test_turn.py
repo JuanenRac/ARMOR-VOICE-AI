@@ -209,6 +209,30 @@ class TurnTests(unittest.TestCase):
         answer = service.handle(SPEECH, "es", "panel")
         self.assertIn("PIN", answer["reply"])
         self.assertTrue(all(call[2] is None for call in server.asked))
+        self.assertEqual(server.asked, [])      # the matrix is read before the server is asked: nothing is sent
+
+    def test_a_disarm_in_any_language_is_refused_before_the_server_is_asked(self):
+        from armor_voice_ai.phrases import PHRASES
+        from armor_voice_ai.turn import DISARM_REFUSED
+        for language, phrases in PHRASES["disarm"].items():
+            for phrase in phrases:
+                with self.subTest(language=language, phrase=phrase):
+                    service, server = self.service(phrase)
+                    answer = service.handle(SPEECH, language, "panel")
+                    self.assertEqual(answer["reply"], DISARM_REFUSED[language])
+                    self.assertEqual(server.asked, [])
+
+    def test_a_question_waiting_is_dropped_by_a_disarm_and_the_panic_check_still_runs_first(self):
+        server = FakeServer()
+        seen = []
+        service = TurnService(engine_saying("arm the system"), None, server, panic_check=lambda heard, language: seen.append(heard))
+        service.handle(SPEECH, "en", "panel")
+        service._stt = engine_saying("disarm the system")
+        self.assertIn("PIN", service.handle(SPEECH, "en", "panel")["reply"])
+        service._stt = engine_saying("yes")
+        service.handle(SPEECH, "en", "panel")
+        self.assertEqual(seen[:2], ["arm the system", "disarm the system"])           # the panic phrase is looked for before the words are interpreted
+        self.assertNotIn(("arm the system", "en", "tok-1"), server.asked)             # the earlier question was dropped: a late yes confirms nothing
 
     def test_no_engine_no_server_and_bad_audio_are_said(self):
         with self.assertRaises(TurnError) as raised:

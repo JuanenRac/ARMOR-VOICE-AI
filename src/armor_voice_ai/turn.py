@@ -357,6 +357,10 @@ class TurnService:
                     number = self._challenges[client] = self.challenge_guard.new_number()
             ask = {PIN: ASK_PIN, CHALLENGE: ASK_CHALLENGE}.get(mode, ASK_YES)
             return self._answer(heard, ask[language], language, challenge=number)
+        spoken_intent = parse_intent(heard)
+        if isinstance(spoken_intent, str) and spoken_intent in RISK and not RISK[spoken_intent].allowed_from_panel:
+            self._take_pending(client)   # the matrix says this is for the screen: the server is not asked at all (the check of _finish stays as the second barrier)
+            return self._answer(heard, DISARM_REFUSED[language], language)
         pending = self._take_pending(client)
         if pending is not None:
             original, token = pending
