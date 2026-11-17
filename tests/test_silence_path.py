@@ -21,6 +21,14 @@ class Said:
         return self.lines.pop(0).encode("utf-8")
 
 
+class Clock:
+    def __init__(self):
+        self.now = 1000.0
+
+    def __call__(self):
+        return self.now
+
+
 class Server:
     """Answers the first ask as the path says and records every ask."""
 
@@ -46,16 +54,16 @@ class SilencePathTests(unittest.TestCase):
         original = vector["original"]
         for path in vector["paths"]:
             with self.subTest(path["name"]):
-                clock = [1000.0]
-                signer = ConfirmationSigner(b"s" * 32, now=lambda: clock[0])
+                clock = Clock()
+                signer = ConfirmationSigner(b"s" * 32, now=clock)
                 server = Server(path["first_answer"])
                 lines = [original] + ([PROOFS[path["proof"]]] if path["proof"] else [])
-                service = TurnService(Said(*lines), None, server, now=lambda: clock[0], pin_guard=PinGuard(PIN, now=lambda: clock[0]),
-                                      challenge_guard=ChallengeGuard(now=lambda: clock[0], draw=lambda: 47), signer=signer)
+                service = TurnService(Said(*lines), None, server, now=clock, pin_guard=PinGuard(PIN, now=clock),
+                                      challenge_guard=ChallengeGuard(now=clock, draw=lambda: 47), signer=signer)
                 policy = {"silence_confirmation": path["mode"]}
                 first = service.handle(SPEECH, "en", "panel", policy, path["panel"])
                 if path["proof"]:
-                    clock[0] += 1
+                    clock.now += 1
                     second = service.handle(SPEECH, "en", "panel", policy, path["panel"])
                     self.assertTrue(first and second)
                 self.assertEqual(len(server.asked), len(path["asks"]))
@@ -71,7 +79,7 @@ class SilencePathTests(unittest.TestCase):
 
     def test_the_proof_is_never_kept_as_the_order_for_one_more_confirmation(self):
         """A server that asks for a confirmation after the person's yes gets the ORDER again, not the yes."""
-        clock = [1000.0]
+        clock = Clock()
         asked = []
 
         def server(text, language, confirmation):
@@ -80,11 +88,11 @@ class SilencePathTests(unittest.TestCase):
                 return {"accepted": True, "executed": True, "intent": "silence", "outcome": "accepted", "speech": "Done."}
             return {"accepted": False, "executed": False, "intent": "silence", "outcome": "confirmation-needed", "confirmation_token": "t2" if confirmation == "t1" else "t1", "speech": "Once more?"}
 
-        service = TurnService(Said("silence the alarm", "yes", "yes"), None, server, now=lambda: clock[0], signer=ConfirmationSigner(b"s" * 32, now=lambda: clock[0]))
+        service = TurnService(Said("silence the alarm", "yes", "yes"), None, server, now=clock, signer=ConfirmationSigner(b"s" * 32, now=clock))
         policy = {"silence_confirmation": "double_turn"}
         for _ in range(3):
             service.handle(SPEECH, "en", "panel", policy)
-            clock[0] += 1
+            clock.now += 1
         self.assertTrue(all(text == "silence the alarm" for text, _ in asked), asked)
         self.assertEqual(asked[-1], ("silence the alarm", "t2"))
 
