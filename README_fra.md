@@ -42,7 +42,7 @@
 | Rôle | Passerelle vocale et d'intentions hors ligne (famille : Core Services, parent : ARMOR-SERVER) |
 | Technologie | Python 3.11+, bibliothèque standard uniquement |
 | Tests | 255 (`python -m unittest discover -s tests`) |
-| Commandes | 15 (10 qui interrogent, 5 qui agissent), 420 phrases, 8 langues |
+| Commandes | 16 (11 qui interrogent, 5 qui agissent), 450 phrases, 8 langues |
 | Écoute sur | `127.0.0.1:18090` (boucle locale uniquement), avec un jeton |
 | Fonctionne sur | Le banc d'essai CM5 (comme service) ou n'importe quel ordinateur |
 | Sur matériel réel | Fonctionne comme service sur le banc d'essai CM5, interrogé par le serveur ; aucun microphone ni moteur vocal n'a été essayé |
@@ -69,13 +69,13 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 
 ## 🎯 Présentation
 
-ARMOR-VOICE-AI est la partie d'A.R.M.O.R. qui transforme **ce qu'une personne dit en l'une de quinze commandes, ou en rien**. Il ne fait jamais rien par lui-même : il décide, et [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authentifie, autorise et exécute ce qui a été accepté, exactement comme pour un clic dans la console.
+ARMOR-VOICE-AI est la partie d'A.R.M.O.R. qui transforme **ce qu'une personne dit en l'une de seize commandes, ou en rien**. Il ne fait jamais rien par lui-même : il décide, et [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authentifie, autorise et exécute ce qui a été accepté, exactement comme pour un clic dans la console.
 
-Le texte produit par un moteur de reconnaissance vocale est une *entrée non fiable*. Il n'est donc ni interprété, ni fouillé à la recherche de mots-clés, ni transmis comme commande : il est nettoyé (accents, ponctuation, formules de politesse) puis doit correspondre **exactement** à l'une des 420 phrases connues. Tout le reste, tout texte trop long et toute phrase qui pourrait signifier deux commandes *n'est pas compris*.
+Le texte produit par un moteur de reconnaissance vocale est une *entrée non fiable*. Il n'est donc ni interprété, ni fouillé à la recherche de mots-clés, ni transmis comme commande : il est nettoyé (accents, ponctuation, formules de politesse) puis doit correspondre **exactement** à l'une des 450 phrases connues. Tout le reste, tout texte trop long et toute phrase qui pourrait signifier deux commandes *n'est pas compris*.
 
 **Ce qu'il fait**
 
-* Comprend quinze commandes en **huit langues** (anglais, espagnol, allemand, français, italien, japonais, chinois et portugais).
+* Comprend seize commandes en **huit langues** (anglais, espagnol, allemand, français, italien, japonais, chinois et portugais).
 * Exige pour `arm` et `disarm` un **second tour avec un jeton signé par le service**, lié à l'intention et à la personne qui l'a demandée.
 * Peut exiger pour `silence` un **code PIN** prononcé ou un second tour de confirmation, quand ARMOR-SERVER le demande.
 * Fonctionne comme **service HTTP local** et comme **passerelle en lignes JSON** pour les adaptateurs et les tests.
@@ -139,7 +139,7 @@ sequenceDiagram
 
 **Pourquoi il est construit ainsi**
 
-* **Pourquoi une liste fermée et non une classification d'intentions.** Un moteur de reconnaissance se trompe et n'importe qui peut parler près d'un microphone. Avec 420 phrases exactes, le pire qu'une mauvaise transcription puisse provoquer est d'être ignorée, et un test vérifie qu'aucune phrase n'appartient à deux commandes.
+* **Pourquoi une liste fermée et non une classification d'intentions.** Un moteur de reconnaissance se trompe et n'importe qui peut parler près d'un microphone. Avec 450 phrases exactes, le pire qu'une mauvaise transcription puisse provoquer est d'être ignorée, et un test vérifie qu'aucune phrase n'appartient à deux commandes.
 * **Pourquoi le service ne fait que décider.** L'authentification, l'autorisation, la piste d'audit et l'action restent en un seul endroit, ARMOR-SERVER ; un bogue ici peut accepter une phrase à tort, mais ne peut pas toucher à une alarme.
 * **Pourquoi la confirmation est un jeton signé émis par le service.** Un indicateur fixé par l'appelant (`confirmed: true`) ne prouve rien, il est donc refusé. Le jeton est signé en HMAC-SHA-256, lié à la commande et à la personne, valable 30 secondes et utilisable une seule fois.
 * **Pourquoi les moteurs vocaux sont des programmes séparés.** Les modèles évoluent plus vite qu'une passerelle de sécurité ne devrait le faire. Ils sont exécutés sans shell, avec un environnement réduit et une limite de temps, et les secrets propres au service ne leur parviennent jamais.
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## ✨ Fonctionnalités
 
-### Les quinze commandes
+### Les seize commandes
 
 | Commande | Type | Signification | Confirmation |
 |---|---|---|---|
@@ -155,6 +155,7 @@ sequenceDiagram
 | `alarms` | interroge | Les alarmes actives | non |
 | `nodes` | interroge | L'état des nœuds | non |
 | `cameras` | interroge | L'état des caméras | non |
+| `last_camera` | interroge | Quelle caméra a vu un mouvement en dernier | non |
 | `radar` | interroge | L'état des radars | non |
 | `solar` | interroge | L'état du système solaire | non |
 | `electrical` | interroge | La consommation électrique | non |
@@ -167,11 +168,11 @@ sequenceDiagram
 | `arm` | agit | Armer le périmètre | **oui** |
 | `disarm` | agit | Désarmer le périmètre | **oui** |
 
-Les dix qui *interrogent* ne changent rien. Les cinq qui *agissent* sont exécutées par ARMOR-SERVER avec la session de la personne qui a parlé, jamais par ce service.
+Les onze qui *interrogent* ne changent rien. Les cinq qui *agissent* sont exécutées par ARMOR-SERVER avec la session de la personne qui a parlé, jamais par ce service.
 
 ### Huit langues
 
-Anglais, espagnol, allemand, français, italien, japonais, chinois et portugais européen : les phrases (420 au total), le oui et le non d'une confirmation, les mots des chiffres d'un PIN prononcé et chaque phrase que le service répond. Les phrases sont écrites comme une personne les dit et normalisées au chargement du module avec la même fonction que celle qui normalise ce qui est entendu, de sorte que les deux ne peuvent pas diverger. Les formules de politesse (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) sont écartées avant la comparaison ; le japonais et le chinois, écrits sans espaces, listent leurs phrases avec et sans la terminaison polie.
+Anglais, espagnol, allemand, français, italien, japonais, chinois et portugais européen : les phrases (450 au total), le oui et le non d'une confirmation, les mots des chiffres d'un PIN prononcé et chaque phrase que le service répond. Les phrases sont écrites comme une personne les dit et normalisées au chargement du module avec la même fonction que celle qui normalise ce qui est entendu, de sorte que les deux ne peuvent pas diverger. Les formules de politesse (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) sont écartées avant la comparaison ; le japonais et le chinois, écrits sans espaces, listent leurs phrases avec et sans la terminaison polie.
 
 ### La confirmation en deux tours
 
@@ -403,25 +404,31 @@ C'est du Python pur : rien à compiler. La version se trouve dans `pyproject.tom
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/        le code (bibliothèque standard uniquement)
-│   ├── phrases.py             les 420 phrases des quinze commandes, en huit langues
-│   ├── intent.py              normalisation et correspondance exacte : la liste d'autorisation fermée
-│   ├── confirmation.py        jetons de confirmation signés, à usage unique, par personne
-│   ├── silence_policy.py      off / pin / double_turn, le PIN prononcé, le blocage
-│   ├── session.py             la règle des deux tours pour chaque commande
-│   ├── gateway.py             lignes JSON sur stdin/stdout, l'audit, les phrases répondues
-│   ├── service.py             le service HTTP local (/healthz, /v1/command, /v1/turn)
-│   └── turn.py                un tour vocal : moteurs, oui/non, budget de temps
-├── tests/                     255 tests : silence, limites, passerelle, tour, langues, service
-├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
-├── tools/                     les contrôles CI partagés et l'outillage du projet
-├── images/                    bannière et icône
-├── .github/                   workflow CI, avis du tableau de bord, modèles de tickets et de pull requests
-├── armor.project.json         manifeste : version, rôle, maturité, commande de compilation
-├── pyproject.toml             métadonnées du paquet et la commande `armor-voice-gateway`
-├── run.sh run.bat             démarrent via le flux de projet partagé
-├── build.sh build.bat         compilent et testent via le flux de projet partagé
-├── CHANGELOG.md               ce qui a changé dans chaque version
+├── src/armor_voice_ai/
+│   ├── turn.py                    un tour de parole : audio, mots, réponse
+│   ├── intent.py                  la liste fermée de commandes, huit langues
+│   ├── phrases.py                 les mots de chaque commande et les réponses parlées
+│   ├── confirmation.py            confirmation signée à usage unique liée à l'orateur
+│   ├── silence_policy.py          ce qu'il faut pour couper les alarmes : off, pin, double tour, défi
+│   ├── session.py                 la règle des deux tours pour armer et désarmer
+│   ├── gateway.py                 lignes JSON en entrée, réponses et ligne d'audit
+│   ├── service.py                 le service HTTP local sur l'adresse de bouclage
+│   ├── wakeword.py                le détecteur local du mot d'éveil, désactivé par défaut
+│   ├── wake_model_check.py        vérifie un modèle de mot d'éveil avant de lui faire confiance
+│   ├── wake_release.py            prépare les modèles d'éveil pour une version : manifeste et signature
+│   └── wyoming.py                 gestionnaire Wyoming pour Assist de Home Assistant : requêtes seules, désactivé par défaut
+├── tests/                         commandes, langues, silence, service, éveil
+├── docs/                          INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md
+├── tools/                         les vérifications CI et les outils partagés
+├── images/                        bannière, icône et images du README
+├── .github/                       workflow CI, avis au tableau de bord, modèles d'issues et de pull requests
+├── armor.project.json             manifeste : version, rôle, maturité
+├── pyproject.toml                 métadonnées du paquet, entrées
+├── CHANGELOG.md                   ce qui a changé à chaque version
+├── run.sh run.bat                 démarrer, flux partagé
+├── build.sh build.bat             construire et tester, flux partagé
+├── build-test.sh build-test.bat   construire, tester, empaqueter
+├── test.sh test.bat               seulement les tests, jamais la version
 └── SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE
 ```
 

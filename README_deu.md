@@ -42,7 +42,7 @@
 | Rolle | Offline-Sprach- und Absichts-Gateway (Familie: Core Services, übergeordnet: ARMOR-SERVER) |
 | Technik | Python 3.11+, nur Standardbibliothek |
 | Tests | 255 (`python -m unittest discover -s tests`) |
-| Befehle | 15 (10 fragen ab, 5 handeln), 420 Sätze, 8 Sprachen |
+| Befehle | 16 (11 fragen ab, 5 handeln), 450 Sätze, 8 Sprachen |
 | Lauscht auf | `127.0.0.1:18090` (nur Loopback), mit Token |
 | Läuft auf | Dem CM5-Prüfstand (als Dienst) oder jedem Computer |
 | Auf echter Hardware | Läuft als Dienst auf dem CM5-Prüfstand, vom Server abgefragt; kein Mikrofon und keine Sprach-Engine wurde ausprobiert |
@@ -69,13 +69,13 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 
 ## 🎯 Überblick
 
-ARMOR-VOICE-AI ist der Teil von A.R.M.O.R., der **das, was eine Person sagt, in einen von fünfzehn Befehlen oder in nichts** verwandelt. Er tut nie etwas von sich aus: Er entscheidet, und [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authentifiziert, autorisiert und führt aus, was akzeptiert wurde, genau wie bei einem Klick in der Konsole.
+ARMOR-VOICE-AI ist der Teil von A.R.M.O.R., der **das, was eine Person sagt, in einen von sechzehn Befehlen oder in nichts** verwandelt. Er tut nie etwas von sich aus: Er entscheidet, und [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authentifiziert, autorisiert und führt aus, was akzeptiert wurde, genau wie bei einem Klick in der Konsole.
 
-Der Text, der aus einer Spracherkennung kommt, ist eine *nicht vertrauenswürdige Eingabe*. Deshalb wird er weder interpretiert noch nach Schlüsselwörtern durchsucht noch als Befehl weitergeleitet: Er wird bereinigt (Akzente, Satzzeichen, Höflichkeitsfloskeln) und muss dann **genau** einem der 420 bekannten Sätze entsprechen. Alles andere, jeder zu lange Text und jeder Satz, der zwei Befehle bedeuten könnte, wird *nicht verstanden*.
+Der Text, der aus einer Spracherkennung kommt, ist eine *nicht vertrauenswürdige Eingabe*. Deshalb wird er weder interpretiert noch nach Schlüsselwörtern durchsucht noch als Befehl weitergeleitet: Er wird bereinigt (Akzente, Satzzeichen, Höflichkeitsfloskeln) und muss dann **genau** einem der 450 bekannten Sätze entsprechen. Alles andere, jeder zu lange Text und jeder Satz, der zwei Befehle bedeuten könnte, wird *nicht verstanden*.
 
 **Was er tut**
 
-* Versteht fünfzehn Befehle in **acht Sprachen** (Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch, Chinesisch und Portugiesisch).
+* Versteht sechzehn Befehle in **acht Sprachen** (Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch, Chinesisch und Portugiesisch).
 * Verlangt für `arm` und `disarm` einen **zweiten Turn mit einem vom Dienst signierten Token**, gebunden an die Absicht und an die Person, die sie geäußert hat.
 * Kann für `silence` eine gesprochene **PIN** oder einen zweiten Bestätigungs-Turn verlangen, wenn ARMOR-SERVER es anfordert.
 * Läuft als **lokaler HTTP-Dienst** und als **JSON-Lines-Gateway** für Adapter und Tests.
@@ -139,7 +139,7 @@ sequenceDiagram
 
 **Warum er so gebaut ist**
 
-* **Warum eine geschlossene Liste und keine Absichtsklassifikation.** Eine Spracherkennung macht Fehler, und jeder kann in der Nähe eines Mikrofons sprechen. Bei 420 exakten Sätzen kann ein falsches Transkript schlimmstenfalls ignoriert werden, und ein Test prüft, dass kein Satz zu zwei Befehlen gehört.
+* **Warum eine geschlossene Liste und keine Absichtsklassifikation.** Eine Spracherkennung macht Fehler, und jeder kann in der Nähe eines Mikrofons sprechen. Bei 450 exakten Sätzen kann ein falsches Transkript schlimmstenfalls ignoriert werden, und ein Test prüft, dass kein Satz zu zwei Befehlen gehört.
 * **Warum der Dienst nur entscheidet.** Authentifizierung, Autorisierung, Audit-Spur und Aktion bleiben an einem Ort, ARMOR-SERVER; ein Fehler hier kann einen Satz fälschlich akzeptieren, aber keinen Alarm anrühren.
 * **Warum die Bestätigung ein signierter, vom Dienst ausgestellter Token ist.** Ein Flag, das der Aufrufer setzt (`confirmed: true`), beweist nichts und wird deshalb abgelehnt. Der Token ist mit HMAC-SHA-256 signiert, an den Befehl und die Person gebunden, 30 Sekunden gültig und nur einmal verwendbar.
 * **Warum die Sprach-Engines eigene Programme sind.** Modelle ändern sich schneller, als ein Sicherheits-Gateway es sollte. Sie laufen ohne Shell, mit kurzer Umgebung und Zeitlimit, und die eigenen Geheimnisse des Dienstes erreichen sie nie.
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## ✨ Funktionen
 
-### Die fünfzehn Befehle
+### Die sechzehn Befehle
 
 | Befehl | Art | Bedeutung | Bestätigung |
 |---|---|---|---|
@@ -155,6 +155,7 @@ sequenceDiagram
 | `alarms` | fragt ab | Die aktiven Alarme | nein |
 | `nodes` | fragt ab | Der Zustand der Knoten | nein |
 | `cameras` | fragt ab | Der Zustand der Kameras | nein |
+| `last_camera` | fragt ab | Welche Kamera zuletzt Bewegung gesehen hat | nein |
 | `radar` | fragt ab | Der Zustand der Radare | nein |
 | `solar` | fragt ab | Der Zustand der Solaranlage | nein |
 | `electrical` | fragt ab | Der Stromverbrauch | nein |
@@ -167,11 +168,11 @@ sequenceDiagram
 | `arm` | handelt | Den Perimeter scharf schalten | **ja** |
 | `disarm` | handelt | Den Perimeter unscharf schalten | **ja** |
 
-Die zehn, die *abfragen*, ändern nichts. Die fünf, die *handeln*, führt ARMOR-SERVER mit der Sitzung der Person aus, die gesprochen hat, nie dieser Dienst.
+Die elf, die *abfragen*, ändern nichts. Die fünf, die *handeln*, führt ARMOR-SERVER mit der Sitzung der Person aus, die gesprochen hat, nie dieser Dienst.
 
 ### Acht Sprachen
 
-Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch, Chinesisch und europäisches Portugiesisch: die Sätze (insgesamt 420), das Ja und Nein einer Bestätigung, die Ziffernwörter einer gesprochenen PIN und jeder Satz, den der Dienst zurückspricht. Die Sätze sind so geschrieben, wie eine Person sie sagt, und werden beim Laden des Moduls mit derselben Funktion normalisiert, die das Gehörte normalisiert, sodass beide nicht auseinanderlaufen können. Höflichkeitsfloskeln (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) werden vor dem Vergleich entfernt; Japanisch und Chinesisch, ohne Leerzeichen geschrieben, listen ihre Sätze mit und ohne höfliche Endung.
+Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch, Chinesisch und europäisches Portugiesisch: die Sätze (insgesamt 450), das Ja und Nein einer Bestätigung, die Ziffernwörter einer gesprochenen PIN und jeder Satz, den der Dienst zurückspricht. Die Sätze sind so geschrieben, wie eine Person sie sagt, und werden beim Laden des Moduls mit derselben Funktion normalisiert, die das Gehörte normalisiert, sodass beide nicht auseinanderlaufen können. Höflichkeitsfloskeln (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) werden vor dem Vergleich entfernt; Japanisch und Chinesisch, ohne Leerzeichen geschrieben, listen ihre Sätze mit und ohne höfliche Endung.
 
 ### Die Bestätigung in zwei Turns
 
@@ -403,25 +404,31 @@ Es ist reines Python: Es gibt nichts zu kompilieren. Die Version steht in `pypro
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/        der Code (nur Standardbibliothek)
-│   ├── phrases.py             die 420 Sätze der fünfzehn Befehle, in acht Sprachen
-│   ├── intent.py              Normalisierung und exakter Abgleich: die geschlossene Erlaubnisliste
-│   ├── confirmation.py        signierte, einmalige Bestätigungs-Tokens pro Person
-│   ├── silence_policy.py      off / pin / double_turn, die gesprochene PIN, die Sperre
-│   ├── session.py             die Zwei-Turn-Regel für jeden Befehl
-│   ├── gateway.py             JSON-Zeilen über stdin/stdout, das Audit, die zurückgesprochenen Sätze
-│   ├── service.py             der lokale HTTP-Dienst (/healthz, /v1/command, /v1/turn)
-│   └── turn.py                ein gesprochener Turn: Engines, Ja/Nein, Zeitbudget
-├── tests/                     255 Tests: Stummschaltung, Grenzfälle, Gateway, Turn, Sprachen, Dienst
-├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
-├── tools/                     die gemeinsamen CI-Prüfungen und Projektwerkzeuge
-├── images/                    Banner und Symbol
-├── .github/                   CI-Workflow, Dashboard-Hinweis, Vorlagen für Issues und Pull Requests
-├── armor.project.json         Manifest: Version, Rolle, Reifegrad, Build-Befehl
-├── pyproject.toml             Paketmetadaten und der Befehl `armor-voice-gateway`
-├── run.sh run.bat             starten über den gemeinsamen Projektablauf
-├── build.sh build.bat         bauen und testen über den gemeinsamen Projektablauf
-├── CHANGELOG.md               was sich in jeder Version geändert hat
+├── src/armor_voice_ai/
+│   ├── turn.py                    ein gesprochener Zug: Audio, Wörter, Antwort
+│   ├── intent.py                  die geschlossene Befehlsliste, acht Sprachen
+│   ├── phrases.py                 die Wörter jedes Befehls und die gesprochenen Antworten
+│   ├── confirmation.py            signierte Einmal-Bestätigung, an den Sprecher gebunden
+│   ├── silence_policy.py          was zum Stummschalten der Alarme nötig ist: aus, PIN, Doppelzug, Challenge
+│   ├── session.py                 die Zwei-Züge-Regel für Scharf- und Unscharfschalten
+│   ├── gateway.py                 JSON-Zeilen hinein, Antworten heraus, dazu die Audit-Zeile
+│   ├── service.py                 der lokale HTTP-Dienst auf der Loopback-Adresse
+│   ├── wakeword.py                der lokale Weckwort-Detektor, standardmäßig aus
+│   ├── wake_model_check.py        prüft ein trainiertes Weckwort-Modell, bevor man ihm traut
+│   ├── wake_release.py            bereitet die Weckwort-Modelle für ein Release vor: Manifest und Signatur
+│   └── wyoming.py                 Wyoming-Handler für Home Assistant Assist: nur Abfragen, standardmäßig aus
+├── tests/                         Befehle, Sprachen, Stille, Dienst, Weckwort
+├── docs/                          INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md
+├── tools/                         die gemeinsamen CI-Prüfungen und Werkzeuge
+├── images/                        Banner, Symbol und die Bilder des READMEs
+├── .github/                       CI-Workflow, Dashboard-Hinweis, Vorlagen für Issues und Pull Requests
+├── armor.project.json             Manifest: Version, Rolle, Reife
+├── pyproject.toml                 Paket-Metadaten, Einstiege
+├── CHANGELOG.md                   was sich in jeder Version geändert hat
+├── run.sh run.bat                 Start, gemeinsamer Ablauf
+├── build.sh build.bat             Bauen und Testen, gemeinsamer Ablauf
+├── build-test.sh build-test.bat   Bauen, Testen und Verpacken
+├── test.sh test.bat               nur die Tests, nie die Version
 └── SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE
 ```
 

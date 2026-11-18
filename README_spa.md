@@ -42,7 +42,7 @@
 | Función | Pasarela de voz e intenciones sin conexión (familia: Core Services, padre: ARMOR-SERVER) |
 | Tecnología | Python 3.11+, solo biblioteca estándar |
 | Pruebas | 255 (`python -m unittest discover -s tests`) |
-| Comandos | 15 (10 que preguntan, 5 que actúan), 420 frases, 8 idiomas |
+| Comandos | 16 (11 que preguntan, 5 que actúan), 450 frases, 8 idiomas |
 | Escucha en | `127.0.0.1:18090` (solo bucle local), con token |
 | Funciona en | El banco de pruebas de la CM5 (como servicio) o cualquier ordenador |
 | En hardware real | Funciona como servicio en el banco de la CM5, consultado por el servidor; no se ha probado ningún micrófono ni motor de voz |
@@ -69,13 +69,13 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 
 ## 🎯 Resumen
 
-ARMOR-VOICE-AI es la parte de A.R.M.O.R. que convierte **lo que dice una persona en uno de quince comandos, o en nada**. Nunca hace nada por sí misma: decide, y [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) autentica, autoriza y ejecuta lo aceptado, igual que haría con un clic en la consola.
+ARMOR-VOICE-AI es la parte de A.R.M.O.R. que convierte **lo que dice una persona en uno de dieciséis comandos, o en nada**. Nunca hace nada por sí misma: decide, y [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) autentica, autoriza y ejecuta lo aceptado, igual que haría con un clic en la consola.
 
-El texto que sale de un reconocedor de voz es *entrada no fiable*. Por eso no se interpreta, ni se buscan palabras clave, ni se reenvía como comando: se limpia (acentos, puntuación, cortesías) y entonces debe ser **exactamente** una de 420 frases conocidas. Cualquier otra cosa, cualquier texto demasiado largo y cualquier frase que pudiera significar dos comandos *no se entiende*.
+El texto que sale de un reconocedor de voz es *entrada no fiable*. Por eso no se interpreta, ni se buscan palabras clave, ni se reenvía como comando: se limpia (acentos, puntuación, cortesías) y entonces debe ser **exactamente** una de 450 frases conocidas. Cualquier otra cosa, cualquier texto demasiado largo y cualquier frase que pudiera significar dos comandos *no se entiende*.
 
 **Qué hace**
 
-* Entiende quince comandos en **ocho idiomas** (inglés, español, alemán, francés, italiano, japonés, chino y portugués).
+* Entiende dieciséis comandos en **ocho idiomas** (inglés, español, alemán, francés, italiano, japonés, chino y portugués).
 * Hace que `arm` y `disarm` necesiten un **segundo turno con un token que firmó el servicio**, ligado a la orden y a quien la pidió.
 * Puede hacer que `silence` necesite un **PIN** hablado o un segundo turno de confirmación, cuando ARMOR-SERVER lo pide.
 * Funciona como **servicio HTTP local** y como **pasarela de líneas JSON** para adaptadores y pruebas.
@@ -139,7 +139,7 @@ sequenceDiagram
 
 **Por qué está construido así**
 
-* **Por qué una lista cerrada y no clasificación de intenciones.** Un reconocedor se equivoca y cualquiera puede hablar cerca de un micrófono. Con 420 frases exactas lo peor que puede hacer una transcripción errónea es ser ignorada, y una prueba comprueba que ninguna frase pertenece a dos comandos.
+* **Por qué una lista cerrada y no clasificación de intenciones.** Un reconocedor se equivoca y cualquiera puede hablar cerca de un micrófono. Con 450 frases exactas lo peor que puede hacer una transcripción errónea es ser ignorada, y una prueba comprueba que ninguna frase pertenece a dos comandos.
 * **Por qué el servicio solo decide.** La autenticación, la autorización, el registro de auditoría y la acción están en un único sitio, ARMOR-SERVER; un fallo aquí puede aceptar mal una frase, pero no puede tocar una alarma.
 * **Por qué la confirmación es un token firmado que emite el servicio.** Una marca que pone quien llama (`confirmed: true`) no demuestra nada, así que se rechaza. El token va firmado con HMAC-SHA-256, ligado al comando y a la persona, vale 30 segundos y sirve una vez.
 * **Por qué los motores de voz son programas aparte.** Los modelos cambian más deprisa de lo que debe cambiar una pasarela de seguridad. Se ejecutan sin shell, con un entorno corto y un límite de tiempo, y los secretos del propio servicio nunca les llegan.
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## ✨ Funciones
 
-### Los quince comandos
+### Los dieciséis comandos
 
 | Comando | Tipo | Significado | Confirmación |
 |---|---|---|---|
@@ -155,6 +155,7 @@ sequenceDiagram
 | `alarms` | pregunta | Las alarmas activas | no |
 | `nodes` | pregunta | El estado de los nodos | no |
 | `cameras` | pregunta | El estado de las cámaras | no |
+| `last_camera` | pregunta | Qué cámara vio movimiento por última vez | no |
 | `radar` | pregunta | El estado de los radares | no |
 | `solar` | pregunta | El estado del sistema solar | no |
 | `electrical` | pregunta | El consumo eléctrico | no |
@@ -167,11 +168,11 @@ sequenceDiagram
 | `arm` | actúa | Armar el perímetro | **sí** |
 | `disarm` | actúa | Desarmar el perímetro | **sí** |
 
-Los diez que *preguntan* no cambian nada. Los cinco que *actúan* los ejecuta ARMOR-SERVER con la sesión de quien habló, nunca este servicio.
+Los once que *preguntan* no cambian nada. Los cinco que *actúan* los ejecuta ARMOR-SERVER con la sesión de quien habló, nunca este servicio.
 
 ### Ocho idiomas
 
-Inglés, español, alemán, francés, italiano, japonés, chino y portugués de Portugal: las frases (420 en total), el sí y el no de una confirmación, las palabras de los dígitos de un PIN hablado y cada frase que el servicio responde. Las frases se escriben como las dice una persona y se normalizan al cargar el módulo con la misma función que normaliza lo que se oye, así que no pueden separarse. Las cortesías (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) se descartan antes de comparar; el japonés y el chino, que se escriben sin espacios, listan sus frases con y sin la terminación cortés.
+Inglés, español, alemán, francés, italiano, japonés, chino y portugués de Portugal: las frases (450 en total), el sí y el no de una confirmación, las palabras de los dígitos de un PIN hablado y cada frase que el servicio responde. Las frases se escriben como las dice una persona y se normalizan al cargar el módulo con la misma función que normaliza lo que se oye, así que no pueden separarse. Las cortesías (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) se descartan antes de comparar; el japonés y el chino, que se escriben sin espacios, listan sus frases con y sin la terminación cortés.
 
 ### La confirmación en dos turnos
 
@@ -403,25 +404,31 @@ Es Python puro: no hay nada que compilar. La versión vive en `pyproject.toml`, 
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/        el código (solo biblioteca estándar)
-│   ├── phrases.py             las 420 frases de los quince comandos, en ocho idiomas
-│   ├── intent.py              normalización y coincidencia exacta: la lista cerrada
-│   ├── confirmation.py        tokens de confirmación firmados, de un solo uso y por persona
-│   ├── silence_policy.py      off / pin / double_turn, el PIN hablado, el bloqueo
-│   ├── session.py             la regla de dos turnos de cada comando
-│   ├── gateway.py             líneas JSON por stdin/stdout, la auditoría, las frases que se responden
-│   ├── service.py             el servicio HTTP local (/healthz, /v1/command, /v1/turn)
-│   └── turn.py                un turno hablado: motores, sí/no, presupuesto de tiempo
-├── tests/                     255 pruebas: silencio, bordes, pasarela, turno, idiomas, servicio
-├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
-├── tools/                     las comprobaciones de CI compartidas y la herramienta de proyecto
-├── images/                    banner e icono
-├── .github/                   flujo de CI, aviso al panel, plantillas de incidencias y de pull request
-├── armor.project.json         manifiesto: versión, función, madurez, orden de compilación
-├── pyproject.toml             metadatos del paquete y el comando `armor-voice-gateway`
-├── run.sh run.bat             arrancan con el flujo de proyecto compartido
-├── build.sh build.bat         compilan y prueban con el flujo de proyecto compartido
-├── CHANGELOG.md               qué cambió en cada versión
+├── src/armor_voice_ai/
+│   ├── turn.py                    un turno hablado: audio, palabras y respuesta
+│   ├── intent.py                  la lista cerrada de órdenes, ocho idiomas
+│   ├── phrases.py                 las palabras de cada orden y las respuestas habladas
+│   ├── confirmation.py            confirmación firmada de un solo uso ligada a quien habla
+│   ├── silence_policy.py          lo que hace falta para silenciar las alarmas: off, pin, doble turno, desafío
+│   ├── session.py                 la regla de dos turnos para armar y desarmar
+│   ├── gateway.py                 líneas JSON de entrada, respuestas y la línea de auditoría
+│   ├── service.py                 el servicio HTTP local en la dirección de loopback
+│   ├── wakeword.py                el detector local de la palabra de activación, desactivado por defecto
+│   ├── wake_model_check.py        comprueba un modelo de palabra de activación antes de fiarse de él
+│   ├── wake_release.py            prepara los modelos de activación para una versión: manifiesto y firma
+│   └── wyoming.py                 manejador Wyoming para Assist de Home Assistant: solo consultas, desactivado por defecto
+├── tests/                         órdenes, idiomas, silencio, servicio, activación
+├── docs/                          INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md
+├── tools/                         las comprobaciones de CI y las herramientas compartidas
+├── images/                        banner, icono y las imágenes del README
+├── .github/                       flujo de CI, aviso al panel, plantillas de incidencias y pull requests
+├── armor.project.json             manifiesto: versión, función, madurez
+├── pyproject.toml                 metadatos del paquete, entradas
+├── CHANGELOG.md                   qué cambió en cada versión
+├── run.sh run.bat                 arrancar, flujo compartido
+├── build.sh build.bat             construir y probar, flujo compartido
+├── build-test.sh build-test.bat   construir, probar y empaquetar
+├── test.sh test.bat               solo las pruebas, nunca la versión
 └── SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE
 ```
 

@@ -42,7 +42,7 @@
 | Role | Offline speech and intent gateway (family: Core Services, parent: ARMOR-SERVER) |
 | Stack | Python 3.11+, standard library only |
 | Tests | 255 (`python -m unittest discover -s tests`) |
-| Commands | 15 (10 that ask, 5 that act), 420 phrases, 8 languages |
+| Commands | 16 (11 that ask, 5 that act), 450 phrases, 8 languages |
 | Listens on | `127.0.0.1:18090` (loopback only), with a token |
 | Runs on | The CM5 test bench (as a service) or any computer |
 | On real hardware | Running as a service on the CM5 test bench, asked by the server; no microphone or speech engine has been tried |
@@ -69,13 +69,13 @@ Each line is one part of this repository and the light says how far it is today.
 
 ## 🎯 Overview
 
-ARMOR-VOICE-AI is the part of A.R.M.O.R. that turns **what a person says into one of fifteen commands, or into nothing**. It never does anything by itself: it decides, and [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authenticates, authorises and carries out what was accepted, exactly as it would a click in the console.
+ARMOR-VOICE-AI is the part of A.R.M.O.R. that turns **what a person says into one of sixteen commands, or into nothing**. It never does anything by itself: it decides, and [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) authenticates, authorises and carries out what was accepted, exactly as it would a click in the console.
 
-The text that comes out of a speech recogniser is *untrusted input*. So it is not interpreted, searched for keywords or forwarded as a command: it is cleaned (accents, punctuation, polite filler) and must then be **exactly** one of 420 known phrases. Anything else, anything too long and any phrase that could mean two commands is *not understood*.
+The text that comes out of a speech recogniser is *untrusted input*. So it is not interpreted, searched for keywords or forwarded as a command: it is cleaned (accents, punctuation, polite filler) and must then be **exactly** one of 450 known phrases. Anything else, anything too long and any phrase that could mean two commands is *not understood*.
 
 **What it does**
 
-* Understands fifteen commands in **eight languages** (English, Spanish, German, French, Italian, Japanese, Chinese and Portuguese).
+* Understands sixteen commands in **eight languages** (English, Spanish, German, French, Italian, Japanese, Chinese and Portuguese).
 * Makes `arm` and `disarm` need a **second turn with a token the service signed**, tied to the intent and to the person who asked.
 * Can make `silence` need a spoken **PIN** or a second confirming turn, when ARMOR-SERVER asks for it.
 * Runs as a **local HTTP service** and as a **JSON-lines gateway** for adapters and tests.
@@ -139,7 +139,7 @@ sequenceDiagram
 
 **Why it is built this way**
 
-* **Why a closed list and not intent classification.** A recogniser makes mistakes and anyone can speak near a microphone. With 420 exact phrases the worst a wrong transcript can do is be ignored, and a test checks that no phrase belongs to two commands.
+* **Why a closed list and not intent classification.** A recogniser makes mistakes and anyone can speak near a microphone. With 450 exact phrases the worst a wrong transcript can do is be ignored, and a test checks that no phrase belongs to two commands.
 * **Why the service only decides.** Authentication, authorisation, the audit trail and the action stay in one place, ARMOR-SERVER; a bug here can wrongly accept a phrase but cannot touch an alarm.
 * **Why the confirmation is a signed token the service issues.** A flag the caller sets (`confirmed: true`) proves nothing, so it is refused. The token is HMAC-SHA-256 signed, tied to the command and to the person, valid for 30 seconds and good once.
 * **Why the speech engines are separate programs.** Models change faster than a security gateway should. They are run without a shell, with a short environment and a time limit, and the service's own secrets never reach them.
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## ✨ Features
 
-### The fifteen commands
+### The sixteen commands
 
 | Command | Kind | Meaning | Confirmation |
 |---|---|---|---|
@@ -155,6 +155,7 @@ sequenceDiagram
 | `alarms` | asks | The alarms that are active | no |
 | `nodes` | asks | The state of the nodes | no |
 | `cameras` | asks | The state of the cameras | no |
+| `last_camera` | asks | Which camera saw movement last | no |
 | `radar` | asks | The state of the radars | no |
 | `solar` | asks | The state of the solar system | no |
 | `electrical` | asks | The electrical consumption | no |
@@ -167,11 +168,11 @@ sequenceDiagram
 | `arm` | acts | Arm the perimeter | **yes** |
 | `disarm` | acts | Disarm the perimeter | **yes** |
 
-The ten that *ask* change nothing. The five that *act* are carried out by ARMOR-SERVER with the session of the person who spoke, never by this service.
+The eleven that *ask* change nothing. The five that *act* are carried out by ARMOR-SERVER with the session of the person who spoke, never by this service.
 
 ### Eight languages
 
-English, Spanish, German, French, Italian, Japanese, Chinese and European Portuguese: the phrases (420 in all), the yes and no of a confirmation, the digit words of a spoken PIN and every sentence the service says back. Phrases are written the way a person says them and normalised when the module loads with the same function that normalises what is heard, so the two cannot drift apart. Polite filler (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) is dropped before comparing; Japanese and Chinese, written without spaces, list their phrases with and without the polite ending.
+English, Spanish, German, French, Italian, Japanese, Chinese and European Portuguese: the phrases (450 in all), the yes and no of a confirmation, the digit words of a spoken PIN and every sentence the service says back. Phrases are written the way a person says them and normalised when the module loads with the same function that normalises what is heard, so the two cannot drift apart. Polite filler (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) is dropped before comparing; Japanese and Chinese, written without spaces, list their phrases with and without the polite ending.
 
 ### The two-turn confirmation
 
@@ -403,25 +404,31 @@ It is plain Python: nothing to compile. The version lives in `pyproject.toml`, i
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/        the code (standard library only)
-│   ├── phrases.py             the 420 phrases of the fifteen commands, in eight languages
-│   ├── intent.py              normalising and exact matching: the closed allow-list
-│   ├── confirmation.py        signed, single-use, per-person confirmation tokens
-│   ├── silence_policy.py      off / pin / double_turn, the spoken PIN, the lock
-│   ├── session.py             the two-turn rule for each command
-│   ├── gateway.py             JSON lines on stdin/stdout, the audit, the sentences said back
-│   ├── service.py             the local HTTP service (/healthz, /v1/command, /v1/turn)
-│   └── turn.py                one spoken turn: engines, yes/no, time budget
-├── tests/                     255 tests: silence, edges, gateway, turn, languages, service
-├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
-├── tools/                     the shared CI checks and project tooling
-├── images/                    banner and icon
-├── .github/                   CI workflow, dashboard notice, issue and pull-request templates
-├── armor.project.json         manifest: version, role, maturity, build command
-├── pyproject.toml             package metadata and the `armor-voice-gateway` command
-├── run.sh run.bat             start through the shared project workflow
-├── build.sh build.bat         build and test through the shared project workflow
-├── CHANGELOG.md               what changed in each version
+├── src/armor_voice_ai/
+│   ├── turn.py                    one spoken turn: audio, then words, then the answer
+│   ├── intent.py                  the closed list of commands, eight languages
+│   ├── phrases.py                 the words of each command and the spoken answers
+│   ├── confirmation.py            signed single-use confirmation tied to the speaker
+│   ├── silence_policy.py          what it takes to silence the alarms: off, pin, double turn, challenge
+│   ├── session.py                 the two-turn rule for arm and disarm
+│   ├── gateway.py                 JSON lines in, answers out, and the audit line
+│   ├── service.py                 the local HTTP service on the loopback address
+│   ├── wakeword.py                the local wake word detector, off by default
+│   ├── wake_model_check.py        checks a trained wake word model before it is trusted
+│   ├── wake_release.py            prepares the wake word models for a release: manifest and signature
+│   └── wyoming.py                 Wyoming handler for Home Assistant Assist: queries only, off by default
+├── tests/                         intents, languages, silence, service, wake word
+├── docs/                          INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md
+├── tools/                         the shared CI checks and project tooling
+├── images/                        banner, icon and the pictures of the README
+├── .github/                       CI workflow, dashboard notice, issue and pull-request templates
+├── armor.project.json             manifest: version, role, maturity
+├── pyproject.toml                 package metadata, entry points
+├── CHANGELOG.md                   what changed in each version
+├── run.sh run.bat                 start, shared workflow
+├── build.sh build.bat             build and test, shared workflow
+├── build-test.sh build-test.bat   build, test and package
+├── test.sh test.bat               only the tests, never the version
 └── SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE
 ```
 

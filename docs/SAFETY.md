@@ -30,7 +30,7 @@ that could mean two intents is *not understood*.
 | `arm` | does | Arm the perimeter | **yes** |
 | `disarm` | does | Disarm the perimeter | **yes** |
 
-The ten that *ask* change nothing. The five that *do* are carried out by ARMOR-SERVER with the session of the person who spoke, not by this service.
+The eleven that *ask* change nothing. The five that *do* are carried out by ARMOR-SERVER with the session of the person who spoke, not by this service.
 
 ## The confirmation turn
 
