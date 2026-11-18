@@ -1,0 +1,452 @@
+{
+ "repo": "ARMOR-VOICE-AI",
+ "ecosystem": "armor",
+ "svg": "en",
+ "cards": [
+  {
+   "name": "src/armor_voice_ai/",
+   "span": 3,
+   "accent": "a",
+   "sub": {
+    "en": "the voice service, standard library only",
+    "es": "el servicio de voz, solo biblioteca estándar",
+    "de": "der Sprachdienst, nur Standardbibliothek",
+    "fr": "le service vocal, bibliothèque standard seule",
+    "it": "il servizio vocale, solo libreria standard",
+    "ja": "音声サービス（標準ライブラリのみ）",
+    "zh": "语音服务，仅用标准库",
+    "pt": "o serviço de voz, só biblioteca padrão"
+   },
+   "rows": [
+    {
+     "name": "turn.py",
+     "desc": {
+      "en": "one spoken turn: audio, then words, then the answer",
+      "es": "un turno hablado: audio, palabras y respuesta",
+      "de": "ein gesprochener Zug: Audio, Wörter, Antwort",
+      "fr": "un tour de parole : audio, mots, réponse",
+      "it": "un turno parlato: audio, parole, risposta",
+      "ja": "1 回の発話ターン：音声、言葉、応答",
+      "zh": "一轮语音：音频、文字、回答",
+      "pt": "uma vez falada: áudio, palavras, resposta"
+     }
+    },
+    {
+     "name": "intent.py",
+     "desc": {
+      "en": "the closed list of commands, eight languages",
+      "es": "la lista cerrada de órdenes, ocho idiomas",
+      "de": "die geschlossene Befehlsliste, acht Sprachen",
+      "fr": "la liste fermée de commandes, huit langues",
+      "it": "l'elenco chiuso di comandi, otto lingue",
+      "ja": "限定されたコマンド一覧（8 言語）",
+      "zh": "封闭的命令列表，八种语言",
+      "pt": "a lista fechada de comandos, oito idiomas"
+     }
+    },
+    {
+     "name": "phrases.py",
+     "desc": {
+      "en": "the words of each command and the spoken answers",
+      "es": "las palabras de cada orden y las respuestas habladas",
+      "de": "die Wörter jedes Befehls und die gesprochenen Antworten",
+      "fr": "les mots de chaque commande et les réponses parlées",
+      "it": "le parole di ogni comando e le risposte parlate",
+      "ja": "各コマンドの言葉と音声応答",
+      "zh": "每条命令的词语与语音回答",
+      "pt": "as palavras de cada comando e as respostas faladas"
+     }
+    },
+    {
+     "name": "confirmation.py",
+     "desc": {
+      "en": "signed single-use confirmation tied to the speaker",
+      "es": "confirmación firmada de un solo uso ligada a quien habla",
+      "de": "signierte Einmal-Bestätigung, an den Sprecher gebunden",
+      "fr": "confirmation signée à usage unique liée à l'orateur",
+      "it": "conferma firmata monouso legata a chi parla",
+      "ja": "話者に結び付いた署名付き使い捨て確認",
+      "zh": "绑定说话人的签名一次性确认",
+      "pt": "confirmação assinada de uso único ligada a quem fala"
+     }
+    },
+    {
+     "name": "silence_policy.py",
+     "desc": {
+      "en": "what it takes to silence the alarms: off, pin, double turn, challenge",
+      "es": "lo que hace falta para silenciar las alarmas: off, pin, doble turno, desafío",
+      "de": "was zum Stummschalten der Alarme nötig ist: aus, PIN, Doppelzug, Challenge",
+      "fr": "ce qu'il faut pour couper les alarmes : off, pin, double tour, défi",
+      "it": "cosa serve per silenziare gli allarmi: off, pin, doppio turno, sfida",
+      "ja": "警報を消音する条件：off、PIN、二度の発話、チャレンジ",
+      "zh": "静音报警所需条件：关闭、PIN、双轮、质询",
+      "pt": "o que é preciso para silenciar os alarmes: off, pin, dupla volta, desafio"
+     }
+    },
+    {
+     "name": "session.py",
+     "desc": {
+      "en": "the two-turn rule for arm and disarm",
+      "es": "la regla de dos turnos para armar y desarmar",
+      "de": "die Zwei-Züge-Regel für Scharf- und Unscharfschalten",
+      "fr": "la règle des deux tours pour armer et désarmer",
+      "it": "la regola dei due turni per inserire e disinserire",
+      "ja": "警戒・解除の 2 ターン規則",
+      "zh": "布防与撤防的两轮规则",
+      "pt": "a regra das duas voltas para armar e desarmar"
+     }
+    },
+    {
+     "name": "gateway.py",
+     "desc": {
+      "en": "JSON lines in, answers out, and the audit line",
+      "es": "líneas JSON de entrada, respuestas y la línea de auditoría",
+      "de": "JSON-Zeilen hinein, Antworten heraus, dazu die Audit-Zeile",
+      "fr": "lignes JSON en entrée, réponses et ligne d'audit",
+      "it": "righe JSON in ingresso, risposte e riga di audit",
+      "ja": "JSON 行の入力、応答、監査行",
+      "zh": "输入 JSON 行，输出回答与审计行",
+      "pt": "linhas JSON de entrada, respostas e a linha de auditoria"
+     }
+    },
+    {
+     "name": "service.py",
+     "desc": {
+      "en": "the local HTTP service on the loopback address",
+      "es": "el servicio HTTP local en la dirección de loopback",
+      "de": "der lokale HTTP-Dienst auf der Loopback-Adresse",
+      "fr": "le service HTTP local sur l'adresse de bouclage",
+      "it": "il servizio HTTP locale sull'indirizzo di loopback",
+      "ja": "ループバック上のローカル HTTP サービス",
+      "zh": "回环地址上的本地 HTTP 服务",
+      "pt": "o serviço HTTP local no endereço de loopback"
+     }
+    },
+    {
+     "name": "wakeword.py",
+     "desc": {
+      "en": "the local wake word detector, off by default",
+      "es": "el detector local de la palabra de activación, desactivado por defecto",
+      "de": "der lokale Weckwort-Detektor, standardmäßig aus",
+      "fr": "le détecteur local du mot d'éveil, désactivé par défaut",
+      "it": "il rilevatore locale della parola di attivazione, disattivato di default",
+      "ja": "ローカルのウェイクワード検出（既定はオフ）",
+      "zh": "本地唤醒词检测，默认关闭",
+      "pt": "o detetor local da palavra de ativação, desativado por omissão"
+     }
+    },
+    {
+     "name": "wake_model_check.py",
+     "desc": {
+      "en": "checks a trained wake word model before it is trusted",
+      "es": "comprueba un modelo de palabra de activación antes de fiarse de él",
+      "de": "prüft ein trainiertes Weckwort-Modell, bevor man ihm traut",
+      "fr": "vérifie un modèle de mot d'éveil avant de lui faire confiance",
+      "it": "controlla un modello di parola di attivazione prima di fidarsene",
+      "ja": "学習済みウェイクワードモデルを信頼前に検査",
+      "zh": "在信任前检查已训练的唤醒词模型",
+      "pt": "verifica um modelo de palavra de ativação antes de confiar nele"
+     }
+    },
+    {
+     "name": "wake_release.py",
+     "desc": {
+      "en": "prepares the wake word models for a release: manifest and signature",
+      "es": "prepara los modelos de activación para una versión: manifiesto y firma",
+      "de": "bereitet die Weckwort-Modelle für ein Release vor: Manifest und Signatur",
+      "fr": "prépare les modèles d'éveil pour une version : manifeste et signature",
+      "it": "prepara i modelli di attivazione per una release: manifesto e firma",
+      "ja": "リリース用ウェイクワードモデルの準備：マニフェストと署名",
+      "zh": "为发布准备唤醒词模型：清单与签名",
+      "pt": "prepara os modelos de ativação para uma versão: manifesto e assinatura"
+     }
+    },
+    {
+     "name": "wyoming.py",
+     "desc": {
+      "en": "Wyoming handler for Home Assistant Assist: queries only, off by default",
+      "es": "manejador Wyoming para Assist de Home Assistant: solo consultas, desactivado por defecto",
+      "de": "Wyoming-Handler für Home Assistant Assist: nur Abfragen, standardmäßig aus",
+      "fr": "gestionnaire Wyoming pour Assist de Home Assistant : requêtes seules, désactivé par défaut",
+      "it": "gestore Wyoming per Assist di Home Assistant: solo interrogazioni, disattivato di default",
+      "ja": "Home Assistant Assist 用 Wyoming ハンドラー：照会のみ、既定はオフ",
+      "zh": "Home Assistant Assist 的 Wyoming 处理器：仅查询，默认关闭",
+      "pt": "gestor Wyoming para o Assist do Home Assistant: só consultas, desativado por omissão"
+     }
+    }
+   ],
+   "complete": true
+  },
+  {
+   "name": {
+    "en": "tests, docs and tools",
+    "es": "pruebas, docs y herramientas",
+    "de": "Tests, Doku und Werkzeuge",
+    "fr": "tests, docs et outils",
+    "it": "test, documenti e strumenti",
+    "ja": "テスト・文書・ツール",
+    "zh": "测试、文档和工具",
+    "pt": "testes, docs e ferramentas"
+   },
+   "kind": "group",
+   "span": 3,
+   "accent": "b",
+   "columns": 2,
+   "sub": {
+    "en": "checked in CI",
+    "es": "comprobado en CI",
+    "de": "in der CI geprüft",
+    "fr": "vérifié en CI",
+    "it": "verificato in CI",
+    "ja": "CI で検証",
+    "zh": "CI 检查",
+    "pt": "verificado na CI"
+   },
+   "rows": [
+    {
+     "name": "tests/",
+     "desc": {
+      "en": "intents, languages, silence, service, wake word",
+      "es": "órdenes, idiomas, silencio, servicio, activación",
+      "de": "Befehle, Sprachen, Stille, Dienst, Weckwort",
+      "fr": "commandes, langues, silence, service, éveil",
+      "it": "comandi, lingue, silenzio, servizio, attivazione",
+      "ja": "コマンド、言語、消音、サービス、ウェイクワード",
+      "zh": "命令、语言、静音、服务、唤醒词",
+      "pt": "comandos, idiomas, silêncio, serviço, ativação"
+     }
+    },
+    {
+     "name": "docs/",
+     "desc": {
+      "en": "safety, service, silence, wake word training",
+      "es": "seguridad, servicio, silencio, entrenamiento",
+      "de": "Sicherheit, Dienst, Stille, Weckwort-Training",
+      "fr": "sécurité, service, silence, entraînement",
+      "it": "sicurezza, servizio, silenzio, addestramento",
+      "ja": "安全、サービス、消音、ウェイクワード学習",
+      "zh": "安全、服务、静音、唤醒词训练",
+      "pt": "segurança, serviço, silêncio, treino"
+     },
+     "tree_desc": {
+      "en": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md",
+      "es": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md",
+      "de": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md",
+      "fr": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md",
+      "it": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md",
+      "ja": "INFERENCE_BOUNDARY.md、SERVICE.md, DAILY_SUMMARY.md",
+      "zh": "INFERENCE_BOUNDARY.md、SERVICE.md, DAILY_SUMMARY.md",
+      "pt": "INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md"
+     }
+    },
+    {
+     "name": "tools/",
+     "desc": {
+      "en": "shared CI checks and tools",
+      "es": "comprobaciones de CI y herramientas",
+      "de": "CI-Prüfungen und Werkzeuge",
+      "fr": "vérifications CI et outils",
+      "it": "controlli CI e strumenti",
+      "ja": "CI 検査とツール",
+      "zh": "CI 检查和工具",
+      "pt": "verificações de CI e ferramentas"
+     },
+     "tree_desc": {
+      "en": "the shared CI checks and project tooling",
+      "es": "las comprobaciones de CI y las herramientas compartidas",
+      "de": "die gemeinsamen CI-Prüfungen und Werkzeuge",
+      "fr": "les vérifications CI et les outils partagés",
+      "it": "i controlli CI e gli strumenti condivisi",
+      "ja": "共通の CI 検査とツール",
+      "zh": "共用的 CI 检查和工具",
+      "pt": "as verificações de CI e as ferramentas partilhadas"
+     }
+    },
+    {
+     "name": "images/",
+     "desc": {
+      "en": "banner, icon, README pictures",
+      "es": "banner, icono, imágenes del README",
+      "de": "Banner, Symbol, README-Bilder",
+      "fr": "bannière, icône, images du README",
+      "it": "banner, icona, immagini del README",
+      "ja": "バナー、アイコン、README の画像",
+      "zh": "横幅图、图标、README 图片",
+      "pt": "faixa, ícone, imagens do README"
+     },
+     "tree_desc": {
+      "en": "banner, icon and the pictures of the README",
+      "es": "banner, icono y las imágenes del README",
+      "de": "Banner, Symbol und die Bilder des READMEs",
+      "fr": "bannière, icône et images du README",
+      "it": "banner, icona e immagini del README",
+      "ja": "バナー、アイコン、README の画像",
+      "zh": "横幅图、图标和 README 的图片",
+      "pt": "faixa, ícone e as imagens do README"
+     }
+    },
+    {
+     "name": ".github/",
+     "desc": {
+      "en": "CI, dashboard notice, templates",
+      "es": "CI, aviso al panel, plantillas",
+      "de": "CI, Dashboard-Hinweis, Vorlagen",
+      "fr": "CI, avis au tableau de bord, modèles",
+      "it": "CI, avviso alla dashboard, modelli",
+      "ja": "CI、ダッシュボード通知、テンプレート",
+      "zh": "CI、仪表板通知、模板",
+      "pt": "CI, aviso ao painel, modelos"
+     },
+     "tree_desc": {
+      "en": "CI workflow, dashboard notice, issue and pull-request templates",
+      "es": "flujo de CI, aviso al panel, plantillas de incidencias y pull requests",
+      "de": "CI-Workflow, Dashboard-Hinweis, Vorlagen für Issues und Pull Requests",
+      "fr": "workflow CI, avis au tableau de bord, modèles d'issues et de pull requests",
+      "it": "workflow CI, avviso alla dashboard, modelli per issue e pull request",
+      "ja": "CI ワークフロー、ダッシュボード通知、Issue と Pull Request のテンプレート",
+      "zh": "CI 工作流、仪表板通知、议题和 pull request 模板",
+      "pt": "fluxo de CI, aviso ao painel, modelos de issues e pull requests"
+     }
+    }
+   ]
+  },
+  {
+   "name": {
+    "en": "project files",
+    "es": "ficheros del proyecto",
+    "de": "Projektdateien",
+    "fr": "fichiers du projet",
+    "it": "file del progetto",
+    "ja": "プロジェクトのファイル",
+    "zh": "项目文件",
+    "pt": "ficheiros do projeto"
+   },
+   "kind": "group",
+   "span": 3,
+   "accent": "c",
+   "columns": 2,
+   "sub": {
+    "en": "at the root",
+    "es": "en la raíz",
+    "de": "im Stammordner",
+    "fr": "à la racine",
+    "it": "alla radice",
+    "ja": "ルート",
+    "zh": "根目录",
+    "pt": "na raiz"
+   },
+   "rows": [
+    {
+     "name": "armor.project.json",
+     "desc": {
+      "en": "manifest: version, role, maturity",
+      "es": "manifiesto: versión, función, madurez",
+      "de": "Manifest: Version, Rolle, Reife",
+      "fr": "manifeste : version, rôle, maturité",
+      "it": "manifesto: versione, ruolo, maturità",
+      "ja": "マニフェスト：版・役割・成熟度",
+      "zh": "清单：版本、角色、成熟度",
+      "pt": "manifesto: versão, função, maturidade"
+     }
+    },
+    {
+     "name": "pyproject.toml",
+     "desc": {
+      "en": "package metadata, entry points",
+      "es": "metadatos del paquete, entradas",
+      "de": "Paket-Metadaten, Einstiege",
+      "fr": "métadonnées du paquet, entrées",
+      "it": "metadati del pacchetto, ingressi",
+      "ja": "パッケージ情報とエントリー",
+      "zh": "包元数据、入口",
+      "pt": "metadados do pacote, entradas"
+     }
+    },
+    {
+     "name": "CHANGELOG.md",
+     "desc": {
+      "en": "what changed in each version",
+      "es": "qué cambió en cada versión",
+      "de": "was sich in jeder Version geändert hat",
+      "fr": "ce qui a changé à chaque version",
+      "it": "cosa è cambiato in ogni versione",
+      "ja": "各バージョンの変更点",
+      "zh": "每个版本的变化",
+      "pt": "o que mudou em cada versão"
+     }
+    },
+    {
+     "name": "run.sh  run.bat",
+     "tree_name": "run.sh run.bat",
+     "desc": {
+      "en": "start, shared workflow",
+      "es": "arrancar, flujo compartido",
+      "de": "Start, gemeinsamer Ablauf",
+      "fr": "démarrer, flux partagé",
+      "it": "avvio, flusso condiviso",
+      "ja": "起動（共通フロー）",
+      "zh": "启动（共用流程）",
+      "pt": "arrancar, fluxo partilhado"
+     }
+    },
+    {
+     "name": "build.sh  build.bat",
+     "tree_name": "build.sh build.bat",
+     "desc": {
+      "en": "build and test, shared workflow",
+      "es": "construir y probar, flujo compartido",
+      "de": "Bauen und Testen, gemeinsamer Ablauf",
+      "fr": "construire et tester, flux partagé",
+      "it": "compila e prova, flusso condiviso",
+      "ja": "ビルドとテスト（共通フロー）",
+      "zh": "构建并测试（共用流程）",
+      "pt": "compilar e testar, fluxo partilhado"
+     }
+    },
+    {
+     "name": "build-test.sh  build-test.bat",
+     "tree_name": "build-test.sh build-test.bat",
+     "desc": {
+      "en": "build, test and package",
+      "es": "construir, probar y empaquetar",
+      "de": "Bauen, Testen und Verpacken",
+      "fr": "construire, tester, empaqueter",
+      "it": "compila, prova e impacchetta",
+      "ja": "ビルド、テスト、パッケージ化",
+      "zh": "构建、测试并打包",
+      "pt": "compilar, testar e empacotar"
+     }
+    },
+    {
+     "name": "test.sh  test.bat",
+     "tree_name": "test.sh test.bat",
+     "desc": {
+      "en": "only the tests, never the version",
+      "es": "solo las pruebas, nunca la versión",
+      "de": "nur die Tests, nie die Version",
+      "fr": "seulement les tests, jamais la version",
+      "it": "solo i test, mai la versione",
+      "ja": "テストのみ（版は変えません）",
+      "zh": "只运行测试，不改版本",
+      "pt": "só os testes, nunca a versão"
+     }
+    },
+    {
+     "name": "SECURITY  SUPPORT  CONTRIBUTING  LICENSE",
+     "tree_name": "SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE",
+     "desc": {
+      "en": "community and licence files",
+      "es": "comunidad y licencia",
+      "de": "Community und Lizenz",
+      "fr": "communauté et licence",
+      "it": "comunità e licenza",
+      "ja": "コミュニティとライセンス",
+      "zh": "社区与许可证",
+      "pt": "comunidade e licença"
+     },
+     "tree_desc": ""
+    }
+   ]
+  }
+ ]
+}
