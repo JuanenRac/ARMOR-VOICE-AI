@@ -1,141 +1,91 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" role="img" aria-labelledby="t d" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
-  <title id="t">ARMOR-VOICE-AI architecture</title>
-  <desc id="d">A wall panel and the Android assistant talk to ARMOR-SERVER. ARMOR-SERVER asks the voice service on the loopback address, which normalises the transcript, matches it against fifteen commands in eight languages, issues signed single-use confirmations and applies the silence policy. Speech engines are programs the installation chooses.</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0D1117"/>
-      <stop offset="1" stop-color="#0A0C10"/>
-    </linearGradient>
-    <linearGradient id="svc" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#00FF88" stop-opacity="0.10"/>
-      <stop offset="1" stop-color="#00E5FF" stop-opacity="0.06"/>
-    </linearGradient>
-    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0L10 5L0 10z" fill="#00E5FF"/>
-    </marker>
-    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0L10 5L0 10z" fill="#00FF88"/>
-    </marker>
-    <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0L10 5L0 10z" fill="#FFB020"/>
-    </marker>
-  </defs>
-
-  <rect x="1" y="1" width="1198" height="638" rx="18" fill="url(#bg)" stroke="#30363D" stroke-width="2"/>
-  <text x="36" y="46" font-size="24" font-weight="700" fill="#FFFFFF">ARMOR-VOICE-AI</text>
-  <text x="36" y="70" font-size="14" fill="#8B949E">A spoken phrase becomes one of fifteen commands, or nothing. It only decides; ARMOR-SERVER acts.</text>
-
-  <!-- callers -->
-  <text x="36" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">CALLERS</text>
-  <rect x="30" y="116" width="240" height="104" rx="12" fill="#161B22" stroke="#30363D"/>
-  <text x="46" y="142" font-size="15" font-weight="700" fill="#C9D1D9">ARMOR-NODE-HMI</text>
-  <text x="46" y="164" font-size="12.5" fill="#8B949E">Wall panel: microphone + speaker</text>
-  <text x="46" y="184" font-size="12.5" fill="#FF6B6B">has not run on a board yet</text>
-  <rect x="46" y="194" width="208" height="3" rx="1.5" fill="#FF6B6B" opacity="0.6"><animate attributeName="opacity" values="0.25;0.85;0.25" dur="2.8s" repeatCount="indefinite"/></rect>
-
-  <rect x="30" y="240" width="240" height="104" rx="12" fill="#161B22" stroke="#30363D"/>
-  <text x="46" y="266" font-size="15" font-weight="700" fill="#C9D1D9">ARMOR-ANDROID-CONTROL</text>
-  <text x="46" y="288" font-size="12.5" fill="#8B949E">Written and spoken assistant</text>
-  <text x="46" y="308" font-size="12.5" fill="#8B949E">of the operator app</text>
-  <rect x="46" y="318" width="208" height="3" rx="1.5" fill="#00FF88" opacity="0.6"><animate attributeName="opacity" values="0.35;0.9;0.35" dur="3.4s" repeatCount="indefinite"/></rect>
-
-  <!-- server -->
-  <text x="316" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">THE ONE THAT ACTS</text>
-  <rect x="310" y="116" width="250" height="228" rx="14" fill="#161B22" stroke="#00E5FF" stroke-width="2"/>
-  <text x="328" y="146" font-size="17" font-weight="700" fill="#00E5FF">ARMOR-SERVER</text>
-  <text x="328" y="172" font-size="12.5" fill="#C9D1D9">/api/v1/voice/command</text>
-  <text x="328" y="194" font-size="12.5" fill="#8B949E">authenticates the person</text>
-  <text x="328" y="214" font-size="12.5" fill="#8B949E">authorises and carries out</text>
-  <text x="328" y="234" font-size="12.5" fill="#8B949E">writes the audit trail</text>
-  <text x="328" y="254" font-size="12.5" fill="#8B949E">holds voice.silence_confirmation</text>
-  <text x="328" y="274" font-size="12.5" fill="#8B949E">PIN to disarm (ARMOR_DISARM_PIN)</text>
-  <text x="328" y="302" font-size="12.5" fill="#00FF88">disarming by voice from the panel:</text>
-  <text x="328" y="320" font-size="12.5" fill="#00FF88">never (the PIN is typed on screen)</text>
-
-  <!-- caller -> server -->
-  <path d="M270 168 H310" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
-  <path d="M270 292 H310" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
-
-  <!-- service -->
-  <text x="640" y="104" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">THE VOICE SERVICE  ·  127.0.0.1:18090  ·  TOKEN</text>
-  <rect x="630" y="116" width="540" height="404" rx="16" fill="url(#svc)" stroke="#00FF88" stroke-width="2"><animate attributeName="stroke-opacity" values="0.55;1;0.55" dur="4s" repeatCount="indefinite"/></rect>
-
-  <rect x="650" y="136" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
-  <text x="666" y="162" font-size="14" font-weight="700" fill="#00FF88">turn.py</text>
-  <text x="666" y="184" font-size="12" fill="#C9D1D9">audio, then words, then the answer</text>
-  <text x="666" y="202" font-size="12" fill="#8B949E">9 s budget, 2 turns at once</text>
-  <text x="666" y="220" font-size="12" fill="#8B949E">a spoken yes or no confirms</text>
-
-  <rect x="910" y="136" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/></rect>
-  <text x="926" y="162" font-size="14" font-weight="700" fill="#00FF88">intent.py + phrases.py</text>
-  <text x="926" y="184" font-size="12" fill="#C9D1D9">NFKC, no accents, no filler words</text>
-  <text x="926" y="202" font-size="12" fill="#8B949E">exact match, 8 languages,</text>
-  <text x="926" y="220" font-size="12" fill="#8B949E">15 commands, 200 characters at most</text>
-
-  <rect x="650" y="264" width="240" height="108" rx="10" fill="#161B22" stroke="#00E5FF" stroke-opacity="0.8"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/></rect>
-  <text x="666" y="290" font-size="14" font-weight="700" fill="#00E5FF">confirmation.py</text>
-  <text x="666" y="312" font-size="12" fill="#C9D1D9">HMAC-SHA-256 token, 30 s, once</text>
-  <text x="666" y="330" font-size="12" fill="#8B949E">bound to the intent and to the</text>
-  <text x="666" y="348" font-size="12" fill="#8B949E">person; arm and disarm only</text>
-
-  <rect x="910" y="264" width="240" height="108" rx="10" fill="#161B22" stroke="#00E5FF" stroke-opacity="0.8"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
-  <text x="926" y="290" font-size="14" font-weight="700" fill="#00E5FF">silence_policy.py</text>
-  <text x="926" y="312" font-size="12" fill="#C9D1D9">off  |  pin  |  double_turn</text>
-  <text x="926" y="330" font-size="12" fill="#8B949E">3 wrong PINs lock it for 5 min;</text>
-  <text x="926" y="348" font-size="12" fill="#8B949E">an unreadable policy is strict</text>
-
-  <rect x="650" y="392" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/></rect>
-  <text x="666" y="418" font-size="14" font-weight="700" fill="#00FF88">session.py</text>
-  <text x="666" y="440" font-size="12" fill="#C9D1D9">the two-turn rule: the ten that</text>
-  <text x="666" y="458" font-size="12" fill="#8B949E">ask, silence and the lights pass;</text>
-  <text x="666" y="476" font-size="12" fill="#8B949E">arm and disarm need the token</text>
-
-  <rect x="910" y="392" width="240" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/></rect>
-  <text x="926" y="418" font-size="14" font-weight="700" fill="#00FF88">gateway.py  +  audit</text>
-  <text x="926" y="440" font-size="12" fill="#C9D1D9">JSON lines or HTTP, same rules</text>
-  <text x="926" y="458" font-size="12" fill="#8B949E">one line per decision: intent,</text>
-  <text x="926" y="476" font-size="12" fill="#8B949E">outcome, SHA-256 (no audio, no text)</text>
-
-  <!-- server <-> service -->
-  <path d="M560 150 H630" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#ag)"/>
-  <text x="562" y="143" font-size="9.5" fill="#00FF88">/v1/command</text>
-  <path d="M560 212 H630" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#ag)"/>
-  <text x="575" y="205" font-size="10.5" fill="#00FF88">/v1/turn</text>
-  <path d="M630 276 H560" stroke="#00E5FF" stroke-width="2" fill="none" marker-end="url(#ar)"/>
-  <text x="568" y="269" font-size="10.5" fill="#00E5FF">ServerLink</text>
-
-  <!-- engines -->
-  <text x="316" y="378" font-size="12" font-weight="700" fill="#8B949E" letter-spacing="2">CHOSEN BY THE INSTALLATION</text>
-  <rect x="310" y="390" width="250" height="110" rx="12" fill="#161B22" stroke="#FFB020" stroke-width="2" stroke-dasharray="7 5"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="3s" repeatCount="indefinite"/></rect>
-  <text x="328" y="418" font-size="14" font-weight="700" fill="#FFB020">Speech engines</text>
-  <text x="328" y="440" font-size="12" fill="#C9D1D9">ARMOR_VOICE_STT_COMMAND</text>
-  <text x="328" y="458" font-size="12" fill="#C9D1D9">ARMOR_VOICE_TTS_COMMAND</text>
-  <text x="328" y="480" font-size="11.5" fill="#8B949E">not shipped; no shell, short env</text>
-  <path d="M650 446 H560" stroke="#FFB020" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#aa)"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.4s" repeatCount="indefinite"/></path>
-  <text x="572" y="437" font-size="10.5" fill="#FFB020">stdin / stdout</text>
-
-  <!-- legend -->
-  <g font-size="12">
-    <rect x="36" y="548" width="14" height="14" rx="3" fill="none" stroke="#00FF88" stroke-width="2"/>
-    <text x="58" y="560" fill="#C9D1D9">decides, tested (118 tests)</text>
-    <rect x="266" y="548" width="14" height="14" rx="3" fill="none" stroke="#00E5FF" stroke-width="2"/>
-    <text x="288" y="560" fill="#C9D1D9">signed and policy parts, or the server</text>
-    <rect x="566" y="548" width="14" height="14" rx="3" fill="none" stroke="#FFB020" stroke-width="2" stroke-dasharray="3 2"/>
-    <text x="588" y="560" fill="#C9D1D9">engine you configure, never tried with a real microphone</text>
-    <rect x="946" y="548" width="14" height="14" rx="3" fill="#FF6B6B" opacity="0.7"/>
-    <text x="968" y="560" fill="#C9D1D9">not run on a board</text>
-  </g>
-  <text x="36" y="604" font-size="12" fill="#6E7681">Nothing is kept: the audio is not stored and the log carries a hash of the words, never the words.</text>
-  <!-- motion -->
-  <path d="M270 168 H310" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
-  <circle r="3.2" fill="#00E5FF"><animateMotion path="M270 168 H310" dur="1.8s" begin="0.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.00s" repeatCount="indefinite"/></circle>
-  <path d="M270 292 H310" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
-  <circle r="3.2" fill="#00E5FF"><animateMotion path="M270 292 H310" dur="1.8s" begin="0.35s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.35s" repeatCount="indefinite"/></circle>
-  <path d="M560 150 H630" stroke="#00FF88" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
-  <circle r="3.2" fill="#00FF88"><animateMotion path="M560 150 H630" dur="1.8s" begin="0.70s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.70s" repeatCount="indefinite"/></circle>
-  <path d="M560 212 H630" stroke="#00FF88" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
-  <circle r="3.2" fill="#00FF88"><animateMotion path="M560 212 H630" dur="1.8s" begin="1.05s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.05s" repeatCount="indefinite"/></circle>
-  <path d="M630 276 H560" stroke="#00E5FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
-  <circle r="3.2" fill="#00E5FF"><animateMotion path="M630 276 H560" dur="1.8s" begin="1.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.40s" repeatCount="indefinite"/></circle>
-  <circle r="3.2" fill="#FFB020"><animateMotion path="M650 446 H560" dur="1.8s" begin="1.75s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="1.75s" repeatCount="indefinite"/></circle>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" role="img" aria-labelledby="t d" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif">
+<!-- generated by tools/make_architecture.py from docs/architecture.json (3a8924d501f8d1b6); do not edit -->
+<title id="t">ARMOR-VOICE-AI architecture</title>
+<desc id="d">A wall panel and the Android assistant talk to ARMOR-SERVER. ARMOR-SERVER asks the voice service on the loopback address, which normalises the transcript, matches it against a closed list of commands in eight languages, issues signed single-use confirmations and applies the silence policy. An optional wake word detector and an optional Wyoming handler for Home Assistant are off by default. Speech engines are programs the installation chooses.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A0C10"/><stop offset="0.5" stop-color="#0D1117"/><stop offset="1" stop-color="#05070A"/></linearGradient><linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#121821"/><stop offset="1" stop-color="#0B0F15"/></linearGradient><linearGradient id="line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#00FF88"/><stop offset="1" stop-color="#00E5FF"/></linearGradient><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="svc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00FF88" stop-opacity="0.10"/><stop offset="1" stop-color="#00E5FF" stop-opacity="0.06"/></linearGradient><marker id="m00FF88" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#00FF88"/></marker><marker id="mFFB020" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#FFB020"/></marker><marker id="m30363D" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8B949E"/></marker></defs>
+<rect x="1" y="1" width="1198" height="638" rx="18" fill="url(#bg)" stroke="#30363D" stroke-width="2"/>
+<text x="36" y="46" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="start">ARMOR-VOICE-AI</text>
+<text x="36" y="70" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="400" fill="#8B949E" text-anchor="start">A spoken phrase becomes one of a closed list of commands, or nothing. It only decides; ARMOR-SERVER acts.</text>
+<text x="36" y="104" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#8B949E" text-anchor="start" letter-spacing="2">CALLERS</text>
+<text x="355" y="104" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#8B949E" text-anchor="start" letter-spacing="2">THE VOICE SERVICE  -  127.0.0.1:18090  -  TOKEN</text>
+<text x="951" y="104" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#8B949E" text-anchor="start" letter-spacing="2">BY THE INSTALLATION</text>
+<rect x="345" y="116" width="510" height="404" rx="16" fill="url(#svc)" stroke="#00FF88" stroke-width="2"><animate attributeName="stroke-opacity" values="0.55;1;0.55" dur="4s" repeatCount="indefinite"/></rect>
+<rect x="30" y="116" width="225" height="102" rx="12" fill="#161B22" stroke="#30363D" stroke-width="1"></rect>
+<text x="46" y="142" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#C9D1D9" text-anchor="start">ARMOR-NODE-HMI</text>
+<text x="46" y="164" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">Wall panel: microphone, speaker</text>
+<text x="46" y="182" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">has not run on a board yet</text>
+<rect x="46" y="204" width="193" height="3" rx="1.5" fill="#FF6B6B" opacity="0.6"><animate attributeName="opacity" values="0.25;0.85;0.25" dur="2.8s" repeatCount="indefinite"/></rect>
+<rect x="30" y="234" width="225" height="90" rx="12" fill="#161B22" stroke="#30363D" stroke-width="1"></rect>
+<text x="46" y="260" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#C9D1D9" text-anchor="start">Android app</text>
+<text x="46" y="282" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">written and spoken assistant</text>
+<text x="46" y="300" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">of the operator app</text>
+<rect x="30" y="340" width="225" height="90" rx="12" fill="#161B22" stroke="#00E5FF" stroke-width="2"></rect>
+<text x="46" y="366" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#00E5FF" text-anchor="start">ARMOR-SERVER</text>
+<text x="46" y="388" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">authorises, acts, writes the audit;</text>
+<text x="46" y="406" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">holds voice.silence_confirmation</text>
+<rect x="30" y="446" width="225" height="72" rx="12" fill="#161B22" stroke="#30363D" stroke-width="1"></rect>
+<text x="46" y="472" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#C9D1D9" text-anchor="start">Home Assistant Assist</text>
+<text x="46" y="494" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">asks through Wyoming; never acts</text>
+<rect x="365" y="136" width="227" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-width="1" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
+<text x="381" y="162" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#00FF88" text-anchor="start">turn.py</text>
+<text x="381" y="184" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">audio, then words, then</text>
+<text x="381" y="202" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">the answer; 9 s budget,</text>
+<text x="381" y="220" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">2 turns at once</text>
+<rect x="608" y="136" width="227" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-width="1" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="1s" repeatCount="indefinite"/></rect>
+<text x="624" y="162" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#00FF88" text-anchor="start">intent.py + phrases.py</text>
+<text x="624" y="184" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">NFKC, no accents, exact</text>
+<text x="624" y="202" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">match, 8 languages,</text>
+<text x="624" y="220" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">200 characters at most</text>
+<rect x="365" y="264" width="227" height="108" rx="10" fill="#161B22" stroke="#00E5FF" stroke-width="1"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="2s" repeatCount="indefinite"/></rect>
+<text x="381" y="290" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#00E5FF" text-anchor="start">confirmation.py</text>
+<text x="381" y="312" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">signed token, used once,</text>
+<text x="381" y="330" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">bound to the person;</text>
+<text x="381" y="348" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">silence: pin, double_turn...</text>
+<rect x="608" y="264" width="227" height="108" rx="10" fill="#161B22" stroke="#00FF88" stroke-width="1" stroke-opacity="0.7"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
+<text x="624" y="290" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#00FF88" text-anchor="start">gateway.py</text>
+<text x="624" y="312" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">JSON lines or HTTP, the</text>
+<text x="624" y="330" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">two-turn rule, one audit</text>
+<text x="624" y="348" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">line (no audio, no text)</text>
+<rect x="365" y="392" width="227" height="108" rx="10" fill="#161B22" stroke="#FFB020" stroke-width="1" stroke-dasharray="7 5"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="4s" repeatCount="indefinite"/></rect>
+<text x="381" y="418" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#FFB020" text-anchor="start">wyoming.py</text>
+<text x="381" y="440" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">queries only, never an</text>
+<text x="381" y="458" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">action; off unless</text>
+<text x="381" y="476" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">ARMOR_VOICE_WYOMING=on</text>
+<rect x="608" y="392" width="227" height="108" rx="10" fill="#161B22" stroke="#FFB020" stroke-width="1" stroke-dasharray="7 5"><animate attributeName="stroke-opacity" values="0.45;1;0.45;0.45" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/><animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.08;0.2;1" dur="6s" begin="5s" repeatCount="indefinite"/></rect>
+<text x="624" y="418" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#FFB020" text-anchor="start">wakeword.py</text>
+<text x="624" y="440" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">openWakeWord, local,</text>
+<text x="624" y="458" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">off unless</text>
+<text x="624" y="476" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">ARMOR_WAKE_WORD=on</text>
+<rect x="945" y="116" width="225" height="108" rx="12" fill="#161B22" stroke="#FFB020" stroke-width="2" stroke-dasharray="7 5"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="3s" repeatCount="indefinite"/></rect>
+<text x="961" y="142" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#FFB020" text-anchor="start">Speech engines</text>
+<text x="961" y="164" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">ARMOR_VOICE_STT_COMMAND</text>
+<text x="961" y="182" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">ARMOR_VOICE_TTS_COMMAND</text>
+<text x="961" y="200" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#8B949E" text-anchor="start">not shipped; no shell, short env</text>
+<path id="p0" d="M255 385 C300 385 300 190 345 190" stroke="#00FF88" stroke-width="2" fill="none" marker-end="url(#m00FF88)"/>
+<path d="M255 385 C300 385 300 190 345 190" stroke="#00FF88" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+<circle r="3.2" fill="#00FF88"><animateMotion dur="1.8s" begin="0.00s" repeatCount="indefinite"><mpath href="#p0"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.00s" repeatCount="indefinite"/></circle>
+<path id="p1" d="M255 482 C300 482 300 446 345 446" stroke="#FFB020" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#mFFB020)"/>
+<path d="M255 482 C300 482 300 446 345 446" stroke="#FFB020" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+<circle r="3.2" fill="#FFB020"><animateMotion dur="1.8s" begin="0.35s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.35s" repeatCount="indefinite"/></circle>
+<path id="p2" d="M855 190 C900 190 900 170 945 170" stroke="#FFB020" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#mFFB020)"/>
+<path d="M855 190 C900 190 900 170 945 170" stroke="#FFB020" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="4 8" opacity="0.95"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/></path>
+<circle r="3.2" fill="#FFB020"><animateMotion dur="1.8s" begin="0.70s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="1.8s" begin="0.70s" repeatCount="indefinite"/></circle>
+<rect x="260.245" y="272" width="79.51" height="31" rx="4" fill="#0D1117" opacity="0.92"/>
+<text x="300" y="283" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#00FF88" text-anchor="middle">/v1/turn</text>
+<text x="300" y="295.5" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#00FF88" text-anchor="middle">/v1/command</text>
+<rect x="273.055" y="454.75" width="53.89" height="18.5" rx="4" fill="#0D1117" opacity="0.92"/>
+<text x="300" y="465.75" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#FFB020" text-anchor="middle">Wyoming</text>
+<rect x="859.09" y="170.75" width="81.82" height="18.5" rx="4" fill="#0D1117" opacity="0.92"/>
+<text x="900" y="181.75" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#FFB020" text-anchor="middle">stdin / stdout</text>
+<rect x="36" y="548" width="14" height="14" rx="3" fill="none" stroke="#00FF88" stroke-width="2"/>
+<text x="58" y="560" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">decides, tested</text>
+<rect x="180.56" y="548" width="14" height="14" rx="3" fill="none" stroke="#00E5FF" stroke-width="2"/>
+<text x="202.56" y="560" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">signed and policy parts, or the server</text>
+<rect x="454.0" y="548" width="14" height="14" rx="3" fill="none" stroke="#FFB020" stroke-width="2" stroke-dasharray="3 2"/>
+<text x="476" y="560" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">engine or option you configure, off by default</text>
+<rect x="773.52" y="548" width="14" height="14" rx="3" fill="#FF6B6B" opacity="0.7"/>
+<text x="795.52" y="560" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">not run on a board</text>
+<rect x="934.64" y="548" width="14" height="14" rx="3" fill="none" stroke="#30363D" stroke-width="2"/>
+<text x="956.64" y="560" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#C9D1D9" text-anchor="start">outside this repository</text>
+<text x="36" y="604" font-family="'Segoe UI','Noto Sans','Noto Sans CJK SC','Microsoft YaHei','Yu Gothic','Helvetica Neue',Helvetica,Arial,sans-serif" font-size="12" font-weight="400" fill="#6E7681" text-anchor="start">Nothing is kept: the audio is not stored and the log carries a hash of the words, never the words.</text>
 </svg>

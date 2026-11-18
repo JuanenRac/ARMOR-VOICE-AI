@@ -1,0 +1,182 @@
+{
+  "repo": "ARMOR-VOICE-AI",
+  "ecosystem": "armor",
+  "tagline": "A spoken phrase becomes one of a closed list of commands, or nothing. It only decides; ARMOR-SERVER acts.",
+  "description": "A wall panel and the Android assistant talk to ARMOR-SERVER. ARMOR-SERVER asks the voice service on the loopback address, which normalises the transcript, matches it against a closed list of commands in eight languages, issues signed single-use confirmations and applies the silence policy. An optional wake word detector and an optional Wyoming handler for Home Assistant are off by default. Speech engines are programs the installation chooses.",
+  "columns": [
+    "CALLERS",
+    "THE VOICE SERVICE  -  127.0.0.1:18090  -  TOKEN",
+    "BY THE INSTALLATION"
+  ],
+  "nodes": [
+    {
+      "id": "hmi",
+      "column": 0,
+      "level": "untested",
+      "title": "ARMOR-NODE-HMI",
+      "lines": [
+        "Wall panel: microphone, speaker",
+        "has not run on a board yet"
+      ]
+    },
+    {
+      "id": "android",
+      "column": 0,
+      "level": "external",
+      "title": "Android app",
+      "lines": [
+        "written and spoken assistant",
+        "of the operator app"
+      ]
+    },
+    {
+      "id": "server",
+      "column": 0,
+      "level": "contract",
+      "title": "ARMOR-SERVER",
+      "lines": [
+        "authorises, acts, writes the audit;",
+        "holds voice.silence_confirmation"
+      ]
+    },
+    {
+      "id": "ha",
+      "column": 0,
+      "level": "external",
+      "title": "Home Assistant Assist",
+      "lines": [
+        "asks through Wyoming; never acts"
+      ]
+    },
+    {
+      "id": "turn",
+      "column": 1,
+      "level": "tested",
+      "title": "turn.py",
+      "lines": [
+        "audio, then words, then",
+        "the answer; 9 s budget,",
+        "2 turns at once"
+      ],
+      "code": [
+        "src/armor_voice_ai/turn.py"
+      ]
+    },
+    {
+      "id": "intent",
+      "column": 1,
+      "level": "tested",
+      "title": "intent.py + phrases.py",
+      "lines": [
+        "NFKC, no accents, exact",
+        "match, 8 languages,",
+        "200 characters at most"
+      ],
+      "code": [
+        "src/armor_voice_ai/intent.py::MAX_TEXT_LENGTH",
+        "src/armor_voice_ai/phrases.py"
+      ]
+    },
+    {
+      "id": "confirm",
+      "column": 1,
+      "level": "contract",
+      "title": "confirmation.py",
+      "lines": [
+        "signed token, used once,",
+        "bound to the person;",
+        "silence: pin, double_turn..."
+      ],
+      "code": [
+        "src/armor_voice_ai/confirmation.py",
+        "src/armor_voice_ai/silence_policy.py::challenge"
+      ]
+    },
+    {
+      "id": "gateway",
+      "column": 1,
+      "level": "tested",
+      "title": "gateway.py",
+      "lines": [
+        "JSON lines or HTTP, the",
+        "two-turn rule, one audit",
+        "line (no audio, no text)"
+      ],
+      "code": [
+        "src/armor_voice_ai/gateway.py",
+        "src/armor_voice_ai/session.py"
+      ]
+    },
+    {
+      "id": "wyoming",
+      "column": 1,
+      "level": "config",
+      "title": "wyoming.py",
+      "lines": [
+        "queries only, never an",
+        "action; off unless",
+        "ARMOR_VOICE_WYOMING=on"
+      ],
+      "code": [
+        "src/armor_voice_ai/wyoming.py::ARMOR_VOICE_WYOMING"
+      ]
+    },
+    {
+      "id": "wake",
+      "column": 1,
+      "level": "config",
+      "title": "wakeword.py",
+      "lines": [
+        "openWakeWord, local,",
+        "off unless",
+        "ARMOR_WAKE_WORD=on"
+      ],
+      "code": [
+        "src/armor_voice_ai/wakeword.py::ARMOR_WAKE_WORD",
+        "src/armor_voice_ai/wake_model_check.py",
+        "src/armor_voice_ai/wake_release.py"
+      ]
+    },
+    {
+      "id": "engines",
+      "column": 2,
+      "level": "config",
+      "title": "Speech engines",
+      "lines": [
+        "ARMOR_VOICE_STT_COMMAND",
+        "ARMOR_VOICE_TTS_COMMAND",
+        "not shipped; no shell, short env"
+      ],
+      "code": [
+        "src/armor_voice_ai/service.py::ARMOR_VOICE_STT_COMMAND"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "server",
+      "to": "turn",
+      "label": "/v1/turn  /v1/command",
+      "level": "tested"
+    },
+    {
+      "from": "ha",
+      "to": "wyoming",
+      "label": "Wyoming",
+      "level": "config"
+    },
+    {
+      "from": "turn",
+      "to": "engines",
+      "label": "stdin / stdout",
+      "level": "config"
+    }
+  ],
+  "legend": {
+    "tested": "decides, tested",
+    "contract": "signed and policy parts, or the server",
+    "config": "engine or option you configure, off by default",
+    "untested": "not run on a board"
+  },
+  "footer": "Nothing is kept: the audio is not stored and the log carries a hash of the words, never the words."
+}
