@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The shared tools of the manifest and the status lights gain an opt-in strict check of the evidence:** `sync_manifests.py` and `status_lights.py` take `--strict-evidence` (off by default; `ARMOR_STRICT_EVIDENCE=1` switches it on for `armor_ci_validate.py`).
 - When a silence is confirmed on the panel and the server asks for one more confirmation, the order kept for it is the one first said, no longer the words of the proof (the yes, or nothing for a PIN or a number); the whole way of a silence is played against the shared vector for every mode.
 
 - **A silence by PIN said on the panel is now carried out:** with the server policy `pin` the service asked the server side for a PIN that the panel had already checked and never sends, so the command stayed waiting. The turn now hands on a single use confirmation of the service, bound to the panel (or to the operator when none is behind the turn), after the person has proved the PIN here; the PIN itself is still never kept or sent. `off`, `double_turn` and `challenge` are unchanged.
