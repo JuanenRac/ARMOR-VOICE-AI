@@ -396,7 +396,7 @@ C'est du Python pur : rien à compiler. La version se trouve dans `pyproject.tom
 ## 📂 Structure du dépôt
 
 <p align="center">
-  <img src="images/repository-structure.svg" alt="Structure du dépôt ARMOR-VOICE-AI" width="100%">
+  <img src="images/repository-structure.svg" alt="Structure du dépôt de ARMOR-VOICE-AI" width="100%">
 </p>
 
 <details>

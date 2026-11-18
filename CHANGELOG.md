@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The file tree of the README is drawn from the structure source:** the text tree in the eight READMEs is generated from `docs/structure.json`, the file that also draws the picture, so the two cannot disagree.
 - **Sixteen commands, not fifteen:** the READMEs and the docs count the `last_camera` question (eleven commands that ask, five that act, 450 phrases), and the text tree of the eight READMEs lists the wake word detector, the Wyoming handler and the wake word model tools.
 - **The architecture and repository structure pictures cover the wake word detector, the Wyoming handler and the wake word model tools:** both pictures are now drawn from `docs/architecture.json` and `docs/structure.json`, which the repository checks against its files; the structure picture lists every module of the service, in the eight languages.
 - **The shared tools of the manifest and the status lights gain an opt-in strict check of the evidence:** `sync_manifests.py` and `status_lights.py` take `--strict-evidence` (off by default; `ARMOR_STRICT_EVIDENCE=1` switches it on for `armor_ci_validate.py`).

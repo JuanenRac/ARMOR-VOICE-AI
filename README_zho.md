@@ -396,7 +396,7 @@ GitHub Actions 在每次 push 和 pull request 时运行 A.R.M.O.R. 基线：先
 ## 📂 仓库结构
 
 <p align="center">
-  <img src="images/repository-structure.svg" alt="Repository structure of ARMOR-VOICE-AI" width="100%">
+  <img src="images/repository-structure.svg" alt="ARMOR-VOICE-AI 的仓库结构" width="100%">
 </p>
 
 <details>

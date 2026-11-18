@@ -396,7 +396,7 @@ GitHub Actions は、push と pull request のたびに A.R.M.O.R. のベース�
 ## 📂 リポジトリの構成
 
 <p align="center">
-  <img src="images/repository-structure.svg" alt="Repository structure of ARMOR-VOICE-AI" width="100%">
+  <img src="images/repository-structure.svg" alt="ARMOR-VOICE-AI のリポジトリ構造" width="100%">
 </p>
 
 <details>
