@@ -42,7 +42,7 @@
 | Ruolo | Gateway vocale e di intenti offline (famiglia: Core Services, genitore: ARMOR-SERVER) |
 | Tecnologia | Python 3.11+, solo libreria standard |
 | Test | 255 (`python -m unittest discover -s tests`) |
-| Comandi | 15 (10 che interrogano, 5 che agiscono), 420 frasi, 8 lingue |
+| Comandi | 16 (11 che interrogano, 5 che agiscono), 450 frasi, 8 lingue |
 | In ascolto su | `127.0.0.1:18090` (solo loopback), con un token |
 | Gira su | Il banco di prova CM5 (come servizio) o qualsiasi computer |
 | Su hardware reale | Gira come servizio sul banco di prova CM5, interrogato dal server; nessun microfono né motore vocale è stato provato |
@@ -69,13 +69,13 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 
 ## 🎯 Panoramica
 
-ARMOR-VOICE-AI è la parte di A.R.M.O.R. che trasforma **ciò che dice una persona in uno di quindici comandi, oppure in niente**. Non fa mai nulla da sé: decide, e [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) autentica, autorizza ed esegue ciò che è stato accettato, esattamente come farebbe con un clic nella console.
+ARMOR-VOICE-AI è la parte di A.R.M.O.R. che trasforma **ciò che dice una persona in uno di sedici comandi, oppure in niente**. Non fa mai nulla da sé: decide, e [ARMOR-SERVER](https://github.com/JuanenRac/ARMOR-SERVER) autentica, autorizza ed esegue ciò che è stato accettato, esattamente come farebbe con un clic nella console.
 
-Il testo che esce da un riconoscitore vocale è un *input non attendibile*. Perciò non viene interpretato, né cercato per parole chiave, né inoltrato come comando: viene ripulito (accenti, punteggiatura, formule di cortesia) e deve poi corrispondere **esattamente** a una delle 420 frasi note. Tutto il resto, ogni testo troppo lungo e ogni frase che potrebbe significare due comandi *non viene capito*.
+Il testo che esce da un riconoscitore vocale è un *input non attendibile*. Perciò non viene interpretato, né cercato per parole chiave, né inoltrato come comando: viene ripulito (accenti, punteggiatura, formule di cortesia) e deve poi corrispondere **esattamente** a una delle 450 frasi note. Tutto il resto, ogni testo troppo lungo e ogni frase che potrebbe significare due comandi *non viene capito*.
 
 **Cosa fa**
 
-* Capisce quindici comandi in **otto lingue** (inglese, spagnolo, tedesco, francese, italiano, giapponese, cinese e portoghese).
+* Capisce sedici comandi in **otto lingue** (inglese, spagnolo, tedesco, francese, italiano, giapponese, cinese e portoghese).
 * Fa sì che `arm` e `disarm` richiedano un **secondo turno con un token firmato dal servizio**, legato all'intento e a chi l'ha richiesto.
 * Può far sì che `silence` richieda un **PIN** pronunciato o un secondo turno di conferma, quando ARMOR-SERVER lo chiede.
 * Gira come **servizio HTTP locale** e come **gateway a righe JSON** per adattatori e test.
@@ -139,7 +139,7 @@ sequenceDiagram
 
 **Perché è costruito così**
 
-* **Perché una lista chiusa e non una classificazione degli intenti.** Un riconoscitore sbaglia e chiunque può parlare vicino a un microfono. Con 420 frasi esatte il peggio che una trascrizione errata possa fare è essere ignorata, e un test verifica che nessuna frase appartenga a due comandi.
+* **Perché una lista chiusa e non una classificazione degli intenti.** Un riconoscitore sbaglia e chiunque può parlare vicino a un microfono. Con 450 frasi esatte il peggio che una trascrizione errata possa fare è essere ignorata, e un test verifica che nessuna frase appartenga a due comandi.
 * **Perché il servizio si limita a decidere.** Autenticazione, autorizzazione, traccia di audit e azione restano in un solo posto, ARMOR-SERVER; un bug qui può accettare per errore una frase, ma non può toccare un allarme.
 * **Perché la conferma è un token firmato emesso dal servizio.** Un flag impostato da chi chiama (`confirmed: true`) non prova nulla, quindi viene rifiutato. Il token è firmato con HMAC-SHA-256, legato al comando e alla persona, valido 30 secondi e utilizzabile una sola volta.
 * **Perché i motori vocali sono programmi separati.** I modelli cambiano più in fretta di quanto dovrebbe fare un gateway di sicurezza. Vengono eseguiti senza shell, con un ambiente ridotto e un limite di tempo, e i segreti del servizio non li raggiungono mai.
@@ -147,7 +147,7 @@ sequenceDiagram
 
 ## ✨ Funzionalità
 
-### I quindici comandi
+### I sedici comandi
 
 | Comando | Tipo | Significato | Conferma |
 |---|---|---|---|
@@ -155,6 +155,7 @@ sequenceDiagram
 | `alarms` | interroga | Gli allarmi attivi | no |
 | `nodes` | interroga | Lo stato dei nodi | no |
 | `cameras` | interroga | Lo stato delle telecamere | no |
+| `last_camera` | interroga | Quale telecamera ha visto movimento per ultima | no |
 | `radar` | interroga | Lo stato dei radar | no |
 | `solar` | interroga | Lo stato dell'impianto solare | no |
 | `electrical` | interroga | Il consumo elettrico | no |
@@ -167,11 +168,11 @@ sequenceDiagram
 | `arm` | agisce | Inserire il perimetro | **sì** |
 | `disarm` | agisce | Disinserire il perimetro | **sì** |
 
-I dieci che *interrogano* non cambiano nulla. I cinque che *agiscono* sono eseguiti da ARMOR-SERVER con la sessione di chi ha parlato, mai da questo servizio.
+Gli undici che *interrogano* non cambiano nulla. I cinque che *agiscono* sono eseguiti da ARMOR-SERVER con la sessione di chi ha parlato, mai da questo servizio.
 
 ### Otto lingue
 
-Inglese, spagnolo, tedesco, francese, italiano, giapponese, cinese e portoghese europeo: le frasi (420 in tutto), il sì e il no di una conferma, le parole delle cifre di un PIN pronunciato e ogni frase che il servizio dice in risposta. Le frasi sono scritte come le dice una persona e normalizzate al caricamento del modulo con la stessa funzione che normalizza ciò che si sente, così le due non possono divergere. Le formule di cortesia (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) vengono scartate prima del confronto; il giapponese e il cinese, scritti senza spazi, elencano le loro frasi con e senza la terminazione cortese.
+Inglese, spagnolo, tedesco, francese, italiano, giapponese, cinese e portoghese europeo: le frasi (450 in tutto), il sì e il no di una conferma, le parole delle cifre di un PIN pronunciato e ogni frase che il servizio dice in risposta. Le frasi sono scritte come le dice una persona e normalizzate al caricamento del modulo con la stessa funzione che normalizza ciò che si sente, così le due non possono divergere. Le formule di cortesia (`please`, `por favor`, `bitte`, `s'il vous plaît`, `per favore`...) vengono scartate prima del confronto; il giapponese e il cinese, scritti senza spazi, elencano le loro frasi con e senza la terminazione cortese.
 
 ### La conferma in due turni
 
@@ -403,25 +404,31 @@ GitHub Actions esegue la base A.R.M.O.R. a ogni push e pull request: la validazi
 
 ```text
 ARMOR-VOICE-AI/
-├── src/armor_voice_ai/        il codice (solo libreria standard)
-│   ├── phrases.py             le 420 frasi dei quindici comandi, in otto lingue
-│   ├── intent.py              normalizzazione e corrispondenza esatta: la lista consentita chiusa
-│   ├── confirmation.py        token di conferma firmati, monouso, per persona
-│   ├── silence_policy.py      off / pin / double_turn, il PIN pronunciato, il blocco
-│   ├── session.py             la regola dei due turni per ogni comando
-│   ├── gateway.py             righe JSON su stdin/stdout, l'audit, le frasi dette in risposta
-│   ├── service.py             il servizio HTTP locale (/healthz, /v1/command, /v1/turn)
-│   └── turn.py                un turno vocale: motori, sì/no, budget di tempo
-├── tests/                     255 test: silenzio, limiti, gateway, turno, lingue, servizio
-├── docs/                      SAFETY.md, SERVICE.md, SILENCE_POLICY.md
-├── tools/                     i controlli CI condivisi e gli strumenti del progetto
-├── images/                    banner e icona
-├── .github/                   workflow CI, avviso della dashboard, modelli di issue e di pull request
-├── armor.project.json         manifesto: versione, ruolo, maturità, comando di compilazione
-├── pyproject.toml             metadati del pacchetto e il comando `armor-voice-gateway`
-├── run.sh run.bat             avviano tramite il flusso di progetto condiviso
-├── build.sh build.bat         compilano e testano tramite il flusso di progetto condiviso
-├── CHANGELOG.md               cosa è cambiato in ogni versione
+├── src/armor_voice_ai/
+│   ├── turn.py                    un turno parlato: audio, parole, risposta
+│   ├── intent.py                  l'elenco chiuso di comandi, otto lingue
+│   ├── phrases.py                 le parole di ogni comando e le risposte parlate
+│   ├── confirmation.py            conferma firmata monouso legata a chi parla
+│   ├── silence_policy.py          cosa serve per silenziare gli allarmi: off, pin, doppio turno, sfida
+│   ├── session.py                 la regola dei due turni per inserire e disinserire
+│   ├── gateway.py                 righe JSON in ingresso, risposte e riga di audit
+│   ├── service.py                 il servizio HTTP locale sull'indirizzo di loopback
+│   ├── wakeword.py                il rilevatore locale della parola di attivazione, disattivato di default
+│   ├── wake_model_check.py        controlla un modello di parola di attivazione prima di fidarsene
+│   ├── wake_release.py            prepara i modelli di attivazione per una release: manifesto e firma
+│   └── wyoming.py                 gestore Wyoming per Assist di Home Assistant: solo interrogazioni, disattivato di default
+├── tests/                         comandi, lingue, silenzio, servizio, attivazione
+├── docs/                          INFERENCE_BOUNDARY.md, SERVICE.md, DAILY_SUMMARY.md
+├── tools/                         i controlli CI e gli strumenti condivisi
+├── images/                        banner, icona e immagini del README
+├── .github/                       workflow CI, avviso alla dashboard, modelli per issue e pull request
+├── armor.project.json             manifesto: versione, ruolo, maturità
+├── pyproject.toml                 metadati del pacchetto, ingressi
+├── CHANGELOG.md                   cosa è cambiato in ogni versione
+├── run.sh run.bat                 avvio, flusso condiviso
+├── build.sh build.bat             compila e prova, flusso condiviso
+├── build-test.sh build-test.bat   compila, prova e impacchetta
+├── test.sh test.bat               solo i test, mai la versione
 └── SECURITY.md SUPPORT.md CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE
 ```
 
