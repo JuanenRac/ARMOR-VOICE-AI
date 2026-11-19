@@ -61,7 +61,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Logiciel | 🟡 | Les règles d'intention, le service local et le point d'entrée des tours tournent comme service sur le banc d'essai CM5, mais aucun moteur de reconnaissance ni de synthèse vocale ne fait partie du dépôt : il exécute les commandes que vous configurez pour cela. |
 | Tests | 🟢 | 255 tests réussissent (`python -m unittest discover -s tests`) : les règles d'intention, les huit langues, la confirmation signée liée à son locuteur, la politique de mise en silence, le service local, le point d'entrée des tours et l'audit. |
 | Matériel | 🔴 | Aucun microphone ni moteur vocal n'a été essayé, et le panneau tactile censé porter l'assistant n'a pas tourné sur une carte. |
-| Sécurité | 🟡 | La confirmation est signée et liée à son locuteur, et l'audit est testé sur la machine hôte ; il n'y a pas eu de revue indépendante. |
+| Sécurité | 🟠 | La confirmation est signée et liée à son locuteur, et l'audit est testé sur la machine hôte ; il n'y a pas eu de revue indépendante. |
 | Intégration | 🟠 | Le serveur interroge le service sur le banc d'essai CM5 ; le flux vocal avec le panneau tactile n'a pas tourné. |
 | Interface | 🟡 | Les routes ou les messages proposés sont documentés et testés avec un client ; tous les clients ne les ont pas encore utilisés |
 | Déploiement | 🟡 | Installé comme service sur le banc d'essai CM5 avec son installeur et son unité ; redémarré à chaque mise à jour |

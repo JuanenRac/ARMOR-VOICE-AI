@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The Security and Updates lights of the Project status table follow the evidence ceiling:** they cannot be above what the Hardware row may show for the evidence of the manifest, and Security is never green; the rows that were higher are now orange in the eight READMEs, and `tools/status_lights.py` is the new shared copy.
+
 - **The file tree of the README is drawn from the structure source:** the text tree in the eight READMEs is generated from `docs/structure.json`, the file that also draws the picture, so the two cannot disagree.
 - **Sixteen commands, not fifteen:** the READMEs and the docs count the `last_camera` question (eleven commands that ask, five that act, 450 phrases), and the text tree of the eight READMEs lists the wake word detector, the Wyoming handler and the wake word model tools.
 - **The architecture and repository structure pictures cover the wake word detector, the Wyoming handler and the wake word model tools:** both pictures are now drawn from `docs/architecture.json` and `docs/structure.json`, which the repository checks against its files; the structure picture lists every module of the service, in the eight languages.
