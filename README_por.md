@@ -61,7 +61,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Software | 🟡 | As regras de intenção, o serviço local e o ponto de entrada de turnos funcionam como serviço na bancada de testes do CM5, mas nenhum motor de reconhecimento ou de síntese de voz faz parte do repositório: executa os comandos que configurar para isso. |
 | Testes | 🟢 | Passam 255 testes (`python -m unittest discover -s tests`): as regras de intenção, os oito idiomas, a confirmação assinada ligada a quem fala, a política de silenciamento, o serviço local, o ponto de entrada de turnos e a auditoria. |
 | Hardware | 🔴 | Não se experimentou nenhum microfone nem motor de voz, e o painel tátil que deverá acolher o assistente não funcionou numa placa. |
-| Segurança | 🟡 | A confirmação é assinada e ligada a quem fala, e a auditoria é testada no equipamento anfitrião; não houve revisão independente. |
+| Segurança | 🟠 | A confirmação é assinada e ligada a quem fala, e a auditoria é testada no equipamento anfitrião; não houve revisão independente. |
 | Integração | 🟠 | O servidor consulta o serviço na bancada de testes do CM5; o fluxo de voz com o painel tátil não funcionou. |
 | Interface | 🟡 | As rotas ou mensagens que oferece estão documentadas e testadas com um cliente; ainda nem todos os clientes as usaram |
 | Implantação | 🟡 | Instalado como serviço na bancada de testes da CM5 com o seu instalador e a sua unidade; reiniciado em cada atualização |
