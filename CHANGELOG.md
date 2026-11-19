@@ -4,23 +4,21 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.7] - Silencing by voice from the panel, a checked server address, simulator evidence and generated file trees
+
 - **The structure generator can write a figure read from the code:** `tools/make_structure.py` resolves `{{fact:NAME|LAST}}` in the descriptions of `docs/structure.json` where the documentation tools are next to the repository, and writes LAST (the figure it had when last written) everywhere else, so a repository still builds on its own.
 - **The Security and Updates lights of the Project status table follow the evidence ceiling:** they cannot be above what the Hardware row may show for the evidence of the manifest, and Security is never green; the rows that were higher are now orange in the eight READMEs, and `tools/status_lights.py` is the new shared copy.
-
 - **The file tree of the README is drawn from the structure source:** the text tree in the eight READMEs is generated from `docs/structure.json`, the file that also draws the picture, so the two cannot disagree.
 - **Sixteen commands, not fifteen:** the READMEs and the docs count the `last_camera` question (eleven commands that ask, five that act, 450 phrases), and the text tree of the eight READMEs lists the wake word detector, the Wyoming handler and the wake word model tools.
 - **The architecture and repository structure pictures cover the wake word detector, the Wyoming handler and the wake word model tools:** both pictures are now drawn from `docs/architecture.json` and `docs/structure.json`, which the repository checks against its files; the structure picture lists every module of the service, in the eight languages.
 - **The shared tools of the manifest and the status lights gain an opt-in strict check of the evidence:** `sync_manifests.py` and `status_lights.py` take `--strict-evidence` (off by default; `ARMOR_STRICT_EVIDENCE=1` switches it on for `armor_ci_validate.py`).
 - When a silence is confirmed on the panel and the server asks for one more confirmation, the order kept for it is the one first said, no longer the words of the proof (the yes, or nothing for a PIN or a number); the whole way of a silence is played against the shared vector for every mode.
-
 - **A silence by PIN said on the panel is now carried out:** with the server policy `pin` the service asked the server side for a PIN that the panel had already checked and never sends, so the command stayed waiting. The turn now hands on a single use confirmation of the service, bound to the panel (or to the operator when none is behind the turn), after the person has proved the PIN here; the PIN itself is still never kept or sent. `off`, `double_turn` and `challenge` are unchanged.
-
 - **A disarm said at the panel is refused before the server is asked:** the matrix of risks is read as soon as the words are understood, so the server receives no call at all for an intent that only the screen may carry out (the check on its answer stays as a second barrier). The panic phrase is still looked for first and the answer to the person is the same. Tests in the eight languages with every phrase of the disarm list.
-
 - **Silencing the alarm by voice from the panel completes when the server also asks for its own confirmation:** once the person has said yes, said the PIN or the number on the screen, the token the server answered with is echoed back at once instead of leaving the silence waiting for a second yes nobody was asked for. Only a silence is completed this way; arming keeps its two turns, and a wrong PIN asks nothing of the server.
 - **The address of the server is checked and a redirect is not followed:** the operator token goes only to `ARMOR_VOICE_SERVER_URL`; a redirect from it is refused, and an address that is neither `https` nor plain http to this machine logs a warning (`ARMOR_VOICE_ALLOW_PLAIN_SERVER=0` refuses it, the default `1` keeps the previous behaviour). The service and the Wyoming handler share the same check. Tests for the rule, the switch and the redirect.
-
 - **The manifest says the evidence is a simulator, and the Integration light of the status table is orange:** the intent rules and the service have run on the test bench, but no microphone or speech engine has, so the project no longer claims bench evidence.
+
 ## [0.3.6] - Wyoming handler for Home Assistant, last camera question, generic wake word and wider tests
 
 - **A Wyoming handler for Home Assistant's Assist, off by default:** `python -m armor_voice_ai.wyoming` (it starts only with `ARMOR_VOICE_WYOMING=on`) answers the `describe` and `transcript` events of the Wyoming protocol over the same closed list of commands: a question of the list (`QUERIES`) is asked to the server and its speech comes back as `handled`; a command that does something is never carried out from there (the answer says to use the app or the panel), and words that are not on the list are `not-handled`. It listens on the loopback address only unless `--allow-remote` (the protocol has no token), takes no audio, limits the size and number of events and connections, and never logs what was said. The fixed texts are in the eight languages. Tried on a computer with a stand-in server and a real local connection; not tried against a Home Assistant.
