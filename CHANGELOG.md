@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A cut or garbled server answer is "server not answering" instead of an unhandled error**, and the check for a panic phrase never raises because of it.
+- **Token and word files saved with a byte-order mark are read**, and a token file in another encoding ends with a message that says so.
 - **The shared project tool is the current one:** the copy follows the shared repository, which now knows the new solar panel node.
 
 - **The shared CI workflow pins the current setup-java action:** the line follows the template of the shared repository.
