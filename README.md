@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Language">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Mode">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-255%20passing-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.3.7-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-259%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.3.8-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit are real and tested (255 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
+**Honesty check - what runs today:** The intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit are real and tested (259 tests), and the server asks the service on the CM5 test bench. **No speech recognition or synthesis engine is part of this repository**: `/v1/turn` runs the commands you configure for them, and none has been tried with a real microphone yet; the touch panel that is meant to carry the assistant has not run on a board.
 
 ---
 
@@ -37,11 +37,11 @@
 
 | | |
 |---|---|
-| Version | `0.3.7` |
+| Version | `0.3.8` |
 | Maturity | Established |
 | Role | Offline speech and intent gateway (family: Core Services, parent: ARMOR-SERVER) |
 | Stack | Python 3.11+, standard library only |
-| Tests | 255 (`python -m unittest discover -s tests`) |
+| Tests | 259 (`python -m unittest discover -s tests`) |
 | Commands | 16 (11 that ask, 5 that act), 450 phrases, 8 languages |
 | Listens on | `127.0.0.1:18090` (loopback only), with a token |
 | Runs on | The CM5 test bench (as a service) or any computer |
@@ -59,7 +59,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟡 | The intent rules, the local service and the turn endpoint run as a service on the CM5 test bench, but no speech recognition or synthesis engine is part of the repository: it runs the commands you configure for them. |
-| Tests | 🟢 | 255 tests pass (`python -m unittest discover -s tests`): the intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit. |
+| Tests | 🟢 | 259 tests pass (`python -m unittest discover -s tests`): the intent rules, the eight languages, the signed confirmation tied to its speaker, the silence policy, the local service, the turn endpoint and the audit. |
 | Hardware | 🔴 | No microphone or speech engine has been tried, and the touch panel that is meant to carry the assistant has not run on a board. |
 | Security | 🟠 | The confirmation is signed and tied to its speaker, and the audit is tested on the host; there has been no independent review. |
 | Integration | 🟠 | The server asks the service on the CM5 test bench; the voice flow with the touch panel has not run. |
@@ -323,7 +323,7 @@ The service never writes what was said to a log, whatever the settings.
 $env:PYTHONPATH = "src"
 
 # 1. the tests
-python -m unittest discover -s tests                      # 255 tests
+python -m unittest discover -s tests                      # 259 tests
 
 # 2. the gateway, one JSON object per line
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway

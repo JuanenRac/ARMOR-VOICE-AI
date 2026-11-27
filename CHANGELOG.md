@@ -4,13 +4,14 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.8] - Cut or garbled answers and differently encoded files handled
+
 - **A cut or garbled server answer is "server not answering" instead of an unhandled error**, and the check for a panic phrase never raises because of it.
 - **Token and word files saved with a byte-order mark are read**, and a token file in another encoding ends with a message that says so.
 - **The shared project tool is the current one:** the copy follows the shared repository, which now knows the new solar panel node.
-
 - **The shared CI workflow pins the current setup-java action:** the line follows the template of the shared repository.
-
 - **The copy of the shared validator is current:** `tools/armor_ci_validate.py` now also checks with `node --check` that the scripts served to a browser parse, in a repository that has them under `panel/` or `public/`.
+
 ## [0.3.7] - Silencing by voice from the panel, a checked server address, simulator evidence and generated file trees
 
 - **The structure generator can write a figure read from the code:** `tools/make_structure.py` resolves `{{fact:NAME|LAST}}` in the descriptions of `docs/structure.json` where the documentation tools are next to the repository, and writes LAST (the figure it had when last written) everywhere else, so a repository still builds on its own.
