@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The shared tools read the output of processes as UTF-8:** `tools/status_lights.py`, `tools/sync_manifests.py` and `tools/universal_readme_check.py` are the current copies; on Windows a character outside the code page no longer breaks a check.
+
 ## [0.3.8] - Cut or garbled answers and differently encoded files handled
 
 - **A cut or garbled server answer is "server not answering" instead of an unhandled error**, and the check for a panic phrase never raises because of it.
