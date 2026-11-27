@@ -87,7 +87,7 @@ def parse_words(text: str | None, generic: bool = True) -> dict[str, WakeWord]:
 
 
 def load_words(path: Path | None, generic: bool = True) -> dict[str, WakeWord]:
-    return parse_words(path.read_text(encoding="utf-8") if path is not None else None, generic)
+    return parse_words(path.read_text(encoding="utf-8-sig") if path is not None else None, generic)
 
 
 def generic_models_on(value: str | None) -> bool:

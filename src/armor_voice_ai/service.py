@@ -197,7 +197,11 @@ def make_server(host: str, port: int, token: str, signer: ConfirmationSigner, au
 
 def _read_token(args: argparse.Namespace) -> str:
     if args.token_file:
-        for line in Path(args.token_file).read_text(encoding="utf-8").splitlines():
+        try:
+            text = Path(args.token_file).read_text(encoding="utf-8-sig")   # an editor on Windows may add a byte-order mark
+        except (OSError, UnicodeDecodeError) as error:
+            raise SystemExit(f"{args.token_file} cannot be read as UTF-8 text ({type(error).__name__})") from None
+        for line in text.splitlines():
             if line.startswith("ARMOR_VOICE_TOKEN="):
                 return line.split("=", 1)[1].strip()
         raise SystemExit(f"{args.token_file} has no ARMOR_VOICE_TOKEN= line")

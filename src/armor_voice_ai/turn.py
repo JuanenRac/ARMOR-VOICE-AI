@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import contextvars
+import http.client
 import ipaddress
 import json
 import logging
@@ -235,7 +236,7 @@ class ServerLink:
         except urllib.error.HTTPError as error:
             error.close()
             raise TurnError(502, f"server_{error.code}") from error
-        except (OSError, ValueError) as error:
+        except (OSError, ValueError, http.client.HTTPException) as error:   # HTTPException: the answer was cut or was not HTTP
             raise TurnError(502, "server_not_answering") from error
 
     def panic_check(self, text: str, language: str) -> None:
@@ -246,7 +247,7 @@ class ServerLink:
         try:
             with _OPENER.open(request, timeout=min(self.timeout_s, PANIC_CHECK_TIMEOUT_S)) as reply:  # noqa: S310 - the address is the installation's own
                 reply.read(1024)
-        except (OSError, ValueError):
+        except (OSError, ValueError, http.client.HTTPException):
             pass   # urllib.error.HTTPError is an OSError: a refusal or a missing route is not the person's problem
 
 
