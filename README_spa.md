@@ -22,14 +22,14 @@
   <img src="https://img.shields.io/badge/Language-Python%203.11%2B-3776ab.svg" alt="Lenguaje">
   <img src="https://img.shields.io/badge/Mode-offline-2ea44f.svg" alt="Modo">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Idiomas">
-  <img src="https://img.shields.io/badge/Tests-255%20passing-2ea44f.svg" alt="Pruebas">
-  <img src="https://img.shields.io/badge/Version-0.3.7-0f6cbd.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Tests-259%20passing-2ea44f.svg" alt="Pruebas">
+  <img src="https://img.shields.io/badge/Version-0.3.8-0f6cbd.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Maturity-established-2EA44F.svg" alt="Madurez">
 </p>
 
 ---
 
-**Comprobación de honestidad - qué funciona hoy:** Las reglas de intención, los ocho idiomas, la confirmación firmada ligada a quien habla, la política de silenciado, el servicio local, el punto de entrada de turnos y la auditoría son reales y están probados (255 pruebas), y el servidor consulta al servicio en el banco de pruebas de la CM5. **Ningún motor de reconocimiento ni de síntesis de voz forma parte de este repositorio**: `/v1/turn` ejecuta los comandos que tú configures para ello, y ninguno se ha probado todavía con un micrófono real; el panel táctil que debe llevar al asistente no ha funcionado en una placa.
+**Comprobación de honestidad - qué funciona hoy:** Las reglas de intención, los ocho idiomas, la confirmación firmada ligada a quien habla, la política de silenciado, el servicio local, el punto de entrada de turnos y la auditoría son reales y están probados (259 pruebas), y el servidor consulta al servicio en el banco de pruebas de la CM5. **Ningún motor de reconocimiento ni de síntesis de voz forma parte de este repositorio**: `/v1/turn` ejecuta los comandos que tú configures para ello, y ninguno se ha probado todavía con un micrófono real; el panel táctil que debe llevar al asistente no ha funcionado en una placa.
 
 ---
 
@@ -37,11 +37,11 @@
 
 | | |
 |---|---|
-| Versión | `0.3.7` |
+| Versión | `0.3.8` |
 | Madurez | Establecido |
 | Función | Pasarela de voz e intenciones sin conexión (familia: Core Services, padre: ARMOR-SERVER) |
 | Tecnología | Python 3.11+, solo biblioteca estándar |
-| Pruebas | 255 (`python -m unittest discover -s tests`) |
+| Pruebas | 259 (`python -m unittest discover -s tests`) |
 | Comandos | 16 (11 que preguntan, 5 que actúan), 450 frases, 8 idiomas |
 | Escucha en | `127.0.0.1:18090` (solo bucle local), con token |
 | Funciona en | El banco de pruebas de la CM5 (como servicio) o cualquier ordenador |
@@ -59,7 +59,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟡 | Las reglas de intención, el servicio local y el punto de entrada de turnos funcionan como servicio en el banco de la CM5, pero ningún motor de reconocimiento ni síntesis de voz forma parte del repositorio: ejecuta los comandos que configures para ello. |
-| Pruebas | 🟢 | Pasan 255 pruebas (`python -m unittest discover -s tests`): las reglas de intención, los ocho idiomas, la confirmación firmada ligada a quien habla, la política de silenciado, el servicio local, el punto de entrada de turnos y la auditoría. |
+| Pruebas | 🟢 | Pasan 259 pruebas (`python -m unittest discover -s tests`): las reglas de intención, los ocho idiomas, la confirmación firmada ligada a quien habla, la política de silenciado, el servicio local, el punto de entrada de turnos y la auditoría. |
 | Hardware | 🔴 | No se ha probado ningún micrófono ni motor de voz, y el panel táctil que debe llevar al asistente no ha funcionado en una placa. |
 | Seguridad | 🟠 | La confirmación está firmada y ligada a quien habla, y la auditoría se prueba en el equipo anfitrión; no ha habido revisión independiente. |
 | Integración | 🟠 | El servidor consulta al servicio en el banco de la CM5; el flujo de voz con el panel táctil no ha funcionado. |
@@ -323,7 +323,7 @@ El servicio nunca escribe lo dicho en un registro, sean cuales sean los ajustes.
 $env:PYTHONPATH = "src"
 
 # 1. las pruebas
-python -m unittest discover -s tests                      # 255 pruebas
+python -m unittest discover -s tests                      # 259 pruebas
 
 # 2. la pasarela, un objeto JSON por línea
 echo '{"text":"arm the system"}' | python -m armor_voice_ai.gateway
